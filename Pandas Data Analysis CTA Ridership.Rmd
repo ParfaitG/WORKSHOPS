@@ -1,0 +1,749 @@
+---
+title: "Pandas Data Analysis CTA Ridership"
+output: html_notebook
+---
+
+## **Data Structures**
+
+#### Pandas Data Structures
+
+<img src="Images/pandas_logo.jpg" style="height:80px;float:right;">
+
+- **[pandas.Series](https://pandas.pydata.org/pandas-docs/stable/generated/pandas.Series.html)**:           indexed collection of primitive, equal-type values
+
+- **[pandas.DataFrame](https://pandas.pydata.org/pandas-docs/stable/api.html#dataframe)**:        indexed collection of equal length pandas Series
+
+#### Numpy Data Structures
+
+<img src="Images/numpy_logo.jpg" style="height:50px;float:right;">
+
+- **[numpy.array](https://docs.scipy.org/doc/numpy/reference/generated/numpy.array.html)**: one or more dimensional structure of equal-length values
+
+- **[numpy.matrix](https://docs.scipy.org/doc/numpy/reference/generated/numpy.matrix.html)**: special 2-D array
+
+
+<table style="float:left;">
+<thead>
+<tr class="header">
+<th align="left"></th>
+<th align="left">Homogeneous</th>
+<th align="left">Heterogeneous</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="left">1d</td>
+<td align="left">pandas Series</td>
+<td align="left">python list/tuple/dict</td>
+</tr>
+<tr class="even">
+<td align="left">2d</td>
+<td align="left">numpy matrix</td>
+<td align="left">pandas DataFrame</td>
+</tr>
+<tr class="odd">
+<td align="left">nd</td>
+<td align="left">numpy array</td>
+<td align="left"></td>
+</tr>
+</tbody>
+</table>
+
+## **Define Modules**
+
+```{python, engine.path = '/usr/bin/python3'}
+import os
+import numpy as np
+import pandas as pd
+```
+
+## **Import Data**
+
+#### [IO Tools (Text, CSV, Excel, HDF5)](https://pandas.pydata.org/pandas-docs/stable/io.html)
+
+#### Source: [CTA Ridership 'L' Stations](https://data.cityofchicago.org/Transportation/CTA-Ridership-L-Station-Entries-Daily-Totals/5neh-572f)
+
+```{python, engine.path = '/usr/bin/python3'}
+import os
+import pandas as pd
+
+cd = os.path.dirname(os.path.abspath('__file__'))
+
+rides_df = pd.read_table(os.path.join(cd, 'Data/CTA_Ridership_L_Station_Entries_DailyTotals.csv'),
+                         sep=",")
+
+print(rides_df.head())
+```
+
+```{python, engine.path='/usr/bin/python3'}
+import os
+import pandas as pd
+
+cd = os.path.dirname(os.path.abspath('__file__'))
+rides_df = pd.read_csv(os.path.join(cd, 'Data/CTA_Ridership_L_Station_Entries_DailyTotals.csv'))
+
+print(rides_df.tail())
+```
+
+### **XML Data**
+
+```{python, engine.path='/usr/bin/python3'}
+'''<?xml version="1.0" encoding="UTF-8"?>
+<response>
+  <row>
+    <row _id="1" _uuid="35A6C0EA-CE03-47C5-987C-825C37C76DF3" _position="1" _address="https://data.cityofchicago.org/resource/_8pix-ypme/1">
+      <stop_id>30161</stop_id>
+      <direction_id>E</direction_id>
+      <stop_name>18th (Loop-bound)</stop_name>
+      <station_name>18th</station_name>
+      <station_descriptive_name>18th (Pink Line)</station_descriptive_name>
+      <map_id>40830</map_id>
+      <ada>true</ada>
+      <red>false</red>
+      <blue>false</blue>
+      <g>false</g>
+      <brn>false</brn>
+      <p>false</p>
+      <pexp>false</pexp>
+      <y>false</y>
+      <pnk>true</pnk>
+      <o>false</o>
+      <location latitude="41.857908" longitude="-87.669147" needs_recoding="false"/>
+    </row>
+    <row _id="2" _uuid="BC49ED7D-D418-4432-BFB2-7A3DD78A5AAF" _position="2" _address="https://data.cityofchicago.org/resource/_8pix-ypme/2">
+      <stop_id>30162</stop_id>
+      <direction_id>W</direction_id>
+      <stop_name>18th (54th/Cermak-bound)</stop_name>
+      <station_name>18th</station_name>
+      <station_descriptive_name>18th (Pink Line)</station_descriptive_name>
+      <map_id>40830</map_id>
+      <ada>true</ada>
+      <red>false</red>
+      <blue>false</blue>
+      <g>false</g>
+      <brn>false</brn>
+      <p>false</p>
+      <pexp>false</pexp>
+      <y>false</y>
+      <pnk>true</pnk>
+      <o>false</o>
+      <location latitude="41.857908" longitude="-87.669147" needs_recoding="false"/>
+    </row>
+    <row _id="3" _uuid="F5415CA3-49A6-4334-86A5-C9D1BDC5F74E" _position="3" _address="https://data.cityofchicago.org/resource/_8pix-ypme/3">
+      <stop_id>30022</stop_id>
+      <direction_id>N</direction_id>
+      <stop_name>35th/Archer (Loop-bound)</stop_name>
+      <station_name>35th/Archer</station_name>
+      <station_descriptive_name>35th/Archer (Orange Line)</station_descriptive_name>
+      <map_id>40120</map_id>
+      <ada>true</ada>
+      <red>false</red>
+      <blue>false</blue>
+      <g>false</g>
+      <brn>false</brn>
+      <p>false</p>
+      <pexp>false</pexp>
+      <y>false</y>
+      <pnk>false</pnk>
+      <o>true</o>
+      <location latitude="41.829353" longitude="-87.680622" needs_recoding="false"/>
+    </row>
+'''
+
+import os
+import pandas as pd
+import xml.etree.ElementTree as et
+
+cd = os.path.dirname(os.path.abspath('__file__'))
+
+doc = et.parse(os.path.join(cd, 'Data/CTA_System_L_Stops.xml'))
+
+data = []
+
+for row in doc.iterfind('.//row/row'):
+    inner = {}
+    for col in row.iterfind('.//*'):
+        
+        if col.tag == 'location':
+            inner['latitude'] = col.attrib['latitude']
+            inner['longitude'] = col.attrib['longitude']
+        else:
+            if col.text in ['true', 'false']:
+                tmp = col.text == 'true'
+                inner[col.tag] = tmp
+            else:
+                inner[col.tag] = col.text
+        
+    data.append(inner)
+    
+xml_df = pd.DataFrame(data, columns=['stop_id', 'direction_id', 'stop_name', 
+                                     'station_name', 'station_descriptive_name',
+                                     'map_id', 'ada', 'red', 'blue', 'g', 'brn', 'p', 
+                                     'pexp', 'y', 'pnk', 'o', 'latitude', 'longitude'])
+                                     
+import json
+
+# CONVERT XML PARSED DATA TO JSON
+jsondata = json.dumps(data, indent=4)
+
+# PRETTY PRINT EXPORT
+with open(os.path.join(cd, 'Data/CTA_System_L_Stops.json'),'w') as jsonfile:
+    jsonfile.write(jsondata)
+    
+print(xml_df.head())
+```
+
+### **JSON Data**
+
+```{python, engine.path='/usr/bin/python3'}
+'''
+[
+    {
+        "y": false,
+        "map_id": "40830",
+        "station_descriptive_name": "18th (Pink Line)",
+        "pexp": false,
+        "longitude": "-87.669147",
+        "red": false,
+        "stop_name": "18th (Loop-bound)",
+        "brn": false,
+        "p": false,
+        "g": false,
+        "ada": true,
+        "latitude": "41.857908",
+        "station_name": "18th",
+        "blue": false,
+        "stop_id": "30161",
+        "pnk": true,
+        "direction_id": "E",
+        "o": false
+    },
+    {
+        "y": false,
+        "map_id": "40830",
+        "station_descriptive_name": "18th (Pink Line)",
+        "pexp": false,
+        "longitude": "-87.669147",
+        "red": false,
+        "stop_name": "18th (54th/Cermak-bound)",
+        "brn": false,
+        "p": false,
+        "g": false,
+        "ada": true,
+        "latitude": "41.857908",
+        "station_name": "18th",
+        "blue": false,
+        "stop_id": "30162",
+        "pnk": true,
+        "direction_id": "W",
+        "o": false
+    },
+    ...
+'''
+
+import os
+import pandas as pd
+
+cd = os.path.dirname(os.path.abspath('__file__'))
+
+# PANDAS IMPORT
+json_df = pd.read_json(os.path.join(cd, 'Data/CTA_System_L_Stops.json'))
+
+print(json_df.head())
+```
+
+### **SQL Data**
+
+```{python, engine.path='/usr/bin/python3'}
+import os
+import numpy as np
+import pandas as pd
+
+import sqlite3 
+import sqlalchemy
+
+cd = os.path.dirname(os.path.abspath('__file__'))
+
+engine = sqlalchemy.create_engine("sqlite:///Data/CTA_Data.db")
+
+# EXPORT DATAFRAMES
+rides_df = pd.read_csv(os.path.join(cd, 'Data/CTA_Ridership_L_Station_Entries_DailyTotals.csv'))
+rides_df['date'] = pd.to_datetime(rides_df['date'], format="%m/%d/%Y").astype(np.int64) // 10**9
+rides_df.to_sql('Ridership', con=engine, if_exists='replace', index=False)
+
+json_df = pd.read_json(os.path.join(cd, 'Data/CTA_System_L_Stops.json'))
+json_df.to_sql('Stations', con=engine, if_exists='replace', index=False)
+
+# CREATE INDEXES
+with engine.connect() as conn:
+    conn.execute("CREATE INDEX station_idx ON Ridership (station_id)")
+    
+with engine.connect() as conn:
+    conn.execute("CREATE INDEX map_idx ON Stations (map_id)")
+
+# IMPORT QUERY DATA
+sql_df = pd.read_sql("SELECT * FROM Ridership r INNER JOIN Stations s ON r.station_id = s.map_id",
+                     con=engine)
+
+print(sql_df.head())
+```
+
+## **Data Processing**
+```{python, engine.path='/usr/bin/python3'}
+import os
+import pandas as pd
+
+cd = os.path.dirname(os.path.abspath('__file__'))
+rides_df = pd.read_csv(os.path.join(cd, 'Data/CTA_Ridership_L_Station_Entries_DailyTotals.csv'))
+
+### BUILD LIST OF GROUPED DATA FRAMES
+station_dfs = {}
+
+for i, g in rides_df.groupby('stationname'):
+    station_dfs[i] = g
+    
+print(station_dfs['Clark/Lake'].head())
+
+print(station_dfs['Merchandise Mart'].head())
+
+print(station_dfs['Jefferson Park'].head())
+```
+
+
+## **Data Diagnostics**
+
+```{python, engine.path='/usr/bin/python3'}
+import os
+import pandas as pd
+
+import matplotlib
+import matplotlib.pyplot as plt
+import seaborn as sns
+
+sns.set()
+
+cd = os.path.dirname(os.path.abspath('__file__'))
+
+rides_df = pd.read_csv(os.path.join(cd, 'Data/CTA_Ridership_L_Station_Entries_DailyTotals.csv'))
+rides_df['rides'].plot('hist', by='daytype', figsize=(15,5), fontsize = 15, bins=100)
+
+plt.title("CTA 'L' Ridership Distribution", weight='bold', size=24)
+
+plt.savefig("Images/Python/CTA L Ridership Distribution.png")
+plt.clf()
+plt.close('all')
+```
+![](Images/Python/CTA L Ridership Distribution.png)
+
+```{python, engine.path='/usr/bin/python3'}
+import os
+import pandas as pd
+
+import matplotlib
+import matplotlib.pyplot as plt
+import seaborn as sns
+
+sns.set()
+
+cd = os.path.dirname(os.path.abspath('__file__'))
+rides_df = pd.read_csv(os.path.join(cd, 'Data/CTA_Ridership_L_Station_Entries_DailyTotals.csv'))
+
+plt.figure(figsize=(15,5))
+plt.hist(rides_df.query("daytype == 'W'")['rides'], bins=100, label='W')
+plt.hist(rides_df.query("daytype == 'U'")['rides'], bins=100, label='U')
+plt.hist(rides_df.query("daytype == 'A'")['rides'], bins=100, label='A')
+
+plt.title("CTA 'L' Ridership Distribution By Day Type", weight='bold', size=24)
+plt.legend(loc='upper right')
+plt.savefig("Images/Python/CTA L Ridership Distribution Day Type.png")
+plt.clf()
+plt.close('all')
+```
+![](Images/Python/CTA L Ridership Distribution Day Type.png)
+
+```{python, engine.path='/usr/bin/python3'}
+import os
+import pandas as pd
+
+import matplotlib
+import matplotlib.pyplot as plt
+import seaborn as sns
+
+sns.set()
+
+cd = os.path.dirname(os.path.abspath('__file__'))
+rides_df = pd.read_csv(os.path.join(cd, 'Data/CTA_Ridership_L_Station_Entries_DailyTotals.csv'))
+rides_df['date'] = pd.to_datetime(rides_df['date'], format="%m/%d/%Y")
+
+fig, ax = plt.subplots(figsize=(15,5))
+sns.boxplot(x='year', y='rides', data=rides_df.assign(year = rides_df['date'].dt.year), ax=ax)
+
+plt.title("CTA 'L' Ridership Box Plot Across Years", weight='bold', size=24)
+plt.xlabel('Years', weight='bold', size=18)
+plt.ylabel('Rides', weight='bold', size=18)
+plt.savefig("Images/Python/CTA L Box Plot Across Years.png")
+plt.clf()
+plt.close('all')
+```
+![](Images/Python/CTA L Box Plot Across Years.png)
+
+## **Correlation**
+
+```{python, engine.path='/usr/bin/python3'}
+import os
+import pandas as pd
+
+cd = os.path.dirname(os.path.abspath('__file__'))
+rides_df = pd.read_csv(os.path.join(cd, 'Data/CTA_Ridership_L_Station_Entries_DailyTotals.csv'))
+rides_df['date'] = pd.to_datetime(rides_df['date'], format="%m/%d/%Y")
+
+### DATA FRAME WITH YEAR COLUMNS
+pvt_df = rides_df.assign(year = rides_df['date'].dt.year)[['year', 'stationname', 'rides']].\
+                         pivot_table(index='stationname', columns='year', aggfunc='sum')
+
+## CORRELATION DATAFRAME
+print(pvt_df.corr(method='pearson'))
+```
+
+
+## **Regression**
+
+#### City of Chicago Population
+#### Source: US Census: American Community Survey (ACS) 2005-2016]
+
+```{python, engine.path='/usr/bin/python3'}
+import os
+import pandas as pd
+
+import statsmodels.api as sm
+
+cd = os.path.dirname(os.path.abspath('__file__'))
+rides_df = pd.read_csv(os.path.join(cd, 'Data/CTA_Ridership_L_Station_Entries_DailyTotals.csv'))
+rides_df['date'] = pd.to_datetime(rides_df['date'], format="%m/%d/%Y")
+
+
+pop_df = pd.DataFrame({'year': list(range(2005, 2017)),
+                       'population': [2701926, 2749283, 2737996, 2850502, 2741455, 2703466, 
+                                      2700741, 2702471, 2706101, 2712608, 2717534, 2714017],
+                       'housing_units': [1170187, 1175547, 1173754, 1182326, 1237642, 1197741, 
+                                         1198408, 1197248, 1192790, 1190998, 1192544, 1194098],
+                       'square_miles': [227.1, 227.1, 227.1, 227.1, 227.1, 227.63, 227.63, 
+                                        227.63, 227.63, 227.63, 227.63, 227.63]},
+                        columns=['year', 'population', 'housing_units', 'square_miles']
+         )
+
+pop_df['pop_density'] = pop_df['population'] / pop_df['square_miles']
+
+reg_df = pd.merge(rides_df.assign(year = rides_df['date'].dt.year), pop_df, on=['year'])
+
+# SIMPLE REGRESSION
+model = sm.OLS(reg_df['rides'], sm.add_constant(reg_df['population'])).fit()
+print(model.summary())
+
+# MULTIPLE REGRESSION
+model = sm.OLS(reg_df['rides'], sm.add_constant(reg_df[['pop_density', 'housing_units']])).fit()
+print(model.summary())
+
+```
+
+## **Graph Data**
+
+```{python, engine.path='/usr/bin/python3'}
+import os
+import pandas as pd
+
+import matplotlib
+import matplotlib.pyplot as plt
+import seaborn as sns
+
+sns.set()
+
+cd = os.path.dirname(os.path.abspath('__file__'))
+rides_df = pd.read_csv(os.path.join(cd, 'Data/CTA_Ridership_L_Station_Entries_DailyTotals.csv'))
+rides_df['date'] = pd.to_datetime(rides_df['date'], format="%m/%d/%Y")
+
+grp_df = rides_df.groupby('stationname')['rides'].agg(['sum'])\
+                                                 .sort_values('sum', ascending=False)\
+                                                 .head(10)
+        
+fig, ax = plt.subplots(figsize=(20,5))
+
+grp_df.plot(kind='bar', edgecolor='w', ax=ax, rot=22, width=0.5, fontsize = 15)
+
+# ADD TITLES AND LABELS
+plt.title('Top Ten CTA L Stations By Ridership, 2001-2018', weight='bold', size=24)
+plt.xlabel('Station', weight='bold', size=24)
+plt.ylabel('Rides', weight='bold', size=20)
+plt.ticklabel_format(style='plain', axis='y')
+ax.get_yaxis().set_major_formatter(matplotlib.ticker.FuncFormatter(lambda x, p: format(int(x), ',')))
+plt.xticks(ha='right')
+
+plt.tight_layout()
+plt.savefig("Images/Python/Top Ten CTA L Stations By Ridership.png")
+plt.clf()
+plt.close()
+```
+
+![](Images/Python/Top Ten CTA L Stations By Ridership.png)
+
+```{python, engine.path='/usr/bin/python3'}
+import os
+import pandas as pd
+
+import matplotlib
+import matplotlib.pyplot as plt
+import seaborn as sns
+
+sns.set()
+
+cd = os.path.dirname(os.path.abspath('__file__'))
+rides_df = pd.read_csv(os.path.join(cd, 'Data/CTA_Ridership_L_Station_Entries_DailyTotals.csv'))
+rides_df['date'] = pd.to_datetime(rides_df['date'], format="%m/%d/%Y")
+
+grp_df = rides_df.groupby('stationname')['rides'].agg(['count', 'mean', 'median', 'min', 'max'])\
+                                                 .sort_values('mean', ascending=False)\
+                                                 .head(10)
+
+fig, ax = plt.subplots(figsize=(20,5))
+
+grp_df.plot(kind='bar', edgecolor='w', ax=ax, rot=22, width=0.5, fontsize = 15)
+
+# ADD TITLES AND LABELS
+plt.title('Top Ten CTA L Stations By Ridership By Aggregate, 2001-2018', weight='bold', size=24)
+plt.xlabel('Station', weight='bold', size=24)
+plt.ylabel('Rides', weight='bold', size=20)
+plt.xticks(ha='right')
+ax.get_yaxis().set_major_formatter(matplotlib.ticker.FuncFormatter(lambda x, p: format(int(x), ',')))
+
+plt.tight_layout()
+plt.savefig("Images/Python/Top Ten CTA L Stations By Ridership By Aggregate.png")
+plt.clf()
+plt.close()
+```
+![](Images/Python/Top Ten CTA L Stations By Ridership By Aggregate.png)
+
+```{python, engine.path='/usr/bin/python3'}
+import os
+import pandas as pd
+
+import matplotlib
+import matplotlib.pyplot as plt
+import seaborn as sns
+
+sns.set()
+
+cd = os.path.dirname(os.path.abspath('__file__'))
+rides_df = pd.read_csv(os.path.join(cd, 'Data/CTA_Ridership_L_Station_Entries_DailyTotals.csv'))
+rides_df['date'] = pd.to_datetime(rides_df['date'], format="%m/%d/%Y")
+
+grp_df = rides_df.assign(year=rides_df['date'].dt.year)\
+                 .groupby('year')['rides'].agg(['mean', 'median'])
+
+fig, ax = plt.subplots(figsize=(20,5))
+
+grp_df.reset_index().plot(kind='scatter', y='mean', x='year', ax=ax)
+grp_df.reset_index().plot(kind='scatter', y='median', x='year', ax=ax)
+grp_df.plot(kind='line', ax=ax, fontsize = 15, xticks=grp_df.index.values)
+
+# ADD TITLES AND LABELS
+plt.title('Annual Mean and Median Ridership, 2001-2018', weight='bold', size=24)
+plt.xlabel('Years', weight='bold', size=24)
+plt.ylabel('Rides', weight='bold', size=20)
+plt.xticks(ha='center')
+ax.get_yaxis().set_major_formatter(matplotlib.ticker.FuncFormatter(lambda x, p: format(int(x), ',')))
+
+plt.tight_layout()
+plt.savefig("Images/Python/Annual Mean and Median Ridership.png")
+plt.clf()
+plt.close()
+```
+![](Images/Python/Annual Mean and Median Ridership.png)
+
+```{python, engine.path='/usr/bin/python3'}
+import os
+import pandas as pd
+
+import matplotlib
+import matplotlib.pyplot as plt
+import seaborn as sns
+
+sns.set()
+
+cd = os.path.dirname(os.path.abspath('__file__'))
+stations_df = pd.read_json(os.path.join(cd, 'Data/CTA_System_L_Stops.json'))
+
+# BY RAIL LINE GRAPH
+grp_df = stations_df.rename(columns={'g':'green', 'brn':'brown', 'p':'purple', 'pexp':'purple_exp',
+                                     'y':'yellow', 'pnk':'pink', 'o':'orange'})\
+                   .agg({'red':'sum', 'blue':'sum', 'brown':'sum', 'green':'sum', 'purple':'sum',
+                         'purple_exp':'sum', 'yellow':'sum', 'pink':'sum', 'orange':'sum'})
+
+grp_df = grp_df.reindex(['blue', 'red', 'green', 'brown', 'purple_exp', 
+                         'pink', 'orange', 'purple', 'yellow'],axis='columns')
+
+cta_palette = ['#00A1DE', '#C60C30', '#009B3A', '#62361B', '#8059BA', '#E27EA6', '#F9461C', '#522398', '#F9E300']
+
+fig = grp_df.plot(kind='bar', edgecolor='w', figsize=(20,5), rot=0, width=0.5, fontsize = 15,
+                  color=cta_palette)
+
+# ADD TITLES AND LABELS
+plt.title("CTA System 'L' Stops", weight='bold', size=24)
+plt.xlabel('Direction', weight='bold', size=24)
+plt.ylabel('Count', weight='bold', size=20)
+plt.xticks(ha='center')
+
+plt.tight_layout()
+plt.savefig("Images/Python/CTA System L Stops.png")
+plt.clf()
+plt.close()
+
+
+# BY DIRECTION GRAPH
+grp_df = stations_df.rename(columns={'g':'green', 'brn':'brown', 'p':'purple', 'pexp':'purple_exp',
+                                     'y':'yellow', 'pnk':'pink', 'o':'orange'})\
+                     .groupby('direction_id')\
+                     .agg({'red':'sum', 'blue':'sum', 'brown':'sum', 'green':'sum', 'purple':'sum',
+                           'purple_exp':'sum', 'yellow':'sum', 'pink':'sum', 'orange':'sum'})
+                           
+grp_df = grp_df.reindex(['blue', 'red', 'green', 'brown', 'purple_exp', 
+                         'pink', 'orange', 'purple', 'yellow'],axis='columns')
+                         
+fig = grp_df.plot(kind='bar', edgecolor='w', figsize=(20,5), rot=0, width=0.5, fontsize = 15,
+                  color=cta_palette)
+                  
+# ADD TITLES AND LABELS
+plt.title("CTA System 'L' Stops By Direction", weight='bold', size=24)
+plt.xlabel('Direction', weight='bold', size=24)
+plt.ylabel('Count', weight='bold', size=20)
+plt.xticks(ha='center')
+
+plt.tight_layout()
+plt.savefig("Images/Python/CTA System L Stops By Direction.png")
+plt.clf()
+plt.close()
+```
+![](Images/Python/CTA System L Stops.png)
+![](Images/Python/CTA System L Stops By Direction.png)
+
+
+## **Extensions**
+
+### RPy2
+
+<img src="Images/Rpy2_Logo.png" style="height:50px;float:left;">
+
+
+```{python, engine.path='/usr/bin/python3'}
+import os
+import pandas as pd
+
+from rpy2.robjects import pandas2ri
+from rpy2.robjects.packages import importr
+
+cd = os.path.dirname(os.path.abspath('__file__'))
+
+# IMPORT R PACKAGES
+base = importr('base')
+utils = importr('utils', robject_translations={'read.csv': 'read_csv'})
+
+# RUN USUAL R OPERATIONS
+r_df = utils.read_csv(os.path.join(cd, "Data/CTA_Ridership_L_Station_Entries_DailyTotals.csv"))
+utils.str(r_df)
+base.print(base.summary(r_df))
+
+# CONVERT R DATAFRAME TO PANDAS DATAFRAME
+pandas2ri.activate()
+py_df = pandas2ri.ri2py_dataframe(r_df)
+print(py_df.head())
+```
+
+## **C Programming**
+
+<img src="Images/Cython_Logo.png" style="float:left;height:50px"/>
+
+```{python, engine.path='/usr/bin/python3'}
+import os 
+import pandas as pd
+
+cd = os.path.dirname(os.path.abspath('__file__'))
+
+## TOP 10 HISTORICAL RIDES
+rides_df = pd.read_csv(os.path.join(cd, 'Data/CTA_Ridership_L_Station_Entries_DailyTotals.csv'))
+print(rides_df.nlargest(10, 'rides'))
+```
+
+```{python, engine.path='/usr/bin/python3'}
+import os, sys
+sys.path.insert(0, '/path/to/working/directory/Apps')
+
+# COMPILE CYTHON SCRIPT
+import pyximport
+pyximport.install()
+
+# IMPORT CYTHON MODULE
+import Cython_Sum_TopRides as cy
+
+'''
+def sum_rides(x):
+    cdef int top_rides = 0
+    for i in x:
+        top_rides += i
+
+    return top_rides
+    
+
+def cum_sum_rides(x):
+    cdef int top_rides = 0
+    cdef int sum_ride = 0
+    cdef int cum_top[10]
+    
+    for n,i in enumerate(x):
+        sum_ride += i
+        cum_top[n] = sum_ride
+        
+    return cum_top
+'''
+
+# RUN CYTHON FUNCTIONS
+print(cy.sum_rides([36323, 36017, 35845, 33795, 33615, 30457, 30295, 29457, 29050, 28460]))
+
+print(cy.cum_sum_rides([36323, 36017, 35845, 33795, 33615, 30457, 30295, 29457, 29050, 28460]))
+```
+
+
+## **Data Applications**
+
+### Desktop GUI (Tkinter)
+
+<img src="Images/Tcl-tk_Icon.gif" style="float:left;height:50px;"/>
+
+```{python, engine.path='/usr/bin/python3'}
+from subprocess import Popen
+import os 
+
+cd = os.path.dirname(os.path.abspath('__file__'))
+
+proc = Popen(['python3 GUI_Python_Tkinter.py'], shell=True, cwd=os.path.join(cd, 'Apps'),
+             stdin=None, stdout=None, stderr=None, close_fds=True)
+```
+
+### Web App (Flask)
+
+<img src="Images/Flask_Logo.png" style="float:left;height:50px;"/>
+
+```{python, engine.path='/usr/bin/python3'}
+from subprocess import Popen
+import os 
+
+cd = os.path.dirname(os.path.abspath('__file__'))
+
+# LINUX SHELL COMMAND CALL
+proc = Popen(['gnome-terminal', '-e', 'python3 Web_Flask_Python.py'], cwd=os.path.join(cd, 'Apps'),
+             stdin=None, stdout=None, stderr=None, close_fds=True)
+             
+# MAC: replace "gnome-terminal -e" with "open -a"
+# WINDOWS: replace "gnome-terminal -e" with "cmd.exe /k"
+```
+
+
+
