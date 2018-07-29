@@ -3,7 +3,7 @@ title: "R Data Analysis CTA Ridership"
 output: html_notebook
 ---
 
-<img src="Images/R_Logo.png" style="height:80px;float:right;">
+<img src="IMAGES/R_Logo.png" style="height:80px;float:right;">
 
 ## **[Data Structures](http://adv-r.had.co.nz/Data-structures.html)**
 
@@ -63,13 +63,13 @@ knitr::opts_chunk$set(fig.width=15, fig.height=8)
 ```{r}
 setwd('/path/to/working/directory')
 
-rides_df <- read.table('Data/CTA_Ridership_L_Station_Entries_DailyTotals.csv', header=TRUE, quote = "\"", sep=",")
+rides_df <- read.table('DATA/CTA_Ridership_L_Station_Entries_DailyTotals.csv', header=TRUE, quote = "\"", sep=",")
 
 head(rides_df, 10)
 ```
 
 ```{r}
-rides_df <- read.csv('Data/CTA_Ridership_L_Station_Entries_DailyTotals.csv', stringsAsFactors = FALSE)
+rides_df <- read.csv('DATA/CTA_Ridership_L_Station_Entries_DailyTotals.csv', stringsAsFactors = FALSE)
 
 tail(rides_df, 10)
 ```
@@ -151,7 +151,7 @@ txt = '<?xml version="1.0" encoding="UTF-8"?>
       <location latitude="41.829353" longitude="-87.680622" needs_recoding="false"/>
     </row>
 '
-doc <- xmlParse('Data/CTA_System_L_Stops.xml')
+doc <- xmlParse('DATA/CTA_System_L_Stops.xml')
 xml_df <- xmlToDataFrame(nodes=getNodeSet(doc, "//response/row/row"), stringsAsFactors = FALSE)
 rm(doc)
 
@@ -221,14 +221,14 @@ txt = '[
 x <- toJSON(xml_df, pretty=TRUE)
 
 # EXPORT TO FILE
-fileConn<-file("Data/CTA_System_L_Stops.json")
+fileConn<-file("DATA/CTA_System_L_Stops.json")
 writeLines(x, fileConn)
 close(fileConn)
 
 rm(fileConn, x, txt)
 
 # IMPORT AS DATAFRAME
-json_df <- do.call(rbind, lapply(paste(readLines("Data/CTA_System_L_Stops.json", warn=FALSE), collapse=""), 
+json_df <- do.call(rbind, lapply(paste(readLines("DATA/CTA_System_L_Stops.json", warn=FALSE), collapse=""), 
                                  jsonlite::fromJSON))
 
 # COLUMN NAME CLEAN-UP
@@ -250,7 +250,7 @@ head(json_df)
 library(DBI)
 library(RSQLite)
 
-conn <-  dbConnect(SQLite(), dbname = "Data/CTA_Data.db")
+conn <-  dbConnect(SQLite(), dbname = "DATA/CTA_Data.db")
 
 ### EXPORT DATAFRAMES
 rides_df$date <- as.POSIXct(as.character(rides_df$date), format="%m/%d/%Y")
@@ -516,14 +516,14 @@ ggplot(rdf, aes(x=reorder(direction_id, -value), y=value, fill=line)) +
 ## **Extensions**
 
 #### Reticulate
-<img src="Images/Reticulate_Icon.png" style="height:50px;float:left;">
+<img src="IMAGES/Reticulate_Icon.png" style="height:50px;float:left;">
 
 ```{r}
 library(reticulate)
 
 pd <- import("pandas")
 
-r_df <- pd$read_csv("Data/CTA_Ridership_L_Station_Entries_DailyTotals.csv")
+r_df <- pd$read_csv("DATA/CTA_Ridership_L_Station_Entries_DailyTotals.csv")
 
 head(r_df)
 summary(r_df)
@@ -531,8 +531,8 @@ summary(r_df)
 
 ### **C/C++ Programming Calls**
 
-<img src="Images/C_Logo.png" style="float:left;height:50px"/>
-<img src="Images/C++_Logo.png" style="float:left;height:50px"/>
+<img src="IMAGES/C_Logo.png" style="float:left;height:50px"/>
+<img src="IMAGES/C++_Logo.png" style="float:left;height:50px"/>
 
 ```{r}
 # TOP TEN RIDES OVERALL
@@ -596,7 +596,7 @@ cum_sum_rides(head(with(rides_df, rides_df[order(-rides_df$rides),'rides']), 10)
 
 #### Desktop GUI (Gwidgets)
 
-<img src="Images/Tcl-tk_Icon.gif" style="float:left;height:50px;"/>
+<img src="IMAGES/Tcl-tk_Icon.gif" style="float:left;height:50px;"/>
 
 ```{r}
 system(paste0("Rscript ", getwd(), "/Apps/GUI_R_GWidgets.R"))
@@ -604,7 +604,7 @@ system(paste0("Rscript ", getwd(), "/Apps/GUI_R_GWidgets.R"))
 
 #### Web App (Shiny)
 
-<img src="Images/Shiny_Logo.png" style="float:left;height:50px;"/>
+<img src="IMAGES/Shiny_Logo.png" style="float:left;height:50px;"/>
 
 ```{r}
 # LINUX SHELL COMMAND CALL

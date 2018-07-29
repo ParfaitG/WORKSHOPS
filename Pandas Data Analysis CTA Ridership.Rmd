@@ -7,7 +7,7 @@ output: html_notebook
 
 #### Pandas Data Structures
 
-<img src="Images/pandas_logo.jpg" style="height:80px;float:right;">
+<img src="IMAGES/pandas_logo.jpg" style="height:80px;float:right;">
 
 - **[pandas.Series](https://pandas.pydata.org/pandas-docs/stable/generated/pandas.Series.html)**:           indexed collection of primitive, equal-type values
 
@@ -15,7 +15,7 @@ output: html_notebook
 
 #### Numpy Data Structures
 
-<img src="Images/numpy_logo.jpg" style="height:50px;float:right;">
+<img src="IMAGES/numpy_logo.jpg" style="height:50px;float:right;">
 
 - **[numpy.array](https://docs.scipy.org/doc/numpy/reference/generated/numpy.array.html)**: one or more dimensional structure of equal-length values
 
@@ -69,7 +69,7 @@ import pandas as pd
 
 cd = os.path.dirname(os.path.abspath('__file__'))
 
-rides_df = pd.read_table(os.path.join(cd, 'Data/CTA_Ridership_L_Station_Entries_DailyTotals.csv'),
+rides_df = pd.read_table(os.path.join(cd, 'DATA/CTA_Ridership_L_Station_Entries_DailyTotals.csv'),
                          sep=",")
 
 print(rides_df.head())
@@ -80,7 +80,7 @@ import os
 import pandas as pd
 
 cd = os.path.dirname(os.path.abspath('__file__'))
-rides_df = pd.read_csv(os.path.join(cd, 'Data/CTA_Ridership_L_Station_Entries_DailyTotals.csv'))
+rides_df = pd.read_csv(os.path.join(cd, 'DATA/CTA_Ridership_L_Station_Entries_DailyTotals.csv'))
 
 print(rides_df.tail())
 ```
@@ -156,7 +156,7 @@ import xml.etree.ElementTree as et
 
 cd = os.path.dirname(os.path.abspath('__file__'))
 
-doc = et.parse(os.path.join(cd, 'Data/CTA_System_L_Stops.xml'))
+doc = et.parse(os.path.join(cd, 'DATA/CTA_System_L_Stops.xml'))
 
 data = []
 
@@ -187,7 +187,7 @@ import json
 jsondata = json.dumps(data, indent=4)
 
 # PRETTY PRINT EXPORT
-with open(os.path.join(cd, 'Data/CTA_System_L_Stops.json'),'w') as jsonfile:
+with open(os.path.join(cd, 'DATA/CTA_System_L_Stops.json'),'w') as jsonfile:
     jsonfile.write(jsondata)
     
 print(xml_df.head())
@@ -247,7 +247,7 @@ import pandas as pd
 cd = os.path.dirname(os.path.abspath('__file__'))
 
 # PANDAS IMPORT
-json_df = pd.read_json(os.path.join(cd, 'Data/CTA_System_L_Stops.json'))
+json_df = pd.read_json(os.path.join(cd, 'DATA/CTA_System_L_Stops.json'))
 
 print(json_df.head())
 ```
@@ -264,14 +264,14 @@ import sqlalchemy
 
 cd = os.path.dirname(os.path.abspath('__file__'))
 
-engine = sqlalchemy.create_engine("sqlite:///Data/CTA_Data.db")
+engine = sqlalchemy.create_engine("sqlite:///DATA/CTA_Data.db")
 
 # EXPORT DATAFRAMES
-rides_df = pd.read_csv(os.path.join(cd, 'Data/CTA_Ridership_L_Station_Entries_DailyTotals.csv'))
+rides_df = pd.read_csv(os.path.join(cd, 'DATA/CTA_Ridership_L_Station_Entries_DailyTotals.csv'))
 rides_df['date'] = pd.to_datetime(rides_df['date'], format="%m/%d/%Y").astype(np.int64) // 10**9
 rides_df.to_sql('Ridership', con=engine, if_exists='replace', index=False)
 
-json_df = pd.read_json(os.path.join(cd, 'Data/CTA_System_L_Stops.json'))
+json_df = pd.read_json(os.path.join(cd, 'DATA/CTA_System_L_Stops.json'))
 json_df.to_sql('Stations', con=engine, if_exists='replace', index=False)
 
 # CREATE INDEXES
@@ -294,7 +294,7 @@ import os
 import pandas as pd
 
 cd = os.path.dirname(os.path.abspath('__file__'))
-rides_df = pd.read_csv(os.path.join(cd, 'Data/CTA_Ridership_L_Station_Entries_DailyTotals.csv'))
+rides_df = pd.read_csv(os.path.join(cd, 'DATA/CTA_Ridership_L_Station_Entries_DailyTotals.csv'))
 
 ### BUILD LIST OF GROUPED DATA FRAMES
 station_dfs = {}
@@ -324,16 +324,16 @@ sns.set()
 
 cd = os.path.dirname(os.path.abspath('__file__'))
 
-rides_df = pd.read_csv(os.path.join(cd, 'Data/CTA_Ridership_L_Station_Entries_DailyTotals.csv'))
+rides_df = pd.read_csv(os.path.join(cd, 'DATA/CTA_Ridership_L_Station_Entries_DailyTotals.csv'))
 rides_df['rides'].plot('hist', by='daytype', figsize=(15,5), fontsize = 15, bins=100)
 
 plt.title("CTA 'L' Ridership Distribution", weight='bold', size=24)
 
-plt.savefig("Images/Python/CTA L Ridership Distribution.png")
+plt.savefig("IMAGES/Python/CTA L Ridership Distribution.png")
 plt.clf()
 plt.close('all')
 ```
-![](Images/Python/CTA L Ridership Distribution.png)
+![](IMAGES/Python/CTA L Ridership Distribution.png)
 
 ```{python, engine.path='/usr/bin/python3'}
 import os
@@ -346,7 +346,7 @@ import seaborn as sns
 sns.set()
 
 cd = os.path.dirname(os.path.abspath('__file__'))
-rides_df = pd.read_csv(os.path.join(cd, 'Data/CTA_Ridership_L_Station_Entries_DailyTotals.csv'))
+rides_df = pd.read_csv(os.path.join(cd, 'DATA/CTA_Ridership_L_Station_Entries_DailyTotals.csv'))
 
 plt.figure(figsize=(15,5))
 plt.hist(rides_df.query("daytype == 'W'")['rides'], bins=100, label='W')
@@ -355,11 +355,11 @@ plt.hist(rides_df.query("daytype == 'A'")['rides'], bins=100, label='A')
 
 plt.title("CTA 'L' Ridership Distribution By Day Type", weight='bold', size=24)
 plt.legend(loc='upper right')
-plt.savefig("Images/Python/CTA L Ridership Distribution Day Type.png")
+plt.savefig("IMAGES/Python/CTA L Ridership Distribution Day Type.png")
 plt.clf()
 plt.close('all')
 ```
-![](Images/Python/CTA L Ridership Distribution Day Type.png)
+![](IMAGES/Python/CTA L Ridership Distribution Day Type.png)
 
 ```{python, engine.path='/usr/bin/python3'}
 import os
@@ -372,7 +372,7 @@ import seaborn as sns
 sns.set()
 
 cd = os.path.dirname(os.path.abspath('__file__'))
-rides_df = pd.read_csv(os.path.join(cd, 'Data/CTA_Ridership_L_Station_Entries_DailyTotals.csv'))
+rides_df = pd.read_csv(os.path.join(cd, 'DATA/CTA_Ridership_L_Station_Entries_DailyTotals.csv'))
 rides_df['date'] = pd.to_datetime(rides_df['date'], format="%m/%d/%Y")
 
 fig, ax = plt.subplots(figsize=(15,5))
@@ -381,11 +381,11 @@ sns.boxplot(x='year', y='rides', data=rides_df.assign(year = rides_df['date'].dt
 plt.title("CTA 'L' Ridership Box Plot Across Years", weight='bold', size=24)
 plt.xlabel('Years', weight='bold', size=18)
 plt.ylabel('Rides', weight='bold', size=18)
-plt.savefig("Images/Python/CTA L Box Plot Across Years.png")
+plt.savefig("IMAGES/Python/CTA L Box Plot Across Years.png")
 plt.clf()
 plt.close('all')
 ```
-![](Images/Python/CTA L Box Plot Across Years.png)
+![](IMAGES/Python/CTA L Box Plot Across Years.png)
 
 ## **Correlation**
 
@@ -394,7 +394,7 @@ import os
 import pandas as pd
 
 cd = os.path.dirname(os.path.abspath('__file__'))
-rides_df = pd.read_csv(os.path.join(cd, 'Data/CTA_Ridership_L_Station_Entries_DailyTotals.csv'))
+rides_df = pd.read_csv(os.path.join(cd, 'DATA/CTA_Ridership_L_Station_Entries_DailyTotals.csv'))
 rides_df['date'] = pd.to_datetime(rides_df['date'], format="%m/%d/%Y")
 
 ### DATA FRAME WITH YEAR COLUMNS
@@ -418,7 +418,7 @@ import pandas as pd
 import statsmodels.api as sm
 
 cd = os.path.dirname(os.path.abspath('__file__'))
-rides_df = pd.read_csv(os.path.join(cd, 'Data/CTA_Ridership_L_Station_Entries_DailyTotals.csv'))
+rides_df = pd.read_csv(os.path.join(cd, 'DATA/CTA_Ridership_L_Station_Entries_DailyTotals.csv'))
 rides_df['date'] = pd.to_datetime(rides_df['date'], format="%m/%d/%Y")
 
 
@@ -459,7 +459,7 @@ import seaborn as sns
 sns.set()
 
 cd = os.path.dirname(os.path.abspath('__file__'))
-rides_df = pd.read_csv(os.path.join(cd, 'Data/CTA_Ridership_L_Station_Entries_DailyTotals.csv'))
+rides_df = pd.read_csv(os.path.join(cd, 'DATA/CTA_Ridership_L_Station_Entries_DailyTotals.csv'))
 rides_df['date'] = pd.to_datetime(rides_df['date'], format="%m/%d/%Y")
 
 grp_df = rides_df.groupby('stationname')['rides'].agg(['sum'])\
@@ -479,12 +479,12 @@ ax.get_yaxis().set_major_formatter(matplotlib.ticker.FuncFormatter(lambda x, p: 
 plt.xticks(ha='right')
 
 plt.tight_layout()
-plt.savefig("Images/Python/Top Ten CTA L Stations By Ridership.png")
+plt.savefig("IMAGES/Python/Top Ten CTA L Stations By Ridership.png")
 plt.clf()
 plt.close()
 ```
 
-![](Images/Python/Top Ten CTA L Stations By Ridership.png)
+![](IMAGES/Python/Top Ten CTA L Stations By Ridership.png)
 
 ```{python, engine.path='/usr/bin/python3'}
 import os
@@ -497,7 +497,7 @@ import seaborn as sns
 sns.set()
 
 cd = os.path.dirname(os.path.abspath('__file__'))
-rides_df = pd.read_csv(os.path.join(cd, 'Data/CTA_Ridership_L_Station_Entries_DailyTotals.csv'))
+rides_df = pd.read_csv(os.path.join(cd, 'DATA/CTA_Ridership_L_Station_Entries_DailyTotals.csv'))
 rides_df['date'] = pd.to_datetime(rides_df['date'], format="%m/%d/%Y")
 
 grp_df = rides_df.groupby('stationname')['rides'].agg(['count', 'mean', 'median', 'min', 'max'])\
@@ -516,11 +516,11 @@ plt.xticks(ha='right')
 ax.get_yaxis().set_major_formatter(matplotlib.ticker.FuncFormatter(lambda x, p: format(int(x), ',')))
 
 plt.tight_layout()
-plt.savefig("Images/Python/Top Ten CTA L Stations By Ridership By Aggregate.png")
+plt.savefig("IMAGES/Python/Top Ten CTA L Stations By Ridership By Aggregate.png")
 plt.clf()
 plt.close()
 ```
-![](Images/Python/Top Ten CTA L Stations By Ridership By Aggregate.png)
+![](IMAGES/Python/Top Ten CTA L Stations By Ridership By Aggregate.png)
 
 ```{python, engine.path='/usr/bin/python3'}
 import os
@@ -533,7 +533,7 @@ import seaborn as sns
 sns.set()
 
 cd = os.path.dirname(os.path.abspath('__file__'))
-rides_df = pd.read_csv(os.path.join(cd, 'Data/CTA_Ridership_L_Station_Entries_DailyTotals.csv'))
+rides_df = pd.read_csv(os.path.join(cd, 'DATA/CTA_Ridership_L_Station_Entries_DailyTotals.csv'))
 rides_df['date'] = pd.to_datetime(rides_df['date'], format="%m/%d/%Y")
 
 grp_df = rides_df.assign(year=rides_df['date'].dt.year)\
@@ -553,11 +553,11 @@ plt.xticks(ha='center')
 ax.get_yaxis().set_major_formatter(matplotlib.ticker.FuncFormatter(lambda x, p: format(int(x), ',')))
 
 plt.tight_layout()
-plt.savefig("Images/Python/Annual Mean and Median Ridership.png")
+plt.savefig("IMAGES/Python/Annual Mean and Median Ridership.png")
 plt.clf()
 plt.close()
 ```
-![](Images/Python/Annual Mean and Median Ridership.png)
+![](IMAGES/Python/Annual Mean and Median Ridership.png)
 
 ```{python, engine.path='/usr/bin/python3'}
 import os
@@ -570,7 +570,7 @@ import seaborn as sns
 sns.set()
 
 cd = os.path.dirname(os.path.abspath('__file__'))
-stations_df = pd.read_json(os.path.join(cd, 'Data/CTA_System_L_Stops.json'))
+stations_df = pd.read_json(os.path.join(cd, 'DATA/CTA_System_L_Stops.json'))
 
 # BY RAIL LINE GRAPH
 grp_df = stations_df.rename(columns={'g':'green', 'brn':'brown', 'p':'purple', 'pexp':'purple_exp',
@@ -593,7 +593,7 @@ plt.ylabel('Count', weight='bold', size=20)
 plt.xticks(ha='center')
 
 plt.tight_layout()
-plt.savefig("Images/Python/CTA System L Stops.png")
+plt.savefig("IMAGES/Python/CTA System L Stops.png")
 plt.clf()
 plt.close()
 
@@ -618,19 +618,19 @@ plt.ylabel('Count', weight='bold', size=20)
 plt.xticks(ha='center')
 
 plt.tight_layout()
-plt.savefig("Images/Python/CTA System L Stops By Direction.png")
+plt.savefig("IMAGES/Python/CTA System L Stops By Direction.png")
 plt.clf()
 plt.close()
 ```
-![](Images/Python/CTA System L Stops.png)
-![](Images/Python/CTA System L Stops By Direction.png)
+![](IMAGES/Python/CTA System L Stops.png)
+![](IMAGES/Python/CTA System L Stops By Direction.png)
 
 
 ## **Extensions**
 
 ### RPy2
 
-<img src="Images/Rpy2_Logo.png" style="height:50px;float:left;">
+<img src="IMAGES/Rpy2_Logo.png" style="height:50px;float:left;">
 
 
 ```{python, engine.path='/usr/bin/python3'}
@@ -647,7 +647,7 @@ base = importr('base')
 utils = importr('utils', robject_translations={'read.csv': 'read_csv'})
 
 # RUN USUAL R OPERATIONS
-r_df = utils.read_csv(os.path.join(cd, "Data/CTA_Ridership_L_Station_Entries_DailyTotals.csv"))
+r_df = utils.read_csv(os.path.join(cd, "DATA/CTA_Ridership_L_Station_Entries_DailyTotals.csv"))
 utils.str(r_df)
 base.print(base.summary(r_df))
 
@@ -659,7 +659,7 @@ print(py_df.head())
 
 ## **C Programming**
 
-<img src="Images/Cython_Logo.png" style="float:left;height:50px"/>
+<img src="IMAGES/Cython_Logo.png" style="float:left;height:50px"/>
 
 ```{python, engine.path='/usr/bin/python3'}
 import os 
@@ -668,7 +668,7 @@ import pandas as pd
 cd = os.path.dirname(os.path.abspath('__file__'))
 
 ## TOP 10 HISTORICAL RIDES
-rides_df = pd.read_csv(os.path.join(cd, 'Data/CTA_Ridership_L_Station_Entries_DailyTotals.csv'))
+rides_df = pd.read_csv(os.path.join(cd, 'DATA/CTA_Ridership_L_Station_Entries_DailyTotals.csv'))
 print(rides_df.nlargest(10, 'rides'))
 ```
 
@@ -715,7 +715,7 @@ print(cy.cum_sum_rides([36323, 36017, 35845, 33795, 33615, 30457, 30295, 29457, 
 
 ### Desktop GUI (Tkinter)
 
-<img src="Images/Tcl-tk_Icon.gif" style="float:left;height:50px;"/>
+<img src="IMAGES/Tcl-tk_Icon.gif" style="float:left;height:50px;"/>
 
 ```{python, engine.path='/usr/bin/python3'}
 from subprocess import Popen
@@ -729,7 +729,7 @@ proc = Popen(['python3 GUI_Python_Tkinter.py'], shell=True, cwd=os.path.join(cd,
 
 ### Web App (Flask)
 
-<img src="Images/Flask_Logo.png" style="float:left;height:50px;"/>
+<img src="IMAGES/Flask_Logo.png" style="float:left;height:50px;"/>
 
 ```{python, engine.path='/usr/bin/python3'}
 from subprocess import Popen
