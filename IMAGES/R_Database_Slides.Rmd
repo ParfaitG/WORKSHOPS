@@ -1,0 +1,177 @@
+---
+title: "R and Databases"
+subtitle: "CRUG+PUG Joint Meetup"
+author: "Parfait Gasana"
+date: "August 30, 2018"
+output: 
+  ioslides_presentation:
+    logo: Images/R_Database.jpg
+    theme: readable
+    css: Images/R_DB_Style.css
+---
+  
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = FALSE)
+```
+
+## The Database
+
+- *What is a Database?*
+    - An organized form of information.
+
+- *What is a Relational Database Management System (RBDMS)?*
+    - Proprietary or open source software designed to maintain and manage structured data
+    - Data is stored in tables of rows and columns within an interconnected system of relational keys    (primary/foreign IDs)
+    - Relational model based on IBM's Edgar F. Codd's 1970 paper, ["A Relational Model of Data for Large Shared Data Banks"](http://www.seas.upenn.edu/~zives/03f/cis550/codd.pdf) 
+
+
+## Database Schema - Simple
+<div class="wrapper"><img src="Images/R_Database_Ex1.png" style="height:400px;"/></div>  
+  
+## Database Schema - Moderate
+<div class="wrapper"><img src="Images/R_Database_Ex2.png" style="height:500px;"/></div>  
+  
+## Database Schema - Moderate
+<div class="wrapper"><img src="Images/R_Database_Ex3.png" style="height:500px;"/></div>  
+  
+## Database Schema - Complex
+<div class="wrapper"><img src="Images/R_Database_Ex4.png" style="height:500px;"/></div>  
+  
+## Postgres Architecture
+<div class="wrapper"><img src="Images/Postgres_Diagram.png" style="height:500px;"/></div> 
+  
+## Why use a Database?
+
+- Data persistence: historical and current needs
+- Maintenance/hygiene: adherence to types with less munging/cleaning
+- Storage efficiency: normalization reduces repetition of data
+- Centralization: multiple user environment and security
+- Scalability: not limited to local resources
+
+## What is SQL?
+
+- A special purpose, declarative language designed to define and manage database objects that interact with data
+- Initially developed by IBM's Chamberlin and Boyce
+    - Inspired by Codd's relational model: [Early History of SQL](https://ieeexplore.ieee.org/stamp/stamp.jsp?reload=true&tp=&arnumber=6359709)
+    - Rooted in relational algebra but in a readable form free from mathematical concepts
+- Being declarative (non-procedural), SQL does not detail how processing is to be done but passes commands to the optimizing compiler
+
+## Typical SQL
+
+-- UNIT LEVEL QUERY
+```
+    SELECT column1, column2, column3
+    FROM table1 t1.
+    INNER JOIN table2 t2 ON t1.matchcolumn = t2.matchcolumn
+    WHERE column1 = condition1
+    ORDER BY column1, column2
+```
+
+-- AGGREGATE QUERY
+```
+    SELECT column1, column2, SUM(column3) As Sum_of_Column3
+    FROM table1
+    INNER JOIN table2 t2 ON t1.matchcolumn = t2.matchcolumn
+    WHERE column1 = condition
+    GROUP column1, column2
+    HAVING SUM(column3) = condition
+    ORDER BY column1, column2, SUM(column3) DESC
+```
+
+## Major RDBMS
+<div class="wrapper"><img src="Images/RDBMS_Icons.png" style="height:100px;"/></div>  
+  
+- Proprietary
+    - Oracle: first commercially successful RDBMS, 1979
+    - SQL Server: began as a Sybase project
+    - DB2: began exclusively on main frames
+    - Others: MS Access, Teradata, SAP
+
+- Open Source
+    - PostgreSQL: advanced level object-oriented RDBMS
+    - MySQL: popular in web development, part of LAMP stack
+    - SQLite: file-level RDBMS, among most used in world
+    - NoSQL: MongoDB, Cassandra, Couchbase
+
+## Database Humor
+
+<i>A big party is being held to honor relational database systems and their impact on modern society. Outside the venue, the host awaits the guests.</i>
+
+The first limousine arrives and out steps Oracle followed by 4 people.
+
+- Host: Who have you brought along?
+- Oracle: I have 4 DBA's in tow. One to install me, one to design the databases, one to administer me, and the other to justify the cost.
+
+A second limo arrives and out steps DB2 followed by 40 people.
+
+- Host: Who have you bought along?
+- DB2: I have 2 DBA's, 2 hardware specialists, and 36 consultants.
+
+## Database Humor
+
+A third limo arrives and out steps SQL Server all on his own.
+
+- Host: Why haven't you brought anyone?
+- SQL Server: I didn't bring anyone because I am easy to install and am basically self managing. But I did bring the #sqlhelp Twitter hashtag for when the excrement hits the fan.
+
+20 minutes later, up rushes MySQL, unshaved, hair a mess.
+
+- Host: Where have you been MySQL?
+- MySQL: Sorry, I thought it was February 31st.
+
+
+## Programming Interfaces
+<div class="wrapper"><img src="Images/Languages_Icons.png" style="height:80px;"/></div>  
+  
+- Most programming languages support RDBMS connections
+- Some languages maintain consistent DB-API specifications and standards:
+    - Java: JDBC
+    - C++: SQLAPI++
+    - NET: ODBC/OLEDB
+    - PHP: PDO
+    - Python: PEP 249
+    - Perl, Ruby, R: DBI
+
+## R DB-APIs
+
+- General: RJDBC, RODBC, odbc
+- Specific: 
+    - DBI standard - ROracle, RPostgreSQL, RMySQL, RSQLite
+    - Standalone - ibmdbr, mssqlr
+
+| Capability   | SQL Command                           | R DBI Command    |
+| :----------: |:-------------------------------------:|:----------------:|
+| Import data  |`SELECT`                               | `dbGetQuery()`   |
+| Run actions  |`ALTER`,  `UPDATE`, `DELETE`, `EXECUTE`| `dbSendQuery()`  |
+| Export data  |`DROP`, `CREATE`, `INSERT`             | `dbWriteTable()` |
+
+
+## RPostgreSQL API
+<div class="lwrapper"><img src="Images/R_Postgres.png"/></div>
+  
+- Began in 2008 Google Summer of Code by Sameer Kuma Prayaga
+- Developers: Sameer Kumar Prayaga, Joe Conway, Neil Tiffin, Dirk Eddelbuettel
+- Lead Maintainer: Tomoaki Nishiyama on [Github](https://github.com/tomoakin/RPostgreSQL)
+- Highlights: implemented all DBI features, transaction support, type mapping for dates/timestamps
+- Others: RPostgres, rpg, rpgsql, Postgres+GIS
+  
+## Best Practices
+  
+- Credentials: use configuration files to avoid exposure
+- Parameterization: readability, avoid SQL injection, abstracts data and code
+- Business Logic: use stored procedures over application layer code (R)
+- Client/Server Jobs: build schemas and objects on server, process data on client (R)
+
+<div class="wrapper"><img src="http://bobby-tables.com/img/xkcd.png"/></div>
+
+## Meetup Speakers
+
+<img src="Images/R_Logo.png" style="float: left; width: 75px;"/>
+**Gene L**: Co-organizer and Data Scientist at City Of Chicago
+<br/> *Lessons Learned in Transitioning Oracle to Postgres*
+
+<img src="Images/Postgres.jpg" style="float: left; width: 75px;"/>
+**Adam D**: PhD student at University of Chicago, Department of Computer Science
+<br/> *Configurability and Features of Postgres 10*
+
+
