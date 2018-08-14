@@ -26,19 +26,19 @@ knitr::opts_chunk$set(echo = FALSE)
 
 
 ## Database Schema - Simple
-<div class="wrapper"><img src="Images/R_Database_Ex1.png" style="height:400px;"/></div>  
+<div class="wrapper"><img src="IMAGES/R_Database_Ex1.png" style="height:400px;"/></div>  
   
 ## Database Schema - Moderate
-<div class="wrapper"><img src="Images/R_Database_Ex2.png" style="height:500px;"/></div>  
+<div class="wrapper"><img src="IMAGES/R_Database_Ex2.png" style="height:500px;"/></div>  
   
 ## Database Schema - Moderate
-<div class="wrapper"><img src="Images/R_Database_Ex3.png" style="height:500px;"/></div>  
+<div class="wrapper"><img src="IMAGES/R_Database_Ex3.png" style="height:500px;"/></div>  
   
 ## Database Schema - Complex
-<div class="wrapper"><img src="Images/R_Database_Ex4.png" style="height:500px;"/></div>  
+<div class="wrapper"><img src="IMAGES/R_Database_Ex4.png" style="height:500px;"/></div>  
   
 ## Postgres Architecture
-<div class="wrapper"><img src="Images/Postgres_Diagram.png" style="height:500px;"/></div> 
+<div class="wrapper"><img src="IMAGES/Postgres_Diagram.png" style="height:500px;"/></div> 
   
 ## Why use a Database?
 
@@ -48,7 +48,7 @@ knitr::opts_chunk$set(echo = FALSE)
 - Centralization: multiple user environment and security
 - Scalability: not limited to local resources
 
-<div class="wrapper"><img src="Images/Database_System.jpg" style="height:250px;"/></div> 
+<div class="wrapper"><img src="IMAGES/Database_System.jpg" style="height:250px;"/></div> 
 
 ## What is SQL?
 
@@ -81,7 +81,7 @@ knitr::opts_chunk$set(echo = FALSE)
 ```
 
 ## Major RDBMS
-<div class="wrapper"><img src="Images/RDBMS_Icons.png" style="height:100px;"/></div>  
+<div class="wrapper"><img src="IMAGES/RDBMS_Icons.png" style="height:100px;"/></div>  
   
 - Proprietary
     - Oracle: first commercially successful RDBMS, 1979
@@ -96,7 +96,7 @@ knitr::opts_chunk$set(echo = FALSE)
 
 
 ## Programming Interfaces
-<div class="wrapper"><img src="Images/Languages_Icons.png" style="height:80px;"/></div>  
+<div class="wrapper"><img src="IMAGES/Languages_Icons.png" style="height:80px;"/></div>  
   
 - Most programming languages support RDBMS connections
 - Some languages maintain consistent DB-API specifications and standards:
@@ -122,7 +122,7 @@ knitr::opts_chunk$set(echo = FALSE)
 
 
 ## RPostgreSQL API
-<div class="lwrapper"><img src="Images/R_Postgres.jpg"" style="height:80px;"/></div>
+<div class="lwrapper"><img src="IMAGES/R_Postgres.jpg"" style="height:80px;"/></div>
   
 - Began in 2008 Google Summer of Code by Sameer Kuma Prayaga
 - Developers: Sameer Kumar Prayaga, Joe Conway, Neil Tiffin, Dirk Eddelbuettel
@@ -165,11 +165,11 @@ knitr::opts_chunk$set(echo = FALSE)
 
 ## Meetup Speakers
 
-<img src="Images/R_Logo.png" style="float: left; width: 100px;"/>
+<img src="IMAGES/R_Logo.png" style="float: left; width: 100px;"/>
 **Gene Leynes**: Co-Organizer and Data Scientist at City Of Chicago
 <br/> *Lessons Learned in Transitioning Oracle to Postgres*
 
-<img src="Images/Postgres.jpg" style="float: left; width: 100px;"/>
+<img src="IMAGES/Postgres.jpg" style="float: left; width: 100px;"/>
 **Adam Dziedzic**: PhD student at University of Chicago, Department of Computer Science
 <br/> *Database Loading and Migration for PostgreSQL and Other Databases*
 
