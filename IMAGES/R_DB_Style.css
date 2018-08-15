@@ -1,0 +1,56 @@
+
+body{ /* Normal  */
+  font-family: Arial, Helvetica, sans-serif;
+}
+
+body div h2 {
+  font-size: 40px;
+}
+
+body div ul {
+  padding-left: 50px;
+  font-size: 36px;
+}
+
+.gdbar img {
+  width: 139px !important;
+  height: 99px !important;
+  margin: 8px 8px;
+}
+
+.gdbar {
+  width: 300px !important;
+  height: 115px !important;
+}
+
+slides > slide:not(.nobackground):before {
+  width: 70px;
+  height: 50px;
+  background-size: 70px 50px;
+  float: right;
+}
+
+pre {
+  padding: 0 0;
+  font-size: 20pt;
+  line-height: 150%;
+}
+
+.wrapper {
+  text-align:center;
+  clear:both;
+  margin: auto;
+  width: 100%;
+}
+
+.footer {
+  color: black;
+  border-top: 1px solid #E8E8E8;
+  background: white;
+  position: fixed;
+  top: 85%;
+  right: 5%;
+  text-align:right;
+  width:100%;
+  height: 400px;
+}
