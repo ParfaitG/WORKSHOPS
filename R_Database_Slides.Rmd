@@ -1,48 +1,45 @@
 ---
 title: "R and Databases"
+subtitle: "CRUG+PUG Joint Meetup"
 author: "Parfait Gasana"
 date: "August 30, 2018"
-output:
-  slidy_presentation:
+output: 
+  ioslides_presentation:
+    logo: Images/R_Database.jpg
+    theme: readable
     css: Images/R_DB_Style.css
-subtitle: CRUG+PUG Joint Meetup
 ---
   
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = FALSE)
 ```
 
-## What is a Database?
-<h3><center>An organized form of information.</center></h3>
-<div class="wrapper"><img src="Images/unstructured_data.jpg" style="height:350px;"/></div>  
-<div class="footer"><img src="Images/R_Database.jpg" /></div>
+## The Database
 
-## What is a Relational Database Management System (RBDMS)?
-- Commercial or open source software designed to maintain and manage structured data
-- Data is stored in logically grouped, disaggregated tables within an interconnected system of relational keys
-- Relational model based on IBM's Edgar F. Codd's 1970 paper, ["A Relational Model of Data for Large Shared Data Banks"](http://www.seas.upenn.edu/~zives/03f/cis550/codd.pdf) 
-<div class="footer"><img src="Images/R_Database.jpg" /></div>
+- *What is a Database?*
+    - An organized form of information.
+
+- *What is a Relational Database Management System (RBDMS)?*
+    - Proprietary or open source software designed to maintain and manage structured data
+    - Data is stored in logically grouped tables of rows and columns within an interconnected system of relational keys (i.e., primary/foreign keys)
+    - Relational model based on IBM's Edgar F. Codd's 1970 paper, ["A Relational Model of Data for Large Shared Data Banks"](http://www.seas.upenn.edu/~zives/03f/cis550/codd.pdf) 
+
 
 ## Database Schema - Simple
-<div class="wrapper"><img src="Images/R_Database_Ex1.png" style="height:700px;"/></div>  
-<div class="footer"><img src="Images/R_Database.jpg" /></div>
-
+<div class="wrapper"><img src="Images/R_Database_Ex1.png" style="height:400px;"/></div>  
+  
 ## Database Schema - Moderate
-<div class="wrapper"><img src="Images/R_Database_Ex2.png" style="height:700px;"/></div>  
-<div class="footer"><img src="Images/R_Database.jpg" /></div>
-
+<div class="wrapper"><img src="Images/R_Database_Ex2.png" style="height:500px;"/></div>  
+  
 ## Database Schema - Moderate
-<div class="wrapper"><img src="Images/R_Database_Ex3.png" style="height:800px;"/></div>  
-<div class="footer"><img src="Images/R_Database.jpg" /></div>
-
+<div class="wrapper"><img src="Images/R_Database_Ex3.png" style="height:500px;"/></div>  
+  
 ## Database Schema - Complex
-<div class="wrapper"><img src="Images/R_Database_Ex4.png" style="height:800px;"/></div>  
-<div class="footer"><img src="Images/R_Database.jpg" /></div>
-
+<div class="wrapper"><img src="Images/R_Database_Ex4.png" style="height:500px;"/></div>  
+  
 ## Postgres Architecture
-<div class="wrapper"><img src="Images/Postgres_Diagram.png" style="height:400px;"/></div> 
-<div class="footer"><img src="Images/R_Database.jpg" /></div>
-
+<div class="wrapper"><img src="Images/Postgres_Diagram.png" style="height:500px;"/></div> 
+  
 ## Why use a Database?
 
 - Data persistence: historical and current needs
@@ -51,8 +48,7 @@ knitr::opts_chunk$set(echo = FALSE)
 - Centralization: multiple user environment and security
 - Scalability: not limited to local resources
 
-<div class="wrapper"><img src="Images/Database_System.png" style="height:250px;"/></div> 
-<div class="footer"><img src="Images/R_Database.jpg" /></div>
+<div class="wrapper"><img src="Images/Database_System.jpg" style="height:250px;"/></div> 
 
 ## What is SQL?
 
@@ -61,35 +57,33 @@ knitr::opts_chunk$set(echo = FALSE)
     - Inspired by Codd's relational model: [Early History of SQL](https://ieeexplore.ieee.org/stamp/stamp.jsp?reload=true&tp=&arnumber=6359709)
     - Rooted in relational algebra but in a readable form free from mathematical concepts
 - Being declarative (non-procedural), SQL does not detail how processing is to be done but passes commands to the optimizing compiler
-<div class="footer"><img src="Images/R_Database.jpg" /></div>
 
 ## Typical SQL
 
-- UNIT LEVEL QUERY
+-- UNIT LEVEL QUERY
 ```
-  SELECT column1, column2, column3
-  FROM table1 t1.
-  INNER JOIN table2 t2 ON t1.matchcolumn = t2.matchcolumn
-  WHERE column1 = condition1
-  ORDER BY column1, column2
+        SELECT column1, column2, column3
+        FROM table1 t1.
+        INNER JOIN table2 t2 ON t1.matchcolumn = t2.matchcolumn
+        WHERE column1 = condition1
+        ORDER BY column1, column2
 ```
 
-- AGGREGATE QUERY
+-- AGGREGATE QUERY
 ```
-  SELECT column1, column2, SUM(column3) As Sum_of_Column3
-  FROM table1
-  INNER JOIN table2 t2 ON t1.matchcolumn = t2.matchcolumn
-  WHERE column1 = condition
-  GROUP column1, column2
-  HAVING SUM(column3) = condition
-  ORDER BY column1, column2, SUM(column3) DESC
+        SELECT column1, column2, SUM(column3) As Sum_of_Column3
+        FROM table1
+        INNER JOIN table2 t2 ON t1.matchcolumn = t2.matchcolumn
+        WHERE column1 = condition
+        GROUP column1, column2
+        HAVING SUM(column3) = condition
+        ORDER BY column1, column2, SUM(column3) DESC
 ```
-<div class="footer"><img src="Images/R_Database.jpg" /></div>
 
 ## Major RDBMS
-<div class="wrapper"><img src="Images/RDBMS_Icons.png"/></div>  
+<div class="wrapper"><img src="Images/RDBMS_Icons.png" style="height:100px;"/></div>  
   
-- Commercial
+- Proprietary
     - Oracle: first commercially successful RDBMS, 1979
     - DB2: began exclusively on main frames
     - SQL Server: began as a Sybase project
@@ -99,10 +93,10 @@ knitr::opts_chunk$set(echo = FALSE)
     - PostgreSQL: advanced level object-RDBMS
     - MySQL: popular in web development, part of LAMP stack
     - SQLite: file-level, used in OS, browsers, and mobile apps
-<div class="footer"><img src="Images/R_Database.jpg" /></div>
+
 
 ## Programming Interfaces
-<div class="wrapper"><img src="Images/Languages_Icons.png"/></div>  
+<div class="wrapper"><img src="Images/Languages_Icons.png" style="height:80px;"/></div>  
   
 - Most programming languages support RDBMS connections
 - Some languages maintain consistent DB-API specifications and standards:
@@ -112,7 +106,6 @@ knitr::opts_chunk$set(echo = FALSE)
     - PHP: PDO
     - Python: PEP 249
     - Perl, Ruby, R: DBI
-<div class="footer"><img src="Images/R_Database.jpg" /></div>
 
 ## R DB-APIs
 
@@ -126,7 +119,7 @@ knitr::opts_chunk$set(echo = FALSE)
 | Import data  |`SELECT`                               | `dbReadTable()`, `dbGetQuery()`  |
 | Run actions  |`ALTER`,  `UPDATE`, `DELETE`, `EXECUTE`| `dbSendQuery()`, `dbGetQuery()`  |
 | Export data  |`DROP`, `CREATE`, `INSERT`             | `dbWriteTable()`                 |
-<div class="footer"><img src="Images/R_Database.jpg" /></div>
+
 
 ## RPostgreSQL API
 <div class="lwrapper"><img src="Images/R_Postgres.jpg"" style="height:80px;"/></div>
@@ -136,8 +129,7 @@ knitr::opts_chunk$set(echo = FALSE)
 - Lead Maintainer: Tomoaki Nishiyama on [Github](https://github.com/tomoakin/RPostgreSQL)
 - Highlights: implemented all DBI features, transaction support, type mapping for dates/timestamps
 - Others: RPostgres, rpg, rpgsql, Postgres+GIS
-<div class="footer"><img src="Images/R_Database.jpg" /></div>
-
+  
 ## Typical Use
 ```{r echo = TRUE, eval=FALSE}
     library(RPostgreSQL)
@@ -160,7 +152,7 @@ knitr::opts_chunk$set(echo = FALSE)
     # DISCONNECT
     dbDisconnect(conn)
 ```
-<div class="footer"><img src="Images/R_Database.jpg" /></div>
+
 
 ## Best Practices
   
@@ -169,17 +161,16 @@ knitr::opts_chunk$set(echo = FALSE)
 - Business Logic: use stored procedures over application layer code (R)
 - Client/Server Jobs: build schemas and objects on server, process data on client (R)
 
-<div class="wrapper"><img src="http://bobby-tables.com/img/xkcd.png"/></div>
-<div class="footer"><img src="Images/R_Database.jpg" /></div>
+<div class="wrapper"><img src="http://bobby-tables.com/img/xkcd.png" style="height:180px;"/></div>
 
 ## Meetup Speakers
 
 <img src="Images/R_Logo.png" style="float: left; width: 100px;"/>
 **Gene Leynes**: Co-Organizer and Data Scientist at City Of Chicago
-<br/> *Lessons Learned Navigating between Oracle and Postgres*
+<br/> *Lessons Learned in Transitioning Oracle to Postgres*
 
 <img src="Images/Postgres.jpg" style="float: left; width: 100px;"/>
 **Adam Dziedzic**: PhD student at University of Chicago, Department of Computer Science
 <br/> *Database Loading and Migration for PostgreSQL and Other Databases*
-<div class="footer"><img src="Images/R_Database.jpg" /></div>
+
 
