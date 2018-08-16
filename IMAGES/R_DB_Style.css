@@ -12,22 +12,10 @@ body div ul {
   font-size: 36px;
 }
 
-.gdbar img {
-  width: 139px !important;
-  height: 99px !important;
-  margin: 8px 8px;
-}
-
-.gdbar {
-  width: 300px !important;
-  height: 115px !important;
-}
-
-slides > slide:not(.nobackground):before {
-  width: 70px;
-  height: 50px;
-  background-size: 70px 50px;
-  float: right;
+.slide.titlepage {
+   background-image: url('R_Database.jpg');
+   background-repeat: no-repeat;
+   background-position: right 50% bottom 65%; 
 }
 
 pre {
@@ -41,6 +29,21 @@ pre {
   clear:both;
   margin: auto;
   width: 100%;
+}
+
+body table {
+  text-align:center;
+  clear:both;
+  margin: auto;
+  width: 80%;
+}
+
+body table th, tr:nth-child(2n) {
+  background-color: white;
+}
+
+body table tr {
+  background-color: #E8E8E8;
 }
 
 .footer {
