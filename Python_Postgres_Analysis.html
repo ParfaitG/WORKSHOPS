@@ -13116,7 +13116,7 @@ div#notebook {
 <div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
 </div><div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
-<h1 id="Leveraging-PostgreSQL-in-Data-Science-with-Python">Leveraging PostgreSQL in Data Science with Python<a class="anchor-link" href="#Leveraging-PostgreSQL-in-Data-Science-with-Python">&#182;</a></h1><div style="font-size: 24px; padding: 10px 0 0 0;">How PGSQL can facilitate the data processing workflow</div><div style="float:right"><img src="postgresql_python.png" height="200" width="200"/></div><h2 id="Parfait-Gasana">Parfait Gasana<a class="anchor-link" href="#Parfait-Gasana">&#182;</a></h2><div style="font-size: 20px; padding: 10px 0 0 0;">Data Analyst, Winston & Strawn</div>
+<h1 id="Leveraging-PostgreSQL-in-Data-Science-with-Python">Leveraging PostgreSQL in Data Science with Python<a class="anchor-link" href="#Leveraging-PostgreSQL-in-Data-Science-with-Python">&#182;</a></h1><div style="font-size: 24px; padding: 10px 0 0 0;">How PGSQL can facilitate the data processing workflow</div><div style="float:right"><img src="IMAGES/postgresql_python.png" height="200" width="200"/></div><h2 id="Parfait-Gasana">Parfait Gasana<a class="anchor-link" href="#Parfait-Gasana">&#182;</a></h2><div style="font-size: 20px; padding: 10px 0 0 0;">Data Analyst, Winston & Strawn</div>
 </div>
 </div>
 </div>
@@ -13245,12 +13245,12 @@ div#notebook {
 </div>
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
-<div class="prompt input_prompt">In&nbsp;[6]:</div>
+<div class="prompt input_prompt">In&nbsp;[3]:</div>
 <div class="inner_cell">
     <div class="input_area">
 <div class=" highlight hl-ipython3"><pre><span></span><span class="o">%%time</span>it
 
-<span class="c1">#conn = psycopg2.connect(host=&#39;10.0.0.220&#39;, user=&#39;ctadba&#39;, password=&#39;cta18!&#39;, dbname=&#39;cta&#39;, port=5432) </span>
+<span class="c1"># conn = psycopg2.connect(host=&#39;10.0.0.220&#39;, user=&#39;ctadba&#39;, password=&#39;cta18!&#39;, dbname=&#39;cta&#39;, port=5432) </span>
 <span class="n">engine</span> <span class="o">=</span> <span class="n">create_engine</span><span class="p">(</span><span class="s1">&#39;postgresql+psycopg2://ctadba:cta18!@10.0.0.220/cta&#39;</span><span class="p">)</span>
 
 <span class="n">bus_month_pg</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">read_sql</span><span class="p">(</span><span class="s2">&quot;SELECT * FROM bus_month&quot;</span><span class="p">,</span> <span class="n">engine</span><span class="p">)</span>
@@ -13259,7 +13259,7 @@ div#notebook {
 <span class="n">rail_stops_pg</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">read_sql</span><span class="p">(</span><span class="s2">&quot;SELECT * FROM rail_stops&quot;</span><span class="p">,</span> <span class="n">engine</span><span class="p">)</span>
 <span class="n">rail_rides_pg</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">read_sql</span><span class="p">(</span><span class="s2">&quot;SELECT * FROM rail_rides&quot;</span><span class="p">,</span> <span class="n">engine</span><span class="p">)</span>
 
-<span class="n">engine</span><span class="o">.</span><span class="n">dispose</span><span class="p">()</span>
+<span class="c1">#engine.dispose()</span>
 <span class="n">engine</span> <span class="o">=</span> <span class="kc">None</span>
 </pre></div>
 
@@ -13277,7 +13277,7 @@ div#notebook {
 
 
 <div class="output_subarea output_stream output_stdout output_text">
-<pre>18.6 s ± 4.86 s per loop (mean ± std. dev. of 7 runs, 1 loop each)
+<pre>10.1 s ± 1.23 s per loop (mean ± std. dev. of 7 runs, 1 loop each)
 </pre>
 </div>
 </div>
