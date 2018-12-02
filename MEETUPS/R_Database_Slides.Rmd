@@ -1,0 +1,214 @@
+---
+title: "R and Databases"
+author: 
+  - "Parfait Gasana"
+  - Microsoft Technology Center
+date: "August 30, 2018"
+output:
+  slidy_presentation:
+    css: Images/R_DB_Style.css
+subtitle: CRUG + PUG Joint Meetup
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = FALSE)
+```
+
+## What is a Database?
+<h3><center>An organized form of information.</center></h3>
+
+| Old Tech          | Current Tech   |
+| :----------------:|:--------------:|
+| Typewriter        | Word processor |
+| Ledger            | Spreadsheet    |
+| Postal mail / Fax | Email          |
+| Overhead Projector| PowerPoint     |
+| File drawer       | **Database**   |
+
+<div class="wrapper"><img src="Images/data_organization.jpg" style="height:400px;"/></div>  
+<div class="footer"><img src="Images/R_Database.jpg" /></div>
+
+## What is a Relational Database Management System (RBDMS)?
+- Commercial or open source software designed to maintain and manage structured data
+- Data is stored in logically grouped, disaggregated tables within an interconnected system of relational keys
+- Relational model based on IBM's Edgar F. Codd's 1970 paper, ["A Relational Model of Data for Large Shared Data Banks"](http://www.seas.upenn.edu/~zives/03f/cis550/codd.pdf) 
+    - Separate machine representation of data vs internal storage of data
+    - Introduced concepts of primary, foreign keys, and normalization
+    - Advanced scholarship of data management rooted in mathematics (sets, relations, domains)
+<div class="footer"><img src="Images/R_Database.jpg" /></div>
+
+## Database Schema - Simple
+<div class="wrapper"><img src="Images/R_Database_Ex1.png" style="height:700px;"/></div>  
+<div class="footer"><img src="Images/R_Database.jpg" /></div>
+
+## Database Schema - Moderate
+<div class="wrapper"><img src="Images/R_Database_Ex2.png" style="height:700px;"/></div>  
+<div class="footer"><img src="Images/R_Database.jpg" /></div>
+
+## Database Schema - Moderate
+<div class="wrapper"><img src="Images/R_Database_Ex3.png" style="height:800px;"/></div>  
+<div class="footer"><img src="Images/R_Database.jpg" /></div>
+
+## Database Schema - Complex
+<div class="wrapper"><img src="Images/R_Database_Ex4.png" style="height:800px;"/></div>  
+<div class="footer"><img src="Images/R_Database.jpg" /></div>
+
+## Postgres Architecture
+<div class="wrapper"><img src="Images/Postgres_Diagram.png" style="height:600px;"/></div> 
+<div class="footer"><img src="Images/R_Database.jpg" /></div>
+
+## Why use a Database?
+
+- Data persistence: historical and current needs
+- Maintenance/hygiene: adherence to types with less munging/cleaning
+- Storage efficiency: normalization reduces repetition of data
+- Centralization: multiple user environment and security
+- Scalability: not limited to local resources
+
+<div class="wrapper"><img src="Images/Database_System.png" style="height:350px;"/></div> 
+<div class="footer"><img src="Images/R_Database.jpg" /></div>
+
+## What is SQL?
+
+- SQL (Structured Query Language) is a special purpose, declarative language designed to define and manage database objects and data
+- Initially developed by IBM's Chamberlin and Boyce
+    - Inspired by Codd's relational model: [Early History of SQL](https://ieeexplore.ieee.org/stamp/stamp.jsp?reload=true&tp=&arnumber=6359709)
+    - Rooted in relational algebra but in a readable form free from mathematical concepts
+    - System R, IBM research project, first SQL implementation in RDBMS
+- Being declarative (non-procedural), SQL does not detail how processing is to be done but passes commands to the optimizing compiler
+<div class="footer"><img src="Images/R_Database.jpg" /></div>
+
+## Typical SQL
+
+- UNIT LEVEL QUERY
+```
+  SELECT column1, column2, column3
+  FROM table1 t1.
+  INNER JOIN table2 t2 ON t1.matchcolumn = t2.matchcolumn
+  WHERE column1 = condition1
+  ORDER BY column1, column2
+```
+
+- AGGREGATE QUERY
+```
+  SELECT column1, column2, SUM(column3) As Sum_of_Column3
+  FROM table1
+  INNER JOIN table2 t2 ON t1.matchcolumn = t2.matchcolumn
+  WHERE column1 = condition
+  GROUP column1, column2
+  HAVING SUM(column3) = condition
+  ORDER BY column1, column2, SUM(column3) DESC
+```
+<div class="footer"><img src="Images/R_Database.jpg" /></div>
+
+## Major RDBMS
+<div class="wrapper"><img src="Images/RDBMS_Icons.png"/></div>  
+  
+- Commercial
+    - [Oracle](http://www.oracle.com/technetwork/database/database-technologies/r/r-enterprise/overview/index.html): first commercially successful RDBMS, 1979
+    - [DB2](https://www.ibm.com/developerworks/data/library/techarticle/dm-1402db2andr/index.html): began exclusively on main frames
+    - [SQL Server](https://docs.microsoft.com/en-us/sql/advanced-analytics/install/sql-machine-learning-services-windows-install?view=sql-server-2017): began as a Sybase project
+    - Others: MS Access, Teradata, SAP Adapter Server, Informix
+
+- Open Source
+    - PostgreSQL: advanced level object-RDBMS
+    - MySQL: popular in web development, part of LAMP stack
+    - SQLite: file-level, used in OS, browsers, and mobile apps
+<div class="footer"><img src="Images/R_Database.jpg" /></div>
+
+## Programming Interfaces
+<div class="wrapper"><img src="Images/Languages_Icons.png"/></div>  
+  
+- Most programming languages support RDBMS connections
+- Some languages maintain consistent DB-API specifications and standards:
+    - Java: JDBC
+    - C++: SQLAPI++
+    - NET: ODBC/OLEDB
+    - PHP: PDO
+    - Python: PEP 249
+    - Perl, Ruby, R: DBI
+<div class="footer"><img src="Images/R_Database.jpg" /></div>
+
+## R DB-APIs
+
+- General: RJDBC, RODBC, odbc
+    - Requires corresponding JDBC/ODBC drivers
+- Specific: 
+    - DBI standard - ROracle, RPostgreSQL, RMySQL, RSQLite
+    - Standalone - ibmdbr, mssqlr
+
+| Capability   | SQL Command                           | R DBI Command                    |
+| :----------: |:-------------------------------------:|:--------------------------------:|
+| Import data  |`SELECT`                               | `dbReadTable()`, `dbGetQuery()`  |
+| Run actions  |`ALTER`,  `UPDATE`, `DELETE`, `EXECUTE`| `dbSendQuery()`, `dbGetQuery()`  |
+| Export data  |`DROP`, `CREATE`, `INSERT`             | `dbWriteTable()`                 |
+<div class="footer"><img src="Images/R_Database.jpg" /></div>
+
+## RPostgreSQL API
+<div class="lwrapper"><img src="Images/R_Postgres.jpg"" style="height:150px;"/></div>
+  
+- Began in 2008 Google Summer of Code
+    - Sameer Kuma Prayaga as student/author and Dirk Eddelbuettel  as mentor/release coordinator
+- Later Team: Tomoaki Nishiyama, Dirk Eddelbuettel, Joe Conway, Neil Tiffin, and DBI team
+- Active [Github](https://github.com/tomoakin/RPostgreSQL) repo and [CRAN](https://cran.r-project.org/web/packages/RPostgreSQL/index.html) version 
+- Highlights: implemented all DBI features, transaction support, type mapping for dates/timestamps
+- Others: RPostgres, rpg, rpgsql, Postgres+GIS
+<div class="footer"><img src="Images/R_Database.jpg" /></div>
+
+## Typical Use
+```{r echo = TRUE, eval=FALSE}
+    library(RPostgreSQL)
+
+    # CONNECT
+    conn <- dbConnect(PostgreSQL(), host="192.168.1.1", dbname="mydatabase",
+                      user="myuser", password="****", port=5432)
+
+    # PREPARED STATEMENT
+    sql <- "SELECT t.col1, t.col2, t.col3 
+            FROM mytable t 
+            WHERE t.col1 = ?PARAM"
+
+    # BIND PARAMETER
+    query <- sqlInterpolate(conn, sql, PARAM = "value")
+
+    # RUN QUERY
+    df <- dbGetQuery(conn, strSQL)
+
+    # DISCONNECT
+    dbDisconnect(conn)
+```
+<div class="footer"><img src="Images/R_Database.jpg" /></div>
+
+## Best Practices
+  
+- Parameterization: avoid SQL injection, abstracts data and code, aids readability
+
+<div class="wrapper"><img src="http://bobby-tables.com/img/xkcd.png" style="height: 250px;"/></div>
+
+- Credentials: use configuration files or environment variables to avoid exposure
+- Application layer: check runaway scripts and data dumps
+
+<div class="footer"><img src="Images/R_Database.jpg" /></div>
+
+## Meetup Speakers
+
+<p>
+  <img src="Images/R_Database.jpg" style="float: left; width: 100px;"/>
+  **Parfait Gasana**: Co-Organizer and Meetup Host
+  <br/> *R and Databases Introduction*
+</p>
+
+<p>
+  <img src="Images/R_Logo.png" style="float: left; width: 100px;"/>
+  **Gene Leynes**: Data Scientist at City Of Chicago
+  <br/> *Practical Tips for Operationalizing R with Oracle and Postgres*
+</p>
+
+<p>
+  <img src="Images/Postgres.jpg" style="float: left; width: 100px;"/>
+  **Adam Dziedzic**: PhD student at University of Chicago, Department of Computer Science
+  <br/> *Database Loading and Migration for PostgreSQL and Other Databases*
+</p>
+
+<div class="footer"><img src="Images/R_Database.jpg" /></div>
+
