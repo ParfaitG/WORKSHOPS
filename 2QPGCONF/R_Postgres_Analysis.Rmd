@@ -38,11 +38,11 @@ options(scipen=999)
 
 ## <span style="color: #646464">Import CSV Data</span>
 
-<div style="float:right"><img src="IMAGES/cta_logo.png" height="200" width="200"/></div>
+<div style="float:right"><img src="IMAGES/cta_logo.png" height="220" width="220"/><br/>Source: City of Chicago Data Portal</div>
 
 - #### <span style="color: #646464">Often one of the largest time and resource-intensive steps for data analysts</span> ####
 - #### <span style="color: #646464">Requires disk space on shared network or local drives</span> ####
-- #### <span style="color: #646464">Ad-hoc cleaning, more reactive to troubleshoot analytical errors/span> ####
+- #### <span style="color: #646464">Ad-hoc cleaning, more reactive to troubleshoot analytical errors </span> ####
 
 ```{r}
 csv_import <- function() {
@@ -188,7 +188,7 @@ seabornPalette <- c('#4878d0', '#ee854a', '#6acc64', '#d65f5f', '#956cb4', '#8c6
                     '#d5bb67', '#82c6e2', '#4878d0', '#ee854a', '#6acc64', '#d65f5f')
 
 ggplot(agg_csv, aes(year, rides.sum, fill=routename)) + geom_col(position = "dodge") +
-  labs(title="Top 5 CTA 'L' Bus Routes", x="Year", y="Rides") +
+  labs(title="CTA Top 5 Bus Routes by Ridership", x="Year", y="Rides") +
   scale_y_continuous(expand = c(0, 0), label=comma) +
   scale_fill_manual(values = seabornPalette) +
   theme(legend.position="bottom",
@@ -208,6 +208,7 @@ sql <- 'SELECT rt.route_name, COUNT(rd.rides) AS "count",
                               SUM(rd.rides) AS "sum", 
                               AVG(rd.rides) AS "mean", 
                               MEDIAN(rd.rides) AS "median",
+                              R_MEDIAN(rd.rides) AS "r_median",
                               MIN(rd.rides) AS "min", 
                               MAX(rd.rides) AS "max"
         FROM bus_routes rt
@@ -226,6 +227,7 @@ sql <- 'SELECT rt.route_name, DATE_PART(\'year\', rd.ride_date)::integer AS "yea
              SUM(rd.rides) AS "sum", 
              AVG(rd.rides) AS "mean", 
              MEDIAN(rd.rides) AS "median",
+             R_MEDIAN(rd.rides) AS "r_median",
              MIN(rd.rides) AS "min", 
              MAX(rd.rides) AS "max"
       FROM bus_routes rt
@@ -246,7 +248,7 @@ agg_sql
 ```{r fig2, fig.height = 4, fig.width = 10, fig.align = "center"}
 ggplot(agg_sql, aes(year, sum, color=route_name)) + 
   geom_line(stat="identity") + geom_point(stat="identity") +
-  labs(title="Top 5 CTA 'L' Bus Routes", x="Year", y="Rides") +
+  labs(title="CTA Top 5 Bus Routes by Ridership", x="Year", y="Rides") +
   scale_x_continuous("year", breaks=unique(agg_sql$year)) +
   scale_y_continuous(expand = c(0, 0), label=comma) +
   scale_color_manual(values = seabornPalette) +
@@ -321,9 +323,9 @@ agg_csv
 
 ## <span style="color:#336791">SQL Data Diagnostics</span>
 
-- ### <span style="color:#336791">Complex processing still readable and maintainable</span> ###
 - ### <span style="color:#336791">CTEs clearly show underlying tables and views without helper objects</span> ###
 - ### <span style="color:#336791">Window functions allow useful inline calculations</span> ###
+- ### <span style="color:#336791">Complex processing still readable and maintainable</span> ###
 
 <div class="blue">
 ```{r}
@@ -376,6 +378,17 @@ ggplot(subset(agg_sql, year > 2012), aes(year, rail_total, fill=rail_line)) + ge
         axis.text.x = element_text(angle=0, hjust=0.5))
 ```
 
+```{r}
+sql <- 'SELECT r.ride_date, r.station_name, r.rides
+        FROM rail_rides r
+        ORDER BY r.rides DESC
+        LIMIT 10'
+  
+agg_sql <- dbGetQuery(conn, sql)
+
+agg_sql
+```
+
 </div>
 
 ## <span style="color:#336791;">Distribution</span
@@ -402,7 +415,7 @@ ggplot(hist_long, aes(x=rides_total, fill=rail_line)) +
    scale_y_continuous(expand = c(0, 0), lim=c(0,40000), label=comma) +
    scale_fill_manual(values = c(red = "#C60C30", blue = "#00A1DE", brown = "#62361B",
                                 green = "#009B3A", orange = "#F9461C")) +
-   labs(title="CTA Ridership Distribution By Rail Line", fill="Rail Line") +
+   labs(title="CTA 'L' Ridership Distribution By Rail Line", fill="Rail Line") +
    theme(plot.title = element_text(hjust=0.5, size=18))
 ```
 
@@ -411,7 +424,7 @@ ggplot(transform(hist_long, year = format(ride_date, '%Y')),
        aes(x=year, y=rides_total, fill=year)) + 
     geom_boxplot() + guides(fill=FALSE) +
     scale_y_continuous(expand = c(0, 0), lim=c(0,40000), label=comma) +
-    labs(title="CTA Ridership Boxplot By Year") +
+    labs(title="CTA 'L' Ridership Boxplot By Year") +
     theme(plot.title = element_text(hjust=0.5, size=18))
 ```
 
@@ -420,7 +433,7 @@ ggplot(hist_long, aes(x=rail_line, y=rides_total, fill=rail_line)) +
     geom_boxplot() + guides(fill=FALSE) +
     scale_fill_manual(values = cta_palette) +
     scale_y_continuous(expand = c(0, 0), lim=c(0,40000), label=comma) +
-    labs(title="CTA Ridership Boxplot By Rail Line") +
+    labs(title="CTA 'L' Ridership Boxplot By Rail Line") +
     theme(plot.title = element_text(hjust=0.5, size=18))
 ```
 
@@ -434,7 +447,7 @@ ggplot(subset(within(hist_long, { year <- format(ride_date, '%Y')
     scale_fill_manual(values = cta_palette) +
     scale_x_discrete(expand = c(0, 0)) +
     scale_y_continuous(expand = c(0, 0), lim=c(0,40000), label=comma) +
-    labs(title="CTA Ridership Boxplot By Rail Line, 2015-2017", x="Year", y="Rides") +
+    labs(title="CTA 'L' Ridership Boxplot By Rail Line, 2015-2017", x="Year", y="Rides") +
     theme(legend.position="bottom", plot.title = element_text(hjust=0.5, size=18))
 ```
 
