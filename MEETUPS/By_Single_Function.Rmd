@@ -1,13 +1,14 @@
 ---
-title: "Single Function Lightning Talk: base::by()"
-author: 
+title: 'Single Function Lightning Talk: base::by()'
+author:
 - <h3>Parfait Gasana, Chicago R User Group (CRUG)<h3>
 - <h3>January 23, 2019</h3>
 output:
   html_document:
     df_print: paged
+  pdf_document: default
 ---
-<div style="float:right"><img src="IMAGES/function.png" width="150px"/></div>
+<div style="float:right"><img src="images/function.png" width="150px"/></div>
 <br/>
 
 <style type="text/css">
@@ -21,11 +22,11 @@ output:
 
 ## Apply Family
 
-- ### One of R's signature family of functions 
+- ### R core's signature family of functions 
 - ### Used to manipulate various objects with equal-length input and output
 - ### From simplified types (vectors, matrices) to complex type (data frames, lists)
 
-<center><img src="IMAGES/apply_family.png" /></center>
+<center><img src="images/apply_family.png" /></center>
 
 # `tapply` + `by`: universal need to subset data by groups
 
@@ -41,27 +42,23 @@ output:
 > by(data, INDICES, FUN, ..., simplify = TRUE)
 
 
-<div style="float:right"><img src="IMAGES/metra.png" width=200 /></div>
+<div style="float:right"><img src="images/metra.png" width=200 /></div>
 <br/>
 
 ## Metra Ridership Data, 2007 - 2017
 
 ```{r}
-metra_ridership <- read.csv('/home/parfaitg/Documents/MISC/DATA/METRA/MetraRidership.csv')
+metra_ridership <- read.csv('data/MetraRidership.csv')
 
 metra_ridership
 ```
 
 
-<center><img src="IMAGES/metra_map.jpg" height="10" /></center>
+<center><img src="images/metra_map.jpg" height="10" /></center>
 
 ## Classic use of `by`:
 
 ```{r}
-# LONG FORM WITH ARG
-summary_list <- by(metra_ridership, metra_ridership$Rail_Line, function(sub) summary(sub))
-
-# SHORT FORM WITHOUT ARG
 summary_list <- by(metra_ridership, metra_ridership$Rail_Line, summary)
 
 summary_list
@@ -83,7 +80,7 @@ names(df_list) <- unique_lines
 
 for (line in unique_lines) {
   tmp <- metra_ridership[metra_ridership$Rail_Line == line,]
-  df_list[[line]] <- tmp[sample(nrow(tmp)),]
+  df_list[[line]] <- tmp[sample(nrow(tmp), 5),]
 }
 ```
 
@@ -96,11 +93,11 @@ for (line in unique_lines) {
 ```{r}
 level_lines <- levels(metra_ridership$Rail_Line)
 df_list <- vector('list', length = length(level_lines))
-names(df_list) <- unique_lines 
+names(df_list) <- level_lines
 
 for (line in level_lines) {
   tmp <- metra_ridership[metra_ridership$Rail_Line == line,]
-  df_list[[line]] <- tmp[sample(nrow(tmp)),]
+  df_list[[line]] <- tmp[sample(nrow(tmp), 5),]
 }
 ```
 
@@ -128,30 +125,30 @@ df_list <-  by(metra_ridership, metra_ridership$Rail_Line, function(sub) sub[sam
 - ### Function extends to <i>any</i> operation on data frame 
 - ### Returns <i>any</i> object
 
-<div style="float:right"><img src="IMAGES/metra_dollar.png" width=150 /></div>
+<div style="float:right"><img src="images/metra_dollar.png" width=150 /></div>
 <br/>
 
 ## Metra Assets, Funding, and Revenues Data
 
 ```{r}
-path <- '/home/parfaitg/Documents/MISC/DATA/METRA'
-
 # ASSETS
-metra_assets <- read.csv(paste0(path, '/MetraAssets.csv'), stringsAsFactors = FALSE)
+metra_assets <- read.csv('data/MetraAssets.csv', stringsAsFactors = FALSE)
 metra_assets <- subset(metra_assets, Asset_Type=="Total Capital Assets, net")
 
 # FUNDING
-metra_funding <- read.csv(paste0(path, '/MetraFunding.csv'), stringsAsFactors = FALSE)
+metra_funding <- read.csv('data/MetraFunding.csv', stringsAsFactors = FALSE)
 metra_funding <- setNames(aggregate(Amount ~ Year, metra_funding, sum), c("Year", "Funding"))
 
 # REVENUES
-metra_revenues <- read.csv(paste0(path, '/MetraRevenues.csv'), stringsAsFactors = FALSE)
+metra_revenues <- read.csv('data/MetraRevenues.csv', stringsAsFactors = FALSE)
 metra_revenues <-subset(metra_revenues, (!is.na(Category) | Category != '') & (Revenue_Type=="Total revenues"))
 
 # CHAIN MERGE
 merge_df <- Reduce(function(x, y) merge(x, y, by="Year", all=TRUE), 
                    list(metra_ridership, metra_assets, metra_funding, metra_revenues))
 ```
+
+## Data Analysis
 
 ### T-test
 
@@ -202,6 +199,7 @@ vec_list <- by(merge_df, merge_df$Rail_Line, function(sub)  {
 do.call(rbind, vec_list)
 ```
 
+## Data Wrangling
 
 ### Highest 3 years by group
 
@@ -227,8 +225,8 @@ random_metra
 
 ```{r}
 out <- by(metra_ridership, metra_ridership$Rail_Line, function(sub) {
-  fn <- paste0(path, "/", gsub("/", " ", sub$Rail_Line[1]), ".csv")
-  write.csv(sub, fn, row.names = FALSE)
+     fn <- paste0("data/", gsub("/", "", sub$Rail_Line[1]), ".csv")
+     write.csv(sub, fn, row.names = FALSE)
 })
 ```
 
@@ -242,7 +240,7 @@ options(scipen=5)
 graph_fct <- function(sub) {
   dat <- tapply(sub$Rides, sub$Year, sum)
   bp <- barplot(dat, col=rainbow(11), ylim=range(pretty(c(0, dat))),
-                main=sub$Rail_Line[[1]], ylab="Rides", xlab="Year")
+                main=sub$Rail_Line[[1]], ylab="Rides (thousands)", xlab="Year")
   axis(1, at=bp, labels=2007:2017)
   mtext('Source: Metra Financial Statements, 2008 - 2017 (Metrarail.com)', side=1, line=4, at=4, cex=0.75)
 }
@@ -251,7 +249,7 @@ graph_fct <- function(sub) {
 plots <- by(metra_ridership, metra_ridership$Rail_Line, graph_fct)
 ```
 
-<div style="float:right"><img src="IMAGES/metra.png" width=150 /></div>
+<div style="float:right"><img src="images/metra.png" width=150 /></div>
 <br/>
 
 ## Overall Graph
@@ -260,8 +258,9 @@ plots <- by(metra_ridership, metra_ridership$Rail_Line, graph_fct)
 par(mar=c(15,5,4,2)) 
 
 with(subset(metra_ridership, Rail_Line != "Total passenger trips"), { 
-  bp <- barplot(tapply(Rides, factor(Rail_Line), mean), col=rainbow(11), las=2, ylim=c(0, 20000), cex.main=1.5,
-          main="Annual Ridership By Metra Lines, 2007-2017", ylab="Rides (thousands)\n", xlab=NULL)
+  dat <- tapply(Rides, factor(Rail_Line), sum)
+  bp <- barplot(dat, col=rainbow(11), ylim=range(pretty(c(0, dat))), las=2, cex.main=1.5,
+          main="Total Ridership\nBy Metra Lines 2007-2017", ylab="Rides (thousands)\n", xlab=NULL)
   mtext('Source: Metra Financial Statements, 2008 - 2017 (Metrarail.com)', side=1, line=12, at=3, cex=0.75)
 })
 ```
