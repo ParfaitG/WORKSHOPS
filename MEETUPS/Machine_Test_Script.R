@@ -16,7 +16,8 @@ sys_data <- data.frame(user = Sys.info()['user'],
 
 
 free_data <- data.frame(mem_total = NA, mem_used = NA, mem_free = NA,
-                        swap_total = NA, swap_used = NA, swap_free = NA)
+                        swap_total = NA, swap_used = NA, swap_free = NA,
+                        cpu_cores = NA, cpu_speed = NA)
 
 ### LINUX MACHINES
 if(Sys.info()[['sysname']] == "Linux") {
@@ -89,19 +90,19 @@ machine_run <- function() {
   
   random_df <- data.frame(
     group = sample(data_tools, 500, replace=TRUE),
-    int = sample(1:15, 1E6, replace=TRUE),
-    y_num = runif(1E6, 0, 100),
-    x_num1 = runif(1E6, 0, 100),
-    x_num2 = runif(1E6) * 10,
-    x_num3 = rnorm(1E6, 10),
-    x_num4 = rnorm(1E6, 50),
-    x_num5 = rnorm(1E6, 100),
-    char = replicate(1E6, paste(sample(alpha, 3, replace=TRUE), collapse="")),
-    bool = sample(c(TRUE, FALSE), 1E6, replace=TRUE),
+    int = sample(1:15, 1E4, replace=TRUE),
+    y_num = runif(1E4, 0, 100),
+    x_num1 = runif(1E4, 0, 100),
+    x_num2 = runif(1E4) * 10,
+    x_num3 = rnorm(1E4, 10),
+    x_num4 = rnorm(1E4, 50),
+    x_num5 = rnorm(1E4, 100),
+    char = replicate(1E4, paste(sample(alpha, 3, replace=TRUE), collapse="")),
+    bool = sample(c(TRUE, FALSE), 1E4, replace=TRUE),
     date = as.Date(sample(as.integer(as.Date("2000-01-01")):as.integer(Sys.Date()), 
-                          1E6, replace=TRUE), origin="1970-01-01")
+                          1E4, replace=TRUE), origin="1970-01-01")
   )
-  
+
   #################
   ### AGGREGATION
   #################
@@ -134,6 +135,7 @@ machine_run <- function() {
                        '#d5bb67', '#82c6e2', '#4878d0', '#ee854a', '#6acc64', '#d65f5f')
   
   # HISTOGRAM BY GROUP
+  pdf(NULL)
   hist(subset(random_df, random_df$group == "julia")$y_num, 
        col=rgb(0,0,1,0.25), breaks=50, ylim=c(0, 5000),
        main="Overlapping Histogram", xlab="y_num")
@@ -147,16 +149,19 @@ machine_run <- function() {
          fill=c(rgb(0,0,1,0.25), rgb(0,0,1,0.5), rgb(0,0,1,0.75),
                 rgb(1,0,0,0.25), rgb(1,0,0,0.5), rgb(1,0,0,0.75)))
   box()
-  
+  dev.off()
+
   # BAR PLOT BY GROUP AND YEAR
   random_df$year <- format(random_df$date, "%Y")
   graph_data <- tapply(random_df$y_num, list(random_df$group, random_df$year), mean)
-  barplot(graph_data, beside=TRUE, col=seaborn_palette[1:6], legend=NULL, ylim=c(0, 60),
+  pdf(NULL)
+  barplot(graph_data, beside=TRUE, col=seaborn_palette[1:6], legend=NULL, 
+          ylim=range(pretty(c(0, graph_data))),
           main="Barplot by Group and Year", ylab="y_num")
   
   legend("top", row.names(graph_data), ncol=6, fill=seaborn_palette[1:6])
   box()
-  
+  dev.off()
   
   #################
   ### MODEL RUN

@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
-import os, platform, pwd
+import os, gc
+import platform, pwd
 from io import StringIO
 import re
 
@@ -37,12 +38,9 @@ sys_data = pd.DataFrame({'user': pwd.getpwuid(os.getuid())[0],
                          'python_version': platform.python_version()
                         }, index=[0])
     
-free_data = pd.DataFrame({'mem_total': np.nan, 
-                          'mem_used': np.nan,
-                          'mem_free': np.nan,
-                          'swap_total': np.nan, 
-                          'swap_used': np.nan,
-                          'swap_free': np.nan
+free_data = pd.DataFrame({'mem_total': np.nan, 'mem_used': np.nan, 'mem_free': np.nan,
+                          'swap_total': np.nan, 'swap_used': np.nan, 'swap_free': np.nan,
+                          'cpu_cores': np.nan, 'cpu_speed': np.nan
                          }, index=[0])
 
 ### LINUX MACHINES
@@ -132,19 +130,19 @@ def machine_run():
     data_tools = ['sas', 'stata', 'spss', 'python', 'r', 'julia']
 
     np.random.seed(2019)
-    random_df = pd.DataFrame({'group': np.random.choice(data_tools, size=int(1E6)),
-                              'float': np.random.randint(1, 15, int(1E6)),
-                              'y_num': np.random.uniform(0, 100, int(1E6)),
-                              'x_num1': np.random.uniform(0, 100, int(1E6)),
-                              'x_num2': np.random.uniform(size=int(1E6)) * 10,
-                              'x_num3': np.random.normal(10, 1, int(1E6)),
-                              'x_num4': np.random.normal(50, 1, int(1E6)),
-                              'x_num5': np.random.normal(100, 1, int(1E6)),
-                              'char': [''.join(np.random.choice(list(alpha), 3)) for _ in range(int(1E6))],
-                              'bool': np.random.choice([True, False], int(1E6)),
+    random_df = pd.DataFrame({'group': np.random.choice(data_tools, size=int(1E4)),
+                              'float': np.random.randint(1, 15, int(1E4)),
+                              'y_num': np.random.uniform(0, 100, int(1E4)),
+                              'x_num1': np.random.uniform(0, 100, int(1E4)),
+                              'x_num2': np.random.uniform(size=int(1E4)) * 10,
+                              'x_num3': np.random.normal(10, 1, int(1E4)),
+                              'x_num4': np.random.normal(50, 1, int(1E4)),
+                              'x_num5': np.random.normal(100, 1, int(1E4)),
+                              'char': [''.join(np.random.choice(list(alpha), 3)) for _ in range(int(1E4))],
+                              'bool': np.random.choice([True, False], int(1E4)),
                               'date': np.random.choice(pd.date_range('2000-01-01', 
-                                                                     dt.datetime.today().strftime('%Y-%m-%d')), int(1E6)),
-                               })
+                                                                     dt.datetime.today().strftime('%Y-%m-%d')), int(1E4)),
+                               })    
     
     #################
     ### AGGREGATION
@@ -193,7 +191,7 @@ def machine_run():
     
     plt.tight_layout()
     plt.clf()
-    plt.close()
+    plt.close('all')
     
 
     #################
@@ -248,9 +246,11 @@ def machine_run():
         
         plt.tight_layout()
         plt.clf()
-        plt.close()
+        plt.close('all')
         
         plot_results.append(fig)
+        
+    gc.collect()
     
 
 #####################
