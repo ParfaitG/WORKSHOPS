@@ -35,7 +35,9 @@ sys_data = pd.DataFrame({'user': pwd.getpwuid(os.getuid())[0],
                          'os_release': platform.release(),
                          'os_version': platform.platform(),
                          'machine': platform.machine(),
-                         'python_version': platform.python_version()
+                         'python_version': platform.python_version(),
+                         'pandas_version': pd.__version__,
+                         'numpy_version': np.__version__
                         }, index=[0])
     
 free_data = pd.DataFrame({'mem_total': np.nan, 'mem_used': np.nan, 'mem_free': np.nan,
