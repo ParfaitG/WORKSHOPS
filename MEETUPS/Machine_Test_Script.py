@@ -99,13 +99,18 @@ elif platform.system() == "Darwin":
         print(e)
 
 ### WINDOWS MACHINES
-elif platform.system() in ["win32", "win64"]:
+elif platform.system() == "Windows":
     try:
-        free_data = (pd.concat([pd.read_table(StringIO(os.popen("wmic ComputerSystem get TotalPhysicalMemory").readlines()), sep="\s+"),
-                                pd.read_table(StringIO(os.popen("wmic OS get FreePhysicalMemory,TotalVirtualMemorySize,FreeVirtualMemory").readlines()), sep="\s+")],
-                               axis=1)
-                       .rename(columns=["mem_total", "mem_free", "swap_free", "swap_total"])
-                    )
+        total_raw = os.popen("wmic ComputerSystem get TotalPhysicalMemory").readlines()
+        free_raw = os.popen("wmic OS get FreePhysicalMemory,FreeVirtualMemory,TotalVirtualMemorySize").readlines()
+		
+        free_data['mem_total'] = float(total_raw[2].strip()) / 1E6
+        free_data['mem_free'] = float(free_raw[2].split()[0]) / 1E3
+        free_data['mem_used'] = free_data['mem_total'] - free_data['mem_free']
+        free_data['swap_total'] = float(free_raw[2].split()[2]) / 1E3
+        free_data['swap_free'] = float(free_raw[2].split()[1]) / 1E3		
+        free_data['swap_used'] = free_data['swap_total'] - free_data['swap_free']
+        
     except Exception as e:
         print(e)
   
