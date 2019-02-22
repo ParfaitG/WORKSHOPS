@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
-import os, gc
-import platform, pwd
+import os, getpass
+import platform
 from io import StringIO
 import re
 
@@ -30,7 +30,7 @@ pd.set_option('max_colwidth', -1)
 ### CPU SPECS
 #################
 
-sys_data = pd.DataFrame({'user': pwd.getpwuid(os.getuid())[0],
+sys_data = pd.DataFrame({'user': getpass.getuser(),
                          'os_type': platform.system(),
                          'os_release': platform.release(),
                          'os_version': platform.platform(),
@@ -256,8 +256,6 @@ def machine_run():
         plt.close('all')
         
         plot_results.append(fig)
-        
-    gc.collect()
     
 
 #####################
