@@ -66,6 +66,17 @@ if(Sys.info()[['sysname']] == "Windows") {
                                   read.table(text=system("wmic OS get FreePhysicalMemory,TotalVirtualMemorySize,FreeVirtualMemory", intern = TRUE),
                                              header=TRUE)),
                             c("mem_total", "mem_free", "swap_free", "swap_total"))
+    
+      free_data <- within(free_data, {
+		        mem_total <- mem_total / 1E6
+		        mem_free <- mem_free / 1E3
+		        mem_used <- mem_total - mem_free
+		        swap_total <- swap_total / 1E3
+		        swap_free <- swap_free / 1E3		
+		        swap_used <- swap_total - swap_free
+      })
+			
+      free_data <- free_data[c("mem_total", "mem_used", "mem_free", "swap_total", "swap_used", "swap_free")] 
   }, error = function(e) print(e) )
   
   tryCatch({ free_data$cpu_cores <- trimws(system("wmic cpu get NumberOfCores", intern=TRUE))[2] },
