@@ -1,0 +1,560 @@
+---
+title: "Hardware Benchmarking Exploratory Analysis"
+output: html_notebook
+---
+
+<div style="float:right"><img src="Images/Hardware_DataScience.png" width="200"/></div>
+
+## Parfait Gasana ##
+<div style="font-size: 20px; padding: 10px 0 0 0;">Hardware for Data Science, CRUG|ChiPy Meetup</div>
+<div style="font-size: 18px; padding: 10px 0 0 0;">February 27, 2019</div>
+<div style="float:left"><img src="Images/github.png" height="30" width="30"/></div>
+<div style="font-size: 16px; padding: 10px 0 0 0;">&nbsp;&nbsp;@ParfaitG (GitHub)</div>
+
+<div style="float:right; margin-right:50px"><img src="Images/R_Logo.png" width="100"/></div>
+
+
+## Hardware Importance
+
+- ### Multi-faceted term of many underlying components
+- ### Includes cores, processing speed, architecture, RAM, hard disk, etc.
+- ### Needs vary with project (i.e., bootstrapping, replication, computing, compilation)
+
+<center><img src="Images/operating_system_diagram.png" width="200"/></center>
+
+## Benchmarking Importance
+
+- ### Helps target and focus resources on specific aspect
+- ### Guages performance across several parameters
+- ### Ensures stability for end use needs
+
+<hr style="height:2px;border:none;color:#C0C0C0;background-color:#C0C0C0;"/>
+
+## Data Analytics Simulation Example
+
+### Build
+
+```{r}
+set.seed(2019)
+alpha <- c(LETTERS, letters, c(0:9))
+data_tools <- c("sas", "stata", "spss", "python", "r", "julia")
+ROW_SIZE <- 1E4
+
+random_df <- data.frame(
+  group = sample(data_tools, 500, replace=TRUE),
+  int = sample(1:15, ROW_SIZE, replace=TRUE),
+  y_num = runif(ROW_SIZE, 0, 100),
+  x_num1 = runif(ROW_SIZE, 0, 100),
+  x_num2 = runif(ROW_SIZE) * 10,
+  x_num3 = rnorm(ROW_SIZE, 10),
+  x_num4 = rnorm(ROW_SIZE, 50),
+  x_num5 = rnorm(ROW_SIZE, 100),
+  char = replicate(ROW_SIZE, paste(sample(alpha, 3, replace=TRUE), collapse="")),
+  bool = sample(c(TRUE, FALSE), ROW_SIZE, replace=TRUE),
+  date = as.Date(sample(as.integer(as.Date("2000-01-01")):as.integer(Sys.Date()), 
+                        ROW_SIZE, replace=TRUE), origin="1970-01-01")
+)
+
+head(random_df, 10)
+```
+
+### Aggregation
+
+```{r}
+agg_df <- do.call(data.frame, 
+                  aggregate(cbind(y_num, x_num1, x_num2, x_num3, x_num4, x_num5) ~ group, random_df, 
+                            FUN=function(x) c(sum=sum(x), 
+                                              mean=mean(x),
+                                              median=median(x),
+                                              min=min(x),
+                                              max=max(x)))
+)
+
+agg_df <- cbind(agg_df[c(1, grep("sum", names(agg_df)))],
+                agg_df[grep("mean", names(agg_df))],
+                agg_df[grep("median", names(agg_df))],
+                agg_df[grep("min", names(agg_df))],
+                agg_df[grep("max", names(agg_df))])
+
+agg_df 
+
+```
+
+
+
+### Plotting
+
+```{r fig1, fig.height = 5, fig.width = 10, fig.align = "center"}
+seaborn_palette <- c("#4C72B0", "#DD8452", "#55A868", "#C44E52", "#8172B3",
+                     "#937860", "#DA8BC3", "#8C8C8C", "#CCB974", "#64B5CD")
+# HISTOGRAM BY GROUP
+hist(subset(random_df, random_df$group == "julia")$y_num, 
+     col=seaborn_palette[1], breaks=50, ylim=c(0, 70),
+     main="Overlapping Histogram", xlab="y_num", border="white")
+hist(subset(random_df, random_df$group == "r")$y_num, col=seaborn_palette[2], breaks=50, add=TRUE)
+hist(subset(random_df, random_df$group == "python")$y_num, col=seaborn_palette[3], breaks=50, add=TRUE, border="white")
+hist(subset(random_df, random_df$group == "sas")$y_num, col=seaborn_palette[4], breaks=50, add=TRUE,
+     border="white")
+hist(subset(random_df, random_df$group == "stata")$y_num, col=seaborn_palette[5], breaks=50, add=TRUE, border="white")
+hist(subset(random_df, random_df$group == "spss")$y_num, col=seaborn_palette[6], breaks=50, add=TRUE,
+     border="white")
+
+legend("top", c("julia", "r", "python", "sas", "stata", "spss"), ncol=6,
+       fill=c(seaborn_palette[1:6]))
+
+```
+
+
+```{r fig2, fig.height = 5, fig.width = 13, fig.align = "center"}
+# BAR PLOT BY GROUP AND YEAR
+random_df$year <- format(random_df$date, "%Y")
+graph_data <- tapply(random_df$y_num, list(random_df$group, random_df$year), mean)
+barplot(graph_data, beside=TRUE, col=seaborn_palette[1:6], legend=NULL, 
+        ylim=c(0,70), border="white", xaxs="i",
+        main="Barplot by Group and Year", ylab="y_num")
+
+legend("top", row.names(graph_data), ncol=6, fill=seaborn_palette[1:6])
+box()
+```
+
+
+### Modeling
+
+```{r}
+# FORMULA BUILD
+expvar_list <- lapply(1:5, function(x) combn(paste0("x_num", 1:5), x, simplify=FALSE))
+  
+formulas_list <- rapply(expvar_list, function(x) paste(paste("y_num ~", paste(x, collapse=" + ")), " + group"))
+formulas_list
+```
+
+
+```{r}
+# LINEAR MODELS
+models <- lapply(formulas_list, function(m) lm(m, data=random_df))
+
+tail(lapply(models, summary), 3)
+```
+
+
+### Results
+
+```{r}
+coeff_matrices <- vector(mode="list", length = length(models))
+rf_matrices <- vector(mode="list", length = length(models))
+anova_dfs <- vector(mode="list", length = length(models))
+plot_results  <- vector(mode="list", length = length(models))
+
+build_plot <-  function(i){
+  dat <- coeff_matrices[[i]]
+  
+  pdf(NULL)
+  dev.control(displaylist="enable")
+  barplot(dat[(2:nrow(dat)),1], col=seaborn_palette[1:nrow(coeff_matrices[[i]])],
+          legend = NULL, main=paste0("Model - ", i), cex.lab=1.5, border="white",
+          ylim=c(-2,2))
+  box()
+  
+  p <- recordPlot()
+  invisible(dev.off())
+  return(p)
+}
+
+for(i in seq_along(models)){
+  res <- summary(models[[i]])
+  
+  coeff_matrices[[i]] <- res$coefficients
+  
+  p <- res$fstatistic
+  rf_matrices[[i]] <- c(r_sq = res$r.squared,
+                        adj_r_sq = res$adj.r.squared,
+                        f_stat = p[['value']],
+                        p_value = unname(pf(p[1], p[2], p[3], lower.tail=FALSE))
+  )
+  
+  anova_dfs[[i]] <- anova(models[[i]])
+  
+  plot_results[[i]] <- build_plot(i)
+}
+
+knitr::kable(tail(coeff_matrices, 3))
+knitr::kable(tail(rf_matrices, 3))
+knitr::kable(tail(anova_dfs, 3))
+```
+
+```{r fig3, fig.height = 8, fig.width = 13, fig.align = "center"}
+plot_results[[31]]
+plot.new()
+invisible(dev.off())
+```
+
+<hr style="height:2px;border:none;color:#C0C0C0;background-color:#C0C0C0;"/>
+
+## Hardware Parameters
+
+### Operating System and Software Versions
+
+```{r}
+sys_data <- data.frame(user = Sys.info()['user'],
+                       os_type = Sys.info()['sysname'],
+                       os_release = Sys.info()['release'],
+                       os_version = Sys.info()['version'],
+                       machine = Sys.info()['machine'],
+                       r_version = paste(R.Version()$major, R.Version()$minor, sep="."),
+                       r_platform =  R.Version()$platform,
+                       r_build_date = paste(R.Version()$year, R.Version()$month,
+                                            R.Version()$day, sep="-"))
+
+
+sys_data
+```
+
+
+### Memory Available
+
+```{r}
+free_data <- data.frame(mem_total = NA, mem_used = NA, mem_free = NA,
+                        swap_total = NA, swap_used = NA, swap_free = NA,
+                        cpu_cores = NA, cpu_speed = NA)
+
+free <- system("free", intern=TRUE)
+free[3] <- paste(free[3], " NA NA NA")
+
+free_data <- read.table(text=paste(free, collapse="\n"), header=TRUE)[1:3]
+free_data <- setNames(cbind(free_data["Mem",], free_data["Swap",],  row.names=NULL) / 1E3, 
+                  c("mem_total", "mem_used", "mem_free", "swap_total", "swap_used", "swap_free"))
+
+free_data
+```
+
+### Memory Used
+
+```{r}
+mem_stats <- gc()
+colnames(mem_stats) <- c("used", "used_mb", "gc_trigger", "gc_trigger_mb", "max_used", "max_used_mb")
+mem_stats <- colSums(mem_stats)
+
+sys_data <- within(sys_data, { 
+                use_mb <- mem_stats['used_mb']
+                gc_trigger_mb <- mem_stats['gc_trigger_mb']
+                max_used_mb <- mem_stats['max_used_mb']
+            })
+
+sys_data
+```
+
+
+### CPU Cores and Speed (MHz)
+
+```{r}
+free_data$cpu_cores <- system("getconf _NPROCESSORS_ONLN", intern=TRUE) 
+free_data$cpu_speed <- trimws(strsplit(system("lscpu | grep MHz", intern=TRUE)[1], ":")[[1]][2])
+
+free_data
+```
+
+## Timings
+
+```{r eval=FALSE}
+library(microbenchmark)
+
+mb_stats <- do.call(data.frame, aggregate(time~., microbenchmark(machine_run(), times=5L, unit="s"),
+                                          function(x)
+                                            c(min = min(x) / 1E9,
+                                              lq = unname(quantile(x)[2]) / 1E9,
+                                              mean = mean(x) / 1E9,
+                                              median = median(x) / 1E9,
+                                              uq = unname(quantile(x)[4]) / 1E9,
+                                              max = max(x) / 1E9,
+                                              neval = 5L)
+                                          )
+                    )
+```
+
+<hr style="height:2px;border:none;color:#C0C0C0;background-color:#C0C0C0;"/>
+
+# Machine Test Results
+
+```{r}
+results_df <- within(read.csv('Machine_Test_Results_r.csv', stringsAsFactors = FALSE), {
+               time_stamp <- as.POSIXct(time_stamp, origin="1970-01-01")
+               machine <- ifelse(machine=="x86_64", "x86-64", machine)
+               mem_total <- round(mem_total, 3)
+})
+
+results_df <- with(results_df, results_df[order(time_stamp),])
+
+results_df[sample(1:nrow(results_df), 10),]
+```
+
+## Summary Stats
+
+```{r}
+agg_df <- do.call(data.frame, 
+                  aggregate(time.mean ~ row_size, results_df, 
+                            FUN=function(x) c(sum=sum(x), 
+                                              mean=mean(x),
+                                              median=median(x),
+                                              min=min(x),
+                                              max=max(x)))
+)
+
+agg_df
+```
+
+
+```{r}
+agg_df <- do.call(data.frame, 
+                  aggregate(cbind(use_mb, gc_trigger_mb) ~ row_size, results_df, 
+                            FUN=function(x) c(sum=sum(x), 
+                                              mean=mean(x),
+                                              median=median(x),
+                                              min=min(x),
+                                              max=max(x)))
+)
+
+agg_df
+```
+
+
+```{r fig4, fig.height = 6, fig.width = 12, fig.align = "center"}
+par(mar = c(5,5,3,5), bg="gray98")
+
+with(results_df, {
+  plot(time_stamp, time.mean, type='l',
+       main="Memory Usage and Timing Across Iterations",
+       xlab="Date/Time of Run", ylab="Script Runtime", font.lab=2,
+       col=seaborn_palette[1], bg = "lightgray", xaxt="n", cex.main=1.5)
+  points(time_stamp, time.mean, pch=16, col=seaborn_palette[1])
+  axis.POSIXct(side=1, x=time_stamp, format="%m-%d %H:%M", labels = TRUE)
+  grid(col="white", lty=1)
+})
+
+par(new = TRUE)
+with(results_df, {
+  plot(time_stamp, gc_trigger_mb, type='l', col=seaborn_palette[2], 
+       axes=FALSE, xlab=NA, ylab=NA, cex=1.2)
+  axis(side = 4)
+  mtext(side = 4, line = 3, 'Memory Usage (MB)', font=2)
+  points(time_stamp, gc_trigger_mb, pch=16, col=seaborn_palette[2])
+  
+  lines(time_stamp, use_mb, col=seaborn_palette[3])
+  points(time_stamp, use_mb, pch=16, col=seaborn_palette[3])
+})
+
+legend("topleft",
+       legend=c("mean runtime", "gc trigger mb", "use mb"),
+       lty=c(1,1,1), pch=c(NA, NA, NA), col=seaborn_palette[1:3])
+
+```
+
+
+```{r fig4A, fig.height = 6, fig.width = 12, fig.align = "center"}
+proc_graph <- function(sub) {
+  par(mar = c(5,5,5,5), bg="gray98")
+  with(sub, {
+    plot(time_stamp, time.mean, type='l',
+         main=paste0("Memory Usage and Timing Across Iterations,\nRow Size: ", 
+                     format(sub$row_size[[1]], nsmall=1, big.mark=",")),
+         xlab="Date/Time of Run", ylab="Script Runtime", font.lab=2,
+         col=seaborn_palette[1], bg = "grey90", xaxt="n", lwd=2, cex.main=1.5)
+    points(time_stamp, time.mean, pch=16, col=seaborn_palette[1])
+    axis.POSIXct(side=1, x=time_stamp, format="%m-%d %H:%M", labels = TRUE)
+    grid(col="white", lty=1)
+  })
+  
+  par(new = TRUE)
+  with(sub, {
+    plot(time_stamp, gc_trigger_mb, type='l', col=seaborn_palette[2], 
+         axes=FALSE, xlab=NA, ylab=NA, cex=1.2, lwd=2)
+    axis(side = 4)
+    mtext(side = 4, line = 3, 'Memory Usage (MB)', font=2)
+    points(time_stamp, gc_trigger_mb, pch=16, col=seaborn_palette[2])
+    
+    lines(time_stamp, use_mb, col=seaborn_palette[3], lwd=2)
+    points(time_stamp, use_mb, pch=16, col=seaborn_palette[3])
+  })
+  
+  legend("topleft",
+         legend=c("mean runtime", "gc trigger mb", "use mb"),
+         lty=c(1,1,1), pch=c(NA, NA, NA), col=seaborn_palette[1:3])
+}
+
+plots <- by(results_df, results_df$row_size, proc_graph)
+```
+
+## Plotting by Metrics
+
+```{r fig5A, fig.height = 6, fig.width = 12, fig.align = "center"}
+par(mar = c(5,5,3,5), bg="gray98")
+with(results_df, {
+  fit <- glm(gc_trigger_mb ~ time.mean)
+  plot(time.mean, gc_trigger_mb, type='p', pch=16,
+       main="GC Memory Usage vs Timing", 
+       xlab="Mean Script Runtime (sec.)", ylab="GC Memory (MB)", font.lab=2,
+       col=seaborn_palette[1], bg = "grey90", lwd=2, cex.main=1.5)
+  abline(fit, col=seaborn_palette[4], lwd=2)
+  grid(col="white", lty=1)
+})
+
+```
+
+```{r fig5B, fig.height = 6, fig.width = 12, fig.align = "center"}
+par(mar = c(5,5,3,5), bg="gray98")
+with(results_df, {
+  fit <- glm(use_mb ~ time.mean)
+  plot(time.mean, use_mb, type='p', pch=16,
+       main="Use Memory Usage vs Timing", 
+       xlab="Mean Script Runtime (sec.)", ylab="Use Memory (MB)", font.lab=2,
+       col=seaborn_palette[1], bg = "grey90", lwd=2, cex.main=1.5)
+  abline(fit, col=seaborn_palette[4], lwd=2)
+  grid(col="white", lty=1)
+})
+```
+
+
+```{r fig5C, fig.height = 6, fig.width = 12, fig.align = "center"}
+par(mar = c(5,5,3,5), bg="gray98")
+with(results_df, {
+  fit <- glm(mem_used ~ time.mean)
+  plot(time.mean, mem_used, type='p', pch=16,
+       main="OS Physical Memory Usage vs Timing", 
+       xlab="Mean Script Runtime (sec.)", ylab="OS Physical Memory (MB)", font.lab=2,
+       col=seaborn_palette[1], bg = "grey90", lwd=2, cex.main=1.5)
+  abline(fit, col=seaborn_palette[4], lwd=2)
+  grid(col="white", lty=1)
+})
+```
+
+```{r fig5D, fig.height = 6, fig.width = 12, fig.align = "center"}
+par(mar = c(5,5,3,5), bg="gray98")
+with(results_df, {
+  fit <- glm(swap_used ~ time.mean)
+  plot(time.mean, swap_used, type='p', pch=16,
+       main="OS Swap Memory Usage vs Timing", 
+       xlab="Mean Script Runtime (sec.)", ylab="OS Memory Usage (MB)", font.lab=2,
+       col=seaborn_palette[1], bg = "grey90", lwd=2, cex.main=1.5)
+  abline(fit, col=seaborn_palette[4], lwd=2)
+  grid(col="white", lty=1)
+})
+```
+
+```{r fig5E, fig.height = 6, fig.width = 12, fig.align = "center"}
+par(mar = c(5,5,3,5), bg="gray98")
+with(results_df, {
+  fit <- glm(time.mean ~ cpu_speed)
+  plot(cpu_speed, time.mean, type='p', pch=16,
+       main="Core Speed Usage vs Timing", 
+       xlab="Core Speed", ylab="Mean Script Runtime (sec.)", font.lab=2,
+       col=seaborn_palette[1], bg = "grey90", lwd=2, cex.main=1.5)
+  abline(fit, col=seaborn_palette[4], lwd=2)
+  grid(col="white", lty=1)
+})
+```
+
+## Graphing By Types
+
+<div style="float:right"><img src="Images/linux-mac-windows.jpg" width="200" /></div>
+
+```{r fig6A, fig.height = 6, fig.width = 12, fig.align = "center"}
+par(mar = c(5,5,3,5), bg="gray98")
+dat <- with(results_df, tapply(time.mean, list(os_type, row_size), mean))
+bp <- barplot(dat, col=seaborn_palette[1:3], ylim=range(pretty(c(0, dat))),
+              beside=TRUE, legend=NULL, border="white",
+              main="Timings By Row Size and OS Type", 
+              xlab="Row Size", ylab="Mean Script Runtime (sec.)", font.lab=2, 
+              cex.main=1.5, cex.lab=1.25)
+legend("topleft", legend=rownames(dat), fill=seaborn_palette[1:3])
+box(col="gray50")
+```
+
+
+```{r fig6B, fig.height = 6, fig.width = 12, fig.align = "center"}
+par(mar = c(5,5,3,5), bg="gray98")
+dat <- with(results_df, tapply(gc_trigger_mb, list(os_type, row_size), mean))
+bp <- barplot(dat, col=seaborn_palette[1:3], ylim=range(pretty(c(0, dat))),
+              beside=TRUE, legend=NULL, border="white",
+              main="Physical Memory By Row Size and OS Type", 
+              xlab="Row Size", ylab="GC Memory (MB)", font.lab=2, 
+              cex.main=1.5, cex.lab=1.25)
+legend("topleft", legend=rownames(dat), fill=seaborn_palette[1:3])
+box(col="gray50")
+```
+
+
+```{r fig6C, fig.height = 6, fig.width = 12, fig.align = "center"}
+par(mar = c(5,5,3,5), bg="gray98")
+dat <- with(results_df, tapply(use_mb, list(os_type, row_size), mean))
+bp <- barplot(dat, col=seaborn_palette[1:3], ylim=range(pretty(c(0, dat))),
+              beside=TRUE, legend=NULL, border="white",
+              main="Used Memory By Row Size and OS Type", 
+              xlab="Row Size", ylab="Used Memory (MB)", font.lab=2, 
+              cex.main=1.5, cex.lab=1.5)
+legend("topleft", legend=rownames(dat), fill=seaborn_palette[1:3])
+box(col="gray50")
+```
+
+```{r fig6D, fig.height = 6, fig.width = 12, fig.align = "center"}
+par(mar = c(5,5,3,5), bg="gray98")
+dat <- with(results_df, tapply(time.mean, list(machine, row_size), mean))
+bp <- barplot(dat, col=seaborn_palette[3], ylim=range(pretty(c(0, dat))),
+              beside=TRUE, legend=NULL, border="white",
+              main="Timings By Row Size and Architecture", 
+              xlab="Row Size", ylab="Script Mean Runtime (sec.)", font.lab=2, 
+              cex.main=1.5, cex.lab=1.5)
+legend("topleft", legend=rownames(dat), fill=seaborn_palette[3])
+box(col="gray50")
+```
+
+```{r fig6E, fig.height = 6, fig.width = 12, fig.align = "center"}
+par(mar = c(5,5,3,5), bg="gray98")
+dat <- with(results_df, tapply(time.mean, list(r_version, row_size), mean))
+bp <- barplot(dat, col=seaborn_palette[5:7], ylim=range(pretty(c(0, dat))),
+              beside=TRUE, legend=NULL, border="white",
+              main="Timings By Row Size and R Version", 
+              xlab="Row Size", ylab="Script Mean Runtime (sec.)", font.lab=2, 
+              cex.main=1.5, cex.lab=1.5)
+legend("topleft", legend=rownames(dat), fill=seaborn_palette[5:7])
+box(col="gray50")
+```
+
+
+```{r fig6F, fig.height = 6, fig.width = 12, fig.align = "center"}
+par(mar = c(5,5,3,5), bg="gray98")
+dat <- with(results_df, tapply(time.mean, list(cpu_cores, row_size), mean))
+bp <- barplot(dat, col=seaborn_palette[7:10], ylim=range(pretty(c(0, dat))),
+              beside=TRUE, legend=NULL, border="white",
+              main="Timings By Row Size and CPU Cores", 
+              xlab="Row Size", ylab="Script Mean Runtime (sec.)", font.lab=2, 
+              cex.main=1.5, cex.lab=1.5)
+legend("topleft", legend=rownames(dat), fill=seaborn_palette[7:10])
+box(col="gray50")
+```
+
+```{r fig6G, fig.height = 6, fig.width = 12, fig.align = "center"}
+dat <- with(results_df, tapply(time.mean, list(mem_total, row_size), mean))
+par(mar = c(5,5,3,5), bg="gray98")
+bp <- barplot(dat, col=seaborn_palette[2:6], ylim=range(pretty(c(0, dat))),
+              beside=TRUE, legend=NULL, border="white",
+              main="Timings By Row Size and Total Memory", 
+              xlab="Row Size", ylab="Script Mean Runtime (sec.)", font.lab=2, 
+              cex.main=1.5, cex.lab=1.5)
+legend("topleft", legend=rownames(dat), fill=seaborn_palette[2:6])
+box(col="gray50")
+```
+
+<br/>
+
+## Further Inquiry
+
+- ### Do we simply throw RAM at the problem to enhance performance?
+- ### Does environment matter (OS and software versions)?
+- ### Does type of specs matter (32-bit/64-bit, CPU cores, disk speed)?
+
+<br/>
+
+## Special Thanks
+### Raymond Buhr, for MacOS testing, debugging, and iterations
+
+<br/>
+<br/>
