@@ -548,7 +548,7 @@ bp <- barplot(dat, col=seaborn_palette[5:10], ylim=range(pretty(c(0, dat))),
               main="Timings By Row Size and CPU Cores", 
               xlab="Row Size", ylab="Script Mean Runtime (sec.)", font.lab=2, 
               cex.main=1.5, cex.lab=1.5)
-legend("top", ncol=5, legend=rownames(dat), fill=seaborn_palette[7:10], bty="n")
+legend("top", ncol=5, legend=rownames(dat), fill=seaborn_palette[5:10], bty="n")
 box(col="gray50")
 ```
 
@@ -561,7 +561,7 @@ bp <- barplot(dat, col=seaborn_palette, ylim=range(pretty(c(0, dat))),
               main="Timings By Row Size and CPU Speeds", 
               xlab="Row Size", ylab="Script Mean Runtime (sec.)", font.lab=2, 
               cex.main=1.5, cex.lab=1.5)
-legend("top", ncol=6, legend=rownames(dat), fill=seaborn_palette[7:10], bty="n")
+legend("top", ncol=6, legend=rownames(dat), fill=seaborn_palette, bty="n")
 box(col="gray50")
 ```
 
