@@ -316,22 +316,43 @@ agg_df <- do.call(data.frame,
 agg_df
 ```
 
+```{r}
+by(results_df, results_df$row_size, 
+  function(sub) head(with(sub, sub[order(time.mean),
+                                   c("user", "os_type", "mem_total", "cpu_cores", "cpu_speed",
+                                     "gc_trigger_mb", "time.mean")]
+                          )
+                     )
+  )
+
+```
+
+```{r}
+by(results_df, results_df$row_size, 
+  function(sub) head(with(sub, sub[order(gc_trigger_mb),
+                                   c("user", "os_type", "mem_total", "cpu_cores", "cpu_speed",
+                                     "gc_trigger_mb", "time.mean")]
+                          ),
+                     5)
+  )
+```
 
 ```{r fig4, fig.height = 6, fig.width = 12, fig.align = "center"}
 par(mar = c(5,5,3,5), bg="gray95")
 
-with(results_df, {
+dat <- results_df[results_df$time_stamp >= '2019-02-21',]
+with(dat, {
   plot(time_stamp, time.mean, type='l',
        main="Memory Usage and Timing Across Iterations",
        xlab="Date/Time of Run", ylab="Script Runtime", font.lab=2,
        col=seaborn_palette[1], bg = "lightgray", xaxt="n", cex.main=1.5, lwd=2)
   points(time_stamp, time.mean, pch=16, col=seaborn_palette[1])
-  axis.POSIXct(side=1, x=time_stamp, format="%m-%d %H:%M", labels = TRUE)
+  axis.POSIXct(side=1, x=time_stamp, format="%Y-%m-%d %H:%M", labels = TRUE)
   grid(col="white", lty=1)
 })
 
 par(new = TRUE)
-with(results_df, {
+with(dat, {
   plot(time_stamp, gc_trigger_mb, type='l', col=seaborn_palette[2], 
        axes=FALSE, xlab=NA, ylab=NA, cex=1.2, lwd=2)
   axis(side = 4)
@@ -522,16 +543,31 @@ box(col="gray50")
 ```{r fig6F, fig.height = 6, fig.width = 12, fig.align = "center"}
 par(mar = c(5,5,3,5), bg="gray95")
 dat <- with(results_df, tapply(time.mean, list(cpu_cores, row_size), mean))
-bp <- barplot(dat, col=seaborn_palette[7:10], ylim=range(pretty(c(0, dat))),
+bp <- barplot(dat, col=seaborn_palette[5:10], ylim=range(pretty(c(0, dat))),
               beside=TRUE, legend=NULL, border="white",
               main="Timings By Row Size and CPU Cores", 
               xlab="Row Size", ylab="Script Mean Runtime (sec.)", font.lab=2, 
               cex.main=1.5, cex.lab=1.5)
-legend("top", ncol=4, legend=rownames(dat), fill=seaborn_palette[7:10], bty="n")
+legend("top", ncol=5, legend=rownames(dat), fill=seaborn_palette[7:10], bty="n")
 box(col="gray50")
 ```
 
 ```{r fig6G, fig.height = 6, fig.width = 12, fig.align = "center"}
+par(mar = c(5,5,3,5), bg="gray95")
+results_df$cpu_speed <- round(results_df$cpu_speed / 100) * 100
+dat <- with(results_df, tapply(time.mean, list(cpu_speed, row_size), mean))
+bp <- barplot(dat, col=seaborn_palette, ylim=range(pretty(c(0, dat))),
+              beside=TRUE, legend=NULL, border="white",
+              main="Timings By Row Size and CPU Speeds", 
+              xlab="Row Size", ylab="Script Mean Runtime (sec.)", font.lab=2, 
+              cex.main=1.5, cex.lab=1.5)
+legend("top", ncol=6, legend=rownames(dat), fill=seaborn_palette[7:10], bty="n")
+box(col="gray50")
+```
+
+
+```{r fig6H, fig.height = 6, fig.width = 12, fig.align = "center"}
+results_df$mem_total <- round(results_df$mem_total)
 dat <- with(results_df, tapply(time.mean, list(mem_total, row_size), mean))
 par(mar = c(5,5,3,5), bg="gray95")
 bp <- barplot(dat, col=seaborn_palette[2:6], ylim=range(pretty(c(0, dat))),
@@ -549,7 +585,7 @@ box(col="gray50")
 
 - ### Do we simply throw RAM at the problem to enhance performance?
 - ### Does environment matter (OS and software versions)?
-- ### Does type of specs matter (32-bit/64-bit, CPU cores, disk speed)?
+- ### Does other specs matter (32-bit/64-bit, CPU cores, disk speed)?
 
 <br/>
 
