@@ -182,7 +182,7 @@ knitr::kable(tail(rf_matrices, 3))
 knitr::kable(tail(anova_dfs, 3))
 ```
 
-```{r fig3, fig.height = 8, fig.width = 13, fig.align = "center"}
+```{r fig3, fig.height = 6, fig.width = 13, fig.align = "center"}
 plot_results[[31]]
 plot.new()
 invisible(dev.off())
@@ -321,8 +321,8 @@ by(results_df, results_df$row_size,
   function(sub) head(with(sub, sub[order(time.mean),
                                    c("user", "os_type", "mem_total", "cpu_cores", "cpu_speed",
                                      "gc_trigger_mb", "time.mean")]
-                          )
-                     )
+                          ),
+                     5)
   )
 
 ```
