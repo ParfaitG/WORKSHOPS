@@ -1,0 +1,495 @@
+---
+title: "Divvy + R Analysis"
+output: html_notebook
+---
+
+<div style="float:right"><img src="Images/R_Logo.png" width = "100px"/></div>
+<div style="float:right"><img src="Images/DivvyLogo.png" width = "250px"/></div>
+</br>
+
+## Parfait Gasana ##
+<div style="float:right"><img src="Images/DivvyBike.png" width = "150px"/></div>
+<div style="font-size: 20px; padding: 10px 0 0 0;">Chicago Women in Big Data | CRUG</div>
+<div style="font-size: 18px; padding: 10px 0 0 0;">March 20, 2019</div>
+<div style="float:left"><img src="Images/github.png" height="30" width="30"/></div>
+<div style="font-size: 16px; padding: 10px 0 0 0;">&nbsp;&nbsp;@ParfaitG (GitHub)</div>
+<hr style="height:2px;border:none;color:#C0C0C0;background-color:#C0C0C0;"/>
+
+### IBM DB2 Connection
+<div style="float:left"><img src="Images/DB2.jpg" width = "50px"/></div>
+
+
+```{r}
+options(connectionObserver = NULL)
+
+library(DBI)
+library(odbc)
+
+conn <- dbConnect(odbc::odbc(),
+                  instance = "oem",
+                  driver = "DB2 11.1 ODBC Driver",
+                  database = "DIVVY",
+                  server = "127.0.0.1",
+                  hostname = "10.0.0.220",
+                  MaxFieldLength = 1336856,
+                  port = 48000,
+                  uid = "OEM",
+                  pwd = "oem123",
+                  LongDataCompat = 1)
+```
+
+### By Year
+
+```{r}
+agg_df <- dbGetQuery(conn, "SELECT YEAR(t.START_TIME) AS Trip_Year, 
+                                   SUM(CAST(t.TRIP_DURATION AS DOUBLE)) AS Total_Duration,
+                                   MIN(CAST(t.TRIP_DURATION AS DOUBLE)) AS Min_Duration,
+                                   AVG(CAST(t.TRIP_DURATION AS DOUBLE)) AS Avg_Duration,
+                                   MEDIAN(CAST(t.TRIP_DURATION AS DOUBLE)) AS Median_Duration,
+                                   MAX(CAST(t.TRIP_DURATION AS DOUBLE)) AS Max_Duration
+                            FROM TRIPS t
+                            GROUP BY YEAR(t.START_TIME);")
+agg_df
+```
+
+```{r fig1a, fig.height = 5, fig.width = 13, fig.align = "center"}
+seaborn_palette <- c("#4C72B0", "#DD8452", "#55A868", "#C44E52", "#8172B3",
+                     "#937860", "#DA8BC3", "#8C8C8C", "#CCB974", "#64B5CD")
+
+plot(x=agg_df$TRIP_YEAR, y=agg_df$TOTAL_DURATION, type='l',
+     col=seaborn_palette, legend=NULL, 
+     xaxs="i", cex.main=1.5, cex.lab=1.2, font.lab=2,
+     main="Total Trip Duration by Year", xlab="Year", ylab="Total Duration (seconds)")
+points(agg_df$TRIP_YEAR, agg_df$TOTAL_DURATION, pch=16, col=seaborn_palette[1])
+```
+
+```{r fig1b, fig.height = 5, fig.width = 13, fig.align = "center"}
+plot(x=agg_df$TRIP_YEAR, y=agg_df$AVG_DURATION, type='l',
+     col=seaborn_palette[2], legend=NULL,
+     xaxs="i", cex.main=1.5, cex.lab=1.2, font.lab=2,
+     main="Average Trip Duration by Year", xlab="Year", ylab="Total Duration (seconds)")
+points(agg_df$TRIP_YEAR, agg_df$AVG_DURATION, pch=16, col=seaborn_palette[2])
+```
+
+```{r fig1c, fig.height = 5, fig.width = 13, fig.align = "center"}
+plot(x=agg_df$TRIP_YEAR, y=agg_df$MEDIAN_DURATION, type='l',
+     col=seaborn_palette[3], legend=NULL,
+     xaxs="i", cex.main=1.5, cex.lab=1.2, font.lab=2,
+     main="Median Trip Duration by Year", xlab="Year", ylab="Total Duration (seconds)")
+points(agg_df$TRIP_YEAR, agg_df$MEDIAN_DURATION, pch=16, col=seaborn_palette[3])
+```
+
+### By Month
+
+```{r}
+agg_df <- dbGetQuery(conn, "SELECT MONTHNAME(t.START_TIME) AS Trip_Month, 
+                                   SUM(CAST(t.TRIP_DURATION AS DOUBLE)) AS Total_Duration,
+                                   MIN(CAST(t.TRIP_DURATION AS DOUBLE)) AS Min_Duration,
+                                   AVG(CAST(t.TRIP_DURATION AS DOUBLE)) AS Avg_Duration,
+                                   MEDIAN(CAST(t.TRIP_DURATION AS DOUBLE)) AS Median_Duration,
+                                   MAX(CAST(t.TRIP_DURATION AS DOUBLE)) AS Max_Duration
+                            FROM TRIPS t
+                            GROUP BY MONTHNAME(t.START_TIME);")
+
+agg_df$MONTH <- factor(agg_df$TRIP_MONTH, levels=c("January", "February", "March", "April", "May",
+                                                   "June", "July", "August", "September", 
+                                                   "October", "November", "December"))
+agg_df
+```
+
+```{r fig2a, fig.height = 5, fig.width = 13, fig.align = "center"}
+seaborn_palette <- c("#4C72B0", "#DD8452", "#55A868", "#C44E52", "#8172B3",
+                     "#937860", "#DA8BC3", "#8C8C8C", "#CCB974", "#64B5CD",
+                     "#4C72B0", "#DD8452")
+graph_data <- tapply(agg_df$TOTAL_DURATION, agg_df$MONTH, sum)
+barplot(graph_data, beside=TRUE, col=seaborn_palette, legend=NULL, 
+        border="white", xaxs="i", cex.main=1.5, cex.lab=1.2, font.lab=2,
+        main="Total Trip Duration by Months", xlab="Month", ylab="Total Duration (seconds)")
+```
+
+```{r fig2b, fig.height = 5, fig.width = 13, fig.align = "center"}
+graph_data <- tapply(agg_df$AVG_DURATION, agg_df$MONTH, sum)
+barplot(graph_data, beside=TRUE, col=seaborn_palette, legend=NULL, 
+        border="white", xaxs="i", cex.main=1.5, cex.lab=1.2, font.lab=2,
+        main="Average Trip Duration by Months", xlab="Month", ylab="Mean Duration (seconds)")
+```
+
+### By Weekday
+
+```{r}
+agg_df <- dbGetQuery(conn, "SELECT DAYNAME(t.START_TIME) AS Trip_Day, 
+                                   SUM(CAST(t.TRIP_DURATION AS DOUBLE)) AS Total_Duration,
+                                   MIN(CAST(t.TRIP_DURATION AS DOUBLE)) AS Min_Duration,
+                                   AVG(CAST(t.TRIP_DURATION AS DOUBLE)) AS Avg_Duration,
+                                   MEDIAN(CAST(t.TRIP_DURATION AS DOUBLE)) AS Median_Duration,
+                                   MAX(CAST(t.TRIP_DURATION AS DOUBLE)) AS Max_Duration
+                            FROM TRIPS t
+                            GROUP BY DAYNAME(t.START_TIME);")
+
+agg_df$DAY <- factor(agg_df$TRIP_DAY, levels=c("Monday", "Tuesday", "Wednesday", "Thursday", 
+                                               "Friday", "Saturday", "Sunday"))
+agg_df
+```
+
+```{r fig2c, fig.height = 5, fig.width = 13, fig.align = "center"}
+graph_data <- tapply(agg_df$TOTAL_DURATION, agg_df$DAY, sum)
+barplot(graph_data, beside=TRUE, col=seaborn_palette, legend=NULL, 
+        border="white", xaxs="i", cex.main=1.5, cex.lab=1.2, font.lab=2,
+        main="Total Trip Duration by Weekdays", xlab="Month", ylab="Total Duration (seconds)")
+```
+
+```{r fig2d, fig.height = 5, fig.width = 13, fig.align = "center"}
+graph_data <- tapply(agg_df$AVG_DURATION, agg_df$DAY, sum)
+barplot(graph_data, beside=TRUE, col=seaborn_palette, legend=NULL, 
+        border="white", xaxs="i", cex.main=1.5, cex.lab=1.2, font.lab=2,
+        main="Average Trip Duration by Weekdays", xlab="Month", ylab="Mean Duration (seconds)")
+```
+
+
+### Top Bikes
+
+```{r}
+agg_df <- dbGetQuery(conn, "SELECT t.BIKE_ID, 
+                                   SUM(t.TRIP_DURATION) AS Total_Duration,
+                                   MIN(t.TRIP_DURATION) AS Min_Duration,
+                                   AVG(t.TRIP_DURATION) AS Avg_Duration,
+                                   MEDIAN(t.TRIP_DURATION) AS Median_Duration,
+                                   MAX(t.TRIP_DURATION) AS Max_Duration
+
+                            FROM TRIPS t
+                            GROUP BY t.BIKE_ID
+                            ORDER BY SUM(t.TRIP_DURATION) DESC
+                            FETCH FIRST 10 ROWS ONLY;")
+agg_df
+```
+
+```{r fig3a, fig.height = 5, fig.width = 13, fig.align = "center"}
+graph_data <- tapply(agg_df$TOTAL_DURATION, agg_df$BIKE_ID, sum)
+barplot(graph_data, beside=TRUE, col=seaborn_palette, legend=NULL, 
+        border="white", xaxs="i", cex.main=1.5, cex.lab=1.2, font.lab=2,
+        main="Top Bikes by Trip Duration", xlab="Bike ID", ylab="Total Duration (seconds)")
+```
+
+```{r fig3b, fig.height = 5, fig.width = 13, fig.align = "center"}
+graph_data <- tapply(agg_df$AVG_DURATION, agg_df$BIKE_ID, sum)
+barplot(graph_data, beside=TRUE, col=seaborn_palette, legend=NULL, 
+        border="white", xaxs="i", cex.main=1.5, cex.lab=1.2, font.lab=2,
+        main="Top Bikes by Trip Duration", xlab="Bike ID", ylab="Mean Duration (seconds)")
+```
+
+### Top Origination Stations
+
+```{r}
+agg_df <- dbGetQuery(conn, "SELECT t.FROM_STATION_NAME, 
+                                   SUM(t.TRIP_DURATION) AS Total_Duration,
+                                   MIN(t.TRIP_DURATION) AS Min_Duration,
+                                   AVG(t.TRIP_DURATION) AS Avg_Duration,
+                                   MEDIAN(t.TRIP_DURATION) AS Median_Duration,
+                                   MAX(t.TRIP_DURATION) AS Max_Duration
+                                   
+                            FROM TRIPS t
+                            GROUP BY t.FROM_STATION_NAME
+                            ORDER BY SUM(t.TRIP_DURATION) DESC
+                            FETCH FIRST 10 ROWS ONLY;")
+agg_df
+```
+
+```{r fig4a, fig.height = 5, fig.width = 15, fig.align = "center"}
+agg_df$FROM_STATION_NAME_2 <- gsub("&", "&\n", agg_df$FROM_STATION_NAME)
+graph_data <- tapply(agg_df$TOTAL_DURATION, agg_df$FROM_STATION_NAME_2, sum)
+barplot(graph_data, beside=TRUE, col=seaborn_palette, legend=NULL, 
+        border="white", xaxs="i", cex.main=1.5, cex.lab=1.2, las=1, font.lab=2,
+        main="Top Origination Stations by Trip Duration", xlab="Station Name", ylab="Total Duration (seconds)")
+```
+
+```{r fig4b, fig.height = 5, fig.width = 15, fig.align = "center"}
+graph_data <- tapply(agg_df$AVG_DURATION, agg_df$FROM_STATION_NAME_2, sum)
+barplot(graph_data, beside=TRUE, col=seaborn_palette, legend=NULL, 
+        border="white", xaxs="i", cex.main=1.5, cex.lab=1.2, las=1, font.lab=2,
+        main="Top Origination Stations by Trip Duration", xlab="Station Name", ylab="Mean Duration (seconds)")
+```
+
+### Top Destination Stations
+
+```{r}
+agg_df <- dbGetQuery(conn, "SELECT t.TO_STATION_NAME, 
+                                   SUM(t.TRIP_DURATION) AS Total_Duration,
+                                   MIN(t.TRIP_DURATION) AS Min_Duration,
+                                   AVG(t.TRIP_DURATION) AS Avg_Duration,
+                                   MEDIAN(t.TRIP_DURATION) AS Median_Duration,
+                                   MAX(t.TRIP_DURATION) AS Max_Duration
+                                   
+                            FROM TRIPS t
+                            GROUP BY t.TO_STATION_NAME
+                            ORDER BY SUM(t.TRIP_DURATION) DESC
+                            FETCH FIRST 10 ROWS ONLY;")
+agg_df
+```
+
+```{r fig5a, fig.height = 5, fig.width = 15, fig.align = "center"}
+agg_df$TO_STATION_NAME <- gsub("&|Frame", "&\n", agg_df$TO_STATION_NAME)
+graph_data <- tapply(agg_df$TOTAL_DURATION, agg_df$TO_STATION_NAME, sum)
+barplot(graph_data, beside=TRUE, col=seaborn_palette, legend=NULL, 
+        border="white", xaxs="i", cex.main=1.5, cex.lab=1.2, las=1, font.lab=2,
+        main="Top Destination Stations by Trip Duration", xlab="Station Name", ylab="Total Duration (seconds)")
+```
+
+```{r fig5b, fig.height = 5, fig.width = 15, fig.align = "center"}
+graph_data <- with(subset(agg_df, grepl("DIVVY", TO_STATION_NAME)==FALSE),
+                          tapply(AVG_DURATION, TO_STATION_NAME, sum)
+                  )
+barplot(graph_data, beside=TRUE, col=seaborn_palette, legend=NULL, 
+        border="white", xaxs="i", cex.main=1.5, cex.lab=1.2, las=1, font.lab=2,
+        main="Top Destination Stations by Trip Duration", xlab="Station Name", ylab="Mean Duration (seconds)")
+```
+
+### Origination Station Coordinates
+
+```{r}
+sql <- "SELECT t.FROM_STATION_ID, t.FROM_STATION_NAME, t.FROM_LATITUDE, t.FROM_LONGITUDE,
+               SUM(CAST(t.TRIP_DURATION AS DOUBLE)) AS Total_Duration
+        FROM TRIPS t
+        GROUP BY  t.FROM_STATION_ID, t.FROM_STATION_NAME, t.FROM_LATITUDE, t.FROM_LONGITUDE
+        ORDER BY SUM(t.TRIP_DURATION) DESC
+        FETCH FIRST 10 ROWS ONLY"
+
+map_df <- dbGetQuery(conn, sql)
+map_df
+```
+
+```{r}
+write.csv(map_df, "Divvy_From_Coords.csv", row.names=FALSE)
+
+cat(paste0("['", map_df$FROM_STATION_NAME, "', ", map_df$FROM_LATITUDE, ", ", map_df$FROM_LONGITUDE, "]", ",\n"))
+
+```
+
+### Destination Station Coordinates
+
+```{r}
+sql <- "SELECT t.TO_STATION_ID, t.TO_STATION_NAME, t.TO_LATITUDE, t.TO_LONGITUDE,
+               SUM(CAST(t.TRIP_DURATION AS DOUBLE)) AS Total_Duration
+        FROM TRIPS t
+        GROUP BY t.TO_STATION_ID, t.TO_STATION_NAME, t.TO_LATITUDE, t.TO_LONGITUDE
+        ORDER BY SUM(t.TRIP_DURATION) DESC
+        FETCH FIRST 10 ROWS ONLY"
+
+map_df <- dbGetQuery(conn, sql)
+map_df
+```
+
+```{r}
+write.csv(map_df, "Divvy_To_Coords.csv", row.names=FALSE)
+
+cat(paste0("['", map_df$TO_STATION_NAME, "', ", map_df$TO_LATITUDE, ", ", map_df$TO_LONGITUDE, "]", ",\n"))
+
+```
+
+[Divvy Top Ten From/To Stations](Divvy_Analysis_GMap.html)
+
+### By Specific Day
+
+```{r}
+unit_df <- dbGetQuery(conn, "SELECT t.START_TIME, t.STOP_TIME,
+                                    t.TRIP_DURATION
+                            FROM TRIPS t
+                            WHERE DATE(t.START_TIME) = TO_DATE('2015-09-23', 'YYYY-MM-DD');")
+unit_df
+```
+
+```{r fig5c, fig.height = 8, fig.width = 15, fig.align = "center"}
+with(unit_df,
+     plot(START_TIME, TRIP_DURATION, type='l', col=seaborn_palette[1], 
+     main="Trip Duration in Single Day: Wednesday, September 23, 2015", xlab="Trip Date/Time", ylab="Duration", 
+     cex.main=1.75, font.lab=2, lwd=1)
+)
+```
+
+```{r fig5d, fig.height = 8, fig.width = 15, fig.align = "center"}
+# DATA: 14,982 obs
+unit_df$DAY_PART <- ifelse(unit_df$START_TIME <= '2015-09-23 12:00', 'Morning', 'Evening')
+
+hist(unit_df$TRIP_DURATION, 
+     col=seaborn_palette[1], breaks=100, xlim = c(0,1E4), ylim=c(0, 12E3), cex.main=1.75, 
+     main="Trip Duration Distribution", xlab="Trip Duration (seconds)", border="white")
+```
+
+```{r fig5e, fig.height = 8, fig.width = 15, fig.align = "center"}
+# DATA: 14,982 obs
+unit_df$DAY_PART <- ifelse(unit_df$START_TIME <= '2015-09-23 12:00', 'Morning', 'Evening')
+
+hist(subset(unit_df, DAY_PART == "Morning")$TRIP_DURATION, 
+     col=seaborn_palette[3], breaks=100, xlim=c(0,1E4), ylim=c(0, 8E3), cex.main=1.75, 
+     main="Trip Duration Distribution by Day Part", xlab="Trip Duration (seconds)", border="white")
+
+hist(subset(unit_df, DAY_PART == "Evening")$TRIP_DURATION, 
+     col=seaborn_palette[5], breaks=100,  xlim = c(0,1E4), border="white", add=TRUE)
+
+legend("top", c("Morning", "Evening"), ncol=2,
+       fill=c(seaborn_palette[c(3,5)]), border="gray95")
+```
+
+
+### By User Type
+
+```{r}
+agg_df <- dbGetQuery(conn, "SELECT Year(t.START_TIME) AS Trip_Year,
+                                   t.USER_TYPE,
+                                   SUM(CAST(t.TRIP_DURATION AS DOUBLE)) AS Total_Duration,
+                                   MIN(CAST(t.TRIP_DURATION AS DOUBLE)) AS Min_Duration,
+                                   AVG(CAST(t.TRIP_DURATION AS DOUBLE)) AS Avg_Duration,
+                                   MEDIAN(CAST(t.TRIP_DURATION AS DOUBLE)) AS Median_Duration,
+                                   MAX(CAST(t.TRIP_DURATION AS DOUBLE)) AS Max_Duration
+                                   
+                            FROM TRIPS t
+                            GROUP BY Year(t.START_TIME),
+                                     t.USER_TYPE;")
+agg_df
+```
+
+```{r fig6a, fig.height = 5, fig.width = 13, fig.align = "center"}
+graph_data <- tapply(agg_df$TOTAL_DURATION, list(agg_df$USER_TYPE, agg_df$TRIP_YEAR), sum)
+barplot(graph_data, beside=TRUE, col=seaborn_palette[1:3], legend=NULL, 
+        border="white", xaxs="i", cex.main=1.5, cex.lab=1.2, font.lab=2,
+        main="User Type by Trip Duration", xlab="User Type", ylab="Total Duration (seconds)")
+legend("top", ncol=3, legend=rownames(graph_data), fill=seaborn_palette[1:3], bty="n")
+```
+
+```{r fig6b, fig.height = 5, fig.width = 13, fig.align = "center"}
+graph_data <- tapply(agg_df$AVG_DURATION, list(agg_df$USER_TYPE, agg_df$TRIP_YEAR), sum)
+barplot(graph_data, beside=TRUE, col=seaborn_palette[1:3], legend=NULL, 
+        border="white", xaxs="i", cex.main=1.5, cex.lab=1.2, font.lab=2,
+        main="User Type by Trip Duration", xlab="User Type", ylab="Mean Duration (seconds)")
+legend("top", ncol=3, legend=rownames(graph_data), fill=seaborn_palette[1:3], bty="n")
+```
+
+### By Gender
+
+```{r}
+agg_df <- dbGetQuery(conn, "SELECT Year(t.START_TIME) AS Trip_Year,
+                                   t.GENDER, 
+                                   SUM(CAST(t.TRIP_DURATION AS DOUBLE)) AS Total_Duration,
+                                   MIN(CAST(t.TRIP_DURATION AS DOUBLE)) AS Min_Duration,
+                                   AVG(CAST(t.TRIP_DURATION AS DOUBLE)) AS Avg_Duration,
+                                   MEDIAN(CAST(t.TRIP_DURATION AS DOUBLE)) AS Median_Duration,
+                                   MAX(CAST(t.TRIP_DURATION AS DOUBLE)) AS Max_Duration
+                                   
+                            FROM TRIPS t
+                            GROUP BY t.GENDER,
+                                     Year(t.START_TIME);")
+agg_df
+```
+
+```{r fig7a, fig.height = 5, fig.width = 13, fig.align = "center"}
+graph_data <- tapply(agg_df$TOTAL_DURATION, list(agg_df$GENDER, agg_df$TRIP_YEAR), sum)
+barplot(graph_data, beside=TRUE, col=seaborn_palette[1:2], legend=NULL, 
+        border="white", xaxs="i", cex.main=1.5, cex.lab=1.2, font.lab=2,
+        main="Gender by Trip Duration", xlab="Gender", ylab="Total Duration (seconds)")
+legend("top", ncol=2, legend=rownames(graph_data), fill=seaborn_palette[1:2], bty="n")
+```
+
+```{r fig7b, fig.height = 5, fig.width = 13, fig.align = "center"}
+graph_data <- tapply(agg_df$TOTAL_DURATION, list(agg_df$GENDER, agg_df$TRIP_YEAR), sum)
+barplot(graph_data, beside=TRUE, col=seaborn_palette[1:2], legend=NULL, 
+        border="white", xaxs="i", cex.main=1.5, cex.lab=1.2, font.lab=2,
+        main="Gender by Trip Duration", xlab="Gender", ylab="Mean Duration (seconds)")
+legend("top", ncol=2, legend=rownames(graph_data), fill=seaborn_palette[1:2], bty="n")
+```
+
+### By Age
+
+```{r}
+agg_df <- dbGetQuery(conn, "SELECT Year(t.START_TIME) - t.BIRTH_YEAR AS AGE, 
+                                   SUM(CAST(t.TRIP_DURATION AS DOUBLE)) AS Total_Duration,
+                                   MIN(CAST(t.TRIP_DURATION AS DOUBLE)) AS Min_Duration,
+                                   AVG(CAST(t.TRIP_DURATION AS DOUBLE)) AS Avg_Duration,
+                                   MEDIAN(CAST(t.TRIP_DURATION AS DOUBLE)) AS Median_Duration,
+                                   MAX(CAST(t.TRIP_DURATION AS DOUBLE)) AS Max_Duration
+                                   
+                            FROM TRIPS t
+                            GROUP BY Year(t.START_TIME) - t.BIRTH_YEAR
+                            ORDER BY SUM(CAST(t.TRIP_DURATION AS DOUBLE)) DESC
+                            FETCH FIRST 10 ROWS ONLY;")
+agg_df
+```
+
+```{r fig8a, fig.height = 5, fig.width = 13, fig.align = "center"}
+graph_data <- tapply(agg_df$TOTAL_DURATION, agg_df$AGE, sum)
+barplot(graph_data, beside=TRUE, col=seaborn_palette, legend=NULL, 
+        border="white", xaxs="i", cex.main=1.5, cex.lab=1.2, font.lab=2,
+        main="Age by Trip Duration", xlab="Age", ylab="Total Duration (seconds)")
+```
+
+```{r fig8b, fig.height = 5, fig.width = 13, fig.align = "center"}
+graph_data <- tapply(agg_df$AVG_DURATION, agg_df$AGE, sum)
+barplot(graph_data, beside=TRUE, col=seaborn_palette, legend=NULL, 
+        border="white", xaxs="i", cex.main=1.5, cex.lab=1.2, font.lab=2,
+        main="Age by Trip Duration", xlab="Age", ylab="Mean Duration (seconds)")
+```
+
+### By Community Area
+
+```{r}
+agg_df <- dbGetQuery(conn, "SELECT t.COMMUNITY_AREA, 
+                                   SUM(CAST(t.TRIP_DURATION AS DOUBLE)) AS Total_Duration,
+                                   MIN(CAST(t.TRIP_DURATION AS DOUBLE)) AS Min_Duration,
+                                   AVG(CAST(t.TRIP_DURATION AS DOUBLE)) AS Avg_Duration,
+                                   MEDIAN(CAST(t.TRIP_DURATION AS DOUBLE)) AS Median_Duration,
+                                   MAX(CAST(t.TRIP_DURATION AS DOUBLE)) AS Max_Duration
+                                   
+                            FROM TRIPS t
+                            GROUP BY t.COMMUNITY_AREA
+                            ORDER BY SUM(CAST(t.TRIP_DURATION AS DOUBLE)) DESC
+                            FETCH FIRST 10 ROWS ONLY;")
+agg_df
+```
+
+```{r fig9a, fig.height = 5, fig.width = 13, fig.align = "center"}
+graph_data <- tapply(agg_df$TOTAL_DURATION, agg_df$COMMUNITY_AREA, sum)
+barplot(graph_data, beside=TRUE, col=seaborn_palette, legend=NULL, 
+        border="white", xaxs="i", cex.main=1.5, cex.lab=1.2, font.lab=2,
+        main="Top Ten Community Areas by Trip Duration", xlab="Community Area", ylab="Total Duration (seconds)")
+```
+
+```{r fig9b, fig.height = 5, fig.width = 13, fig.align = "center"}
+graph_data <- tapply(agg_df$AVG_DURATION, agg_df$COMMUNITY_AREA, sum)
+barplot(graph_data, beside=TRUE, col=seaborn_palette, legend=NULL, 
+        border="white", xaxs="i", cex.main=1.5, cex.lab=1.2, font.lab=2,
+        main="Top Ten Community Areas by Trip Duration", xlab="Community Area", ylab="Mean Duration (seconds)")
+```
+
+### By Ward
+
+```{r}
+agg_df <- dbGetQuery(conn, "SELECT t.WARD, 
+                                   SUM(CAST(t.TRIP_DURATION AS DOUBLE)) AS Total_Duration,
+                                   MIN(CAST(t.TRIP_DURATION AS DOUBLE)) AS Min_Duration,
+                                   AVG(CAST(t.TRIP_DURATION AS DOUBLE)) AS Avg_Duration,
+                                   MEDIAN(CAST(t.TRIP_DURATION AS DOUBLE)) AS Median_Duration,
+                                   MAX(CAST(t.TRIP_DURATION AS DOUBLE)) AS Max_Duration
+                                   
+                            FROM TRIPS t
+                            GROUP BY t.WARD
+                            ORDER BY SUM(CAST(t.TRIP_DURATION AS DOUBLE)) DESC
+                            FETCH FIRST 10 ROWS ONLY;;")
+agg_df
+```
+
+```{r fig10a, fig.height = 5, fig.width = 13, fig.align = "center"}
+graph_data <- tapply(agg_df$TOTAL_DURATION, agg_df$WARD, sum)
+barplot(graph_data, beside=TRUE, col=seaborn_palette, legend=NULL, 
+        border="white", xaxs="i", cex.main=1.5, cex.lab=1.2, font.lab=2,
+        main="Top Ten Wards by Trip Duration", xlab="Ward", ylab="Total Duration (seconds)")
+```
+
+```{r fig10b, fig.height = 5, fig.width = 13, fig.align = "center"}
+graph_data <- tapply(agg_df$AVG_DURATION, agg_df$WARD, sum)
+barplot(graph_data, beside=TRUE, col=seaborn_palette, legend=NULL, 
+        border="white", xaxs="i", cex.main=1.5, cex.lab=1.2, font.lab=2,
+        main="Top Ten Wards by Trip Duration", xlab="Ward", ylab="Mean Duration (seconds)")
+```
+
+```{r}
+dbDisconnect(conn)
+```
+

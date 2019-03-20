@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta name="viewport" content="initial-scale=1.0, user-scalable=no">
+    <meta charset="utf-8">
+    <title>Divvy Top Ten From/To Stations</title>
+    <style>
+      /* Always set the map height explicitly to define the size of the div
+       * element that contains the map. */
+      #map {
+        height: 925px;
+      }
+      /* Optional: Makes the sample page fill the window. */
+      html, body {
+        height: 100%;
+        margin: 0;
+        padding: 0;
+      }
+    </style>
+  </head>
+  <body>
+    <div id="map"></div>
+    <script>
+
+      function initMap() {
+        var from_locations = [
+               ['Lake Shore Dr & Monroe St', 41.880958, -87.616743],
+               ['Streeter Dr & Grand Ave', 41.892278, -87.612043],
+               ['Michigan Ave & Oak St', 41.90096, -87.623776],
+               ['Millennium Park', 41.881031, -87.624084],
+               ['Theater on the Lake', 41.926277, -87.630834],
+               ['Lake Shore Dr & North Blvd', 41.911722, -87.626804],
+               ['Streeter Dr & Illinois St', 41.891071, -87.6122],
+               ['Canal St & Adams St', 41.879255, -87.639904],
+               ['Michigan Ave & Washington St', 41.883892, -87.624649],
+               ['Shedd Aquarium', 41.867225, -87.615355],
+        ];
+
+       var to_locations = [
+               ['Streeter Dr & Grand Ave', 41.892278, -87.612043],
+               ['Lake Shore Dr & Monroe St', 41.880958, -87.616743],
+               ['Theater on the Lake', 41.926277, -87.630834],
+               ['Michigan Ave & Oak St', 41.90096, -87.623776],
+               ['Millennium Park', 41.881031, -87.624084],
+               ['Lake Shore Dr & North Blvd', 41.911722, -87.626804],
+               ['Streeter Dr & Illinois St', 41.891071, -87.6122],
+               ['DIVVY Map Frame B/C Station', 41.8781, -87.6298],
+               ['Michigan Ave & Washington St', 41.883892, -87.624649],
+               ['Shedd Aquarium', 41.867225, -87.615355],
+        ];
+
+        var myLatLng = {lat: 41.8781, lng: -87.6298};
+
+        var map = new google.maps.Map(document.getElementById('map'), {
+          zoom: 13,
+          center: myLatLng
+        });
+
+        var marker = new google.maps.Marker({
+          position: myLatLng,
+          map: map,
+          title: 'Hello World!'
+        });
+
+        var infowindow = new google.maps.InfoWindow();
+
+        var marker, i;
+
+        for (i = 0; i < from_locations.length; i++) {  
+          marker = new google.maps.Marker({
+            position: new google.maps.LatLng(from_locations[i][1], from_locations[i][2]),
+            map: map
+          });
+
+          google.maps.event.addListener(marker, 'click', (function(marker, i) {
+            return function() {
+              infowindow.setContent(from_locations[i][0]);
+              infowindow.open(map, marker);
+            }
+          })(marker, i));
+        }
+
+        for (i = 0; i < to_locations.length; i++) {  
+          marker = new google.maps.Marker({
+            position: new google.maps.LatLng(to_locations[i][1], to_locations[i][2]),
+            map: map,
+            icon: {
+                 url: "http://maps.google.com/mapfiles/ms/icons/blue-dot.png"
+            }
+          });
+
+          google.maps.event.addListener(marker, 'click', (function(marker, i) {
+            return function() {
+              infowindow.setContent(to_locations[i][0]);
+              infowindow.open(map, marker);
+            }
+          })(marker, i));
+        }
+
+      }
+    </script>
+    <script async defer
+    src="https://maps.googleapis.com/maps/api/js?key=YOUR_KEY&callback=initMap">
+    </script>
+  </body>
+</html>
