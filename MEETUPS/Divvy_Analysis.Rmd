@@ -384,15 +384,25 @@ agg_df
 graph_data <- tapply(agg_df$TOTAL_DURATION, list(agg_df$GENDER, agg_df$TRIP_YEAR), sum)
 barplot(graph_data, beside=TRUE, col=seaborn_palette[1:2], legend=NULL, 
         border="white", xaxs="i", cex.main=1.5, cex.lab=1.2, font.lab=2,
-        main="Gender by Trip Duration", xlab="Gender", ylab="Total Duration (seconds)")
+        main="Gender by Total Trip Duration", xlab="Gender", ylab="Total Duration (seconds)")
 legend("top", ncol=2, legend=rownames(graph_data), fill=seaborn_palette[1:2], bty="n")
 ```
 
 ```{r fig7b, fig.height = 5, fig.width = 13, fig.align = "center"}
-graph_data <- tapply(agg_df$TOTAL_DURATION, list(agg_df$GENDER, agg_df$TRIP_YEAR), sum)
+graph_data <- tapply(agg_df$AVG_DURATION, list(agg_df$GENDER, agg_df$TRIP_YEAR), sum)
 barplot(graph_data, beside=TRUE, col=seaborn_palette[1:2], legend=NULL, 
+        ylim=range(pretty(c(0, graph_data)+50)),
         border="white", xaxs="i", cex.main=1.5, cex.lab=1.2, font.lab=2,
-        main="Gender by Trip Duration", xlab="Gender", ylab="Mean Duration (seconds)")
+        main="Gender by Average Trip Duration", xlab="Gender", ylab="Mean Duration (seconds)")
+legend("top", ncol=2, legend=rownames(graph_data), fill=seaborn_palette[1:2], bty="n")
+```
+
+```{r fig7c, fig.height = 5, fig.width = 13, fig.align = "center"}
+graph_data <- tapply(agg_df$MEDIAN_DURATION, list(agg_df$GENDER, agg_df$TRIP_YEAR), sum)
+barplot(graph_data, beside=TRUE, col=seaborn_palette[1:2], legend=NULL, 
+        ylim=range(pretty(c(0, graph_data)+50)),
+        border="white", xaxs="i", cex.main=1.5, cex.lab=1.2, font.lab=2,
+        main="Gender by Median Trip Duration", xlab="Gender", ylab="Median Duration (seconds)")
 legend("top", ncol=2, legend=rownames(graph_data), fill=seaborn_palette[1:2], bty="n")
 ```
 
