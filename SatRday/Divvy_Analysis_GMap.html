@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta name="viewport" content="initial-scale=1.0, user-scalable=no">
+    <meta charset="utf-8">
+    <title>Divvy Top Ten From/To Stations</title>
+    <style>
+      /* Always set the map height explicitly to define the size of the div
+       * element that contains the map. */
+      #map {
+        height: 925px;
+      }
+      /* Optional: Makes the sample page fill the window. */
+      html, body {
+        height: 100%;
+        margin: 0;
+        padding: 0;
+      }
+    </style>
+  </head>
+  <body>
+    <div id="map"></div>
+    <script>
+
+       function loadJSON(callback, jfile) {
+          var xobj = new XMLHttpRequest();
+              xobj.overrideMimeType("application/json");
+          xobj.open('GET', jfile, true); // Replace 'my_data' with the path to your file
+          xobj.onreadystatechange = function () {
+                if (xobj.readyState == 4 && xobj.status == "200") {
+                  // Required use of an anonymous callback as .open will NOT return a value but simply returns undefined in asynchronous mode
+                  callback(xobj.responseText);
+                }
+          };
+          xobj.send(null);  
+      }
+
+      function initMap() {
+
+        var myLatLng = {lat: 41.8781, lng: -87.6298};
+        var map = new google.maps.Map(document.getElementById('map'), {
+          zoom: 13,
+          center: myLatLng
+        });
+
+        var marker = new google.maps.Marker({
+          position: myLatLng,
+          map: map,
+          title: 'Divvy From/To Locations'
+        });
+
+        var infowindow = new google.maps.InfoWindow();
+        var marker, i;
+
+
+        loadJSON(function(response) {
+                // Parse JSON string into object    
+                var from_locations = JSON.parse(response);
+
+		for (i = 0; i < from_locations.length; i++) {  
+		  marker = new google.maps.Marker({
+		    position: new google.maps.LatLng(from_locations[i]["FROM_LATITUDE"], from_locations[i]["FROM_LONGITUDE"]),
+		    map: map
+		  });
+
+		  google.maps.event.addListener(marker, 'click', (function(marker, i) {
+		    return function() {
+		      infowindow.setContent(from_locations[i]["FROM_STATION_NAME"]);
+		      infowindow.open(map, marker);
+		    }
+		  })(marker, i));
+		}
+         }, './Divvy_From_Coords.json');
+
+
+        loadJSON(function(response) {
+                // Parse JSON string into object    
+                var to_locations = JSON.parse(response);
+
+		for (i = 0; i < to_locations.length; i++) {  
+		  marker = new google.maps.Marker({
+		    position: new google.maps.LatLng(to_locations[i]["TO_LATITUDE"], to_locations[i]["TO_LONGITUDE"]),
+		    map: map,
+		    icon: {
+		         url: "http://maps.google.com/mapfiles/ms/icons/blue-dot.png"
+		    }
+		  });
+
+		  google.maps.event.addListener(marker, 'click', (function(marker, i) {
+		    return function() {
+		      infowindow.setContent(to_locations[i]["TO_STATION_NAME"]);
+		      infowindow.open(map, marker);
+		    }
+		  })(marker, i));
+		}
+         }, './Divvy_To_Coords.json');
+
+      }
+    </script>
+    <script async defer
+    src="https://maps.googleapis.com/maps/api/js?key=[Your-API-Key]&callback=initMap">
+    </script>
+  </body>
+</html>

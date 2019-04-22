@@ -1,0 +1,52 @@
+[
+  {
+    "FROM_STATION_NAME": "Lake Shore Dr & Monroe St",
+    "FROM_LATITUDE": 41.881,
+    "FROM_LONGITUDE": -87.6167
+  },
+  {
+    "FROM_STATION_NAME": "Streeter Dr & Grand Ave",
+    "FROM_LATITUDE": 41.8923,
+    "FROM_LONGITUDE": -87.612
+  },
+  {
+    "FROM_STATION_NAME": "Michigan Ave & Oak St",
+    "FROM_LATITUDE": 41.901,
+    "FROM_LONGITUDE": -87.6238
+  },
+  {
+    "FROM_STATION_NAME": "Millennium Park",
+    "FROM_LATITUDE": 41.881,
+    "FROM_LONGITUDE": -87.6241
+  },
+  {
+    "FROM_STATION_NAME": "Theater on the Lake",
+    "FROM_LATITUDE": 41.9263,
+    "FROM_LONGITUDE": -87.6308
+  },
+  {
+    "FROM_STATION_NAME": "Lake Shore Dr & North Blvd",
+    "FROM_LATITUDE": 41.9117,
+    "FROM_LONGITUDE": -87.6268
+  },
+  {
+    "FROM_STATION_NAME": "Streeter Dr & Illinois St",
+    "FROM_LATITUDE": 41.8911,
+    "FROM_LONGITUDE": -87.6122
+  },
+  {
+    "FROM_STATION_NAME": "Canal St & Adams St",
+    "FROM_LATITUDE": 41.8793,
+    "FROM_LONGITUDE": -87.6399
+  },
+  {
+    "FROM_STATION_NAME": "Michigan Ave & Washington St",
+    "FROM_LATITUDE": 41.8839,
+    "FROM_LONGITUDE": -87.6246
+  },
+  {
+    "FROM_STATION_NAME": "Shedd Aquarium",
+    "FROM_LATITUDE": 41.8672,
+    "FROM_LONGITUDE": -87.6154
+  }
+]

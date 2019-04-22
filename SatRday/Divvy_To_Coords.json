@@ -1,0 +1,52 @@
+[
+  {
+    "TO_STATION_NAME": "Streeter Dr & Grand Ave",
+    "TO_LATITUDE": 41.8923,
+    "TO_LONGITUDE": -87.612
+  },
+  {
+    "TO_STATION_NAME": "Lake Shore Dr & Monroe St",
+    "TO_LATITUDE": 41.881,
+    "TO_LONGITUDE": -87.6167
+  },
+  {
+    "TO_STATION_NAME": "Theater on the Lake",
+    "TO_LATITUDE": 41.9263,
+    "TO_LONGITUDE": -87.6308
+  },
+  {
+    "TO_STATION_NAME": "Michigan Ave & Oak St",
+    "TO_LATITUDE": 41.901,
+    "TO_LONGITUDE": -87.6238
+  },
+  {
+    "TO_STATION_NAME": "Millennium Park",
+    "TO_LATITUDE": 41.881,
+    "TO_LONGITUDE": -87.6241
+  },
+  {
+    "TO_STATION_NAME": "Lake Shore Dr & North Blvd",
+    "TO_LATITUDE": 41.9117,
+    "TO_LONGITUDE": -87.6268
+  },
+  {
+    "TO_STATION_NAME": "Streeter Dr & Illinois St",
+    "TO_LATITUDE": 41.8911,
+    "TO_LONGITUDE": -87.6122
+  },
+  {
+    "TO_STATION_NAME": "Michigan Ave & Washington St",
+    "TO_LATITUDE": 41.8839,
+    "TO_LONGITUDE": -87.6246
+  },
+  {
+    "TO_STATION_NAME": "Shedd Aquarium",
+    "TO_LATITUDE": 41.8672,
+    "TO_LONGITUDE": -87.6154
+  },
+  {
+    "TO_STATION_NAME": "Adler Planetarium",
+    "TO_LATITUDE": 41.8661,
+    "TO_LONGITUDE": -87.6073
+  }
+]
