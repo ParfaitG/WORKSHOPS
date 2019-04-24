@@ -1,10 +1,14 @@
 ---
 title: "Leveraging Relational Databases in R"
-author: "Parfait Gasana"
-date: "April 27, 2019"
 output: html_notebook
-subtitle: SatRday Chicago 2019
 ---
+
+<div style="font-size: 22px;">SatRday Chicago, April 27, 2019</div>
+
+## Parfait Gasana ##
+<div style="font-size: 20px;">Data Analyst, Winston & Strawn</div>
+<div style="float:left"><img src="assets/github.png" height="30" width="30"/></div>
+<div style="font-size: 16px; padding: 10px 0 0 0;">&nbsp;&nbsp;@ParfaitG (GitHub)</div>
 
 <style type="text/css">
 div.blue pre { background-color: #EBF4FA; }
@@ -39,11 +43,11 @@ seaborn_palette <- c('#4878d0', '#ee854a', '#6acc64', '#d65f5f', '#956cb4', '#8c
 
 ## R as an Extendable Environment
 
-- ### I/O Interface: csv/txt, json, XML, HTML
-- ### API Connections: httr, URL request, piping
-- ### Remote Integrations: server, cloud computing
+- ### Flat file and binary formats: csv, txt, json, XML, HTML, Excel, HDF5
+- ### API/Language Interface: curl, httr, ssh, docker, Rcpp, rJava, SparkR
+- ### Remote Integrations: ssh, network, server, cloud computing
 
-<center><img src="assets/R_Extendable_Environment.png" width="550px" /></center> 
+<center><img src="assets/R_Extendable_Environment.png" width="600px" /></center> 
 
 ------
 
@@ -54,7 +58,7 @@ seaborn_palette <- c('#4878d0', '#ee854a', '#6acc64', '#d65f5f', '#956cb4', '#8c
 
 - ### Commercial or open source software designed to maintain and manage structured data
 - ### Based on relational model of IBM's Edgar F. Codd
-    - #### Data is stored in logically grouped, disaggregated tables within an interconnected system of relational keys
+    - #### Data is stored in logically grouped tables within a system of relational keys
 - ### Mainstay in software and web applications but not in data science
 
 ------
@@ -311,8 +315,8 @@ dbDisconnect(conn)
 
 <center><img src="assets/DivvyLogo.png" width="150px"/><img src="assets/r_db2.png" width="150px"/></center>
 
-- ### <span style="color:#336791">Seamless data type integration (i.e., timestamps, coordinate decimals)</span>
-- ### <span style="color:#336791">Query specific data points without large in-memory footprint</span>
+- ### <span style="color:#336791">Seamless data type integration (i.e., timestamps, coordinates)</span>
+- ### <span style="color:#336791">Query specific records without large in-memory footprint</span>
 - ### <span style="color:#336791">Better handle calculations and indicator conversions</span>
 
   
@@ -677,9 +681,9 @@ dbDisconnect(conn)
 
 <center><img src="assets/RDBMS_Icons.png" width="500px" /></center>  
 
-- ### <span style="color:#336791">Relational databases provides a stable, centralized, repository for data sourcing</span> ###
+- ### <span style="color:#336791">Relational databases provide a stable, centralized, repository for data sourcing</span> ###
 - ### <span style="color:#336791">Relational databases maintains a proficient query optimizer and set-based language for data processing</span> ###
-- ### <span style="color:#336791">Relational databases supports data science ensures best practices and reproducibility</span> ###
+- ### <span style="color:#336791">Relational databases supports data science by ensuring integrity, best practices, and reproducibility</span> ###
 
 <br/>
 <br/>
