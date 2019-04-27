@@ -3,6 +3,7 @@ title: "Leveraging Relational Databases in R"
 output:
   html_document:
     df_print: paged
+    code_folding: hide
 ---
 
 <div style="font-size: 22px;">SatRday Chicago, April 27, 2019</div>
@@ -25,6 +26,7 @@ div.blue pre { background-color: #EBF4FA; }
 library(yaml)
 library(ggplot2)
 library(scales)
+library(kableExtra)
 library(xtable)
 
 knitr::opts_chunk$set(echo = TRUE)
@@ -86,7 +88,12 @@ seaborn_palette <- c('#4878d0', '#ee854a', '#6acc64', '#d65f5f', '#956cb4', '#8c
   
 - ### Most programming languages support RDBMS connections
 - ### Some languages maintain consistent DB-API specifications and standards:
-    - #### Java: JDBC; C++: SQLAPI++; NET: ODBC/OLEDB; PHP: PDO; Python: DBAPI; Perl, Ruby, R: DBI
+    - #### Java: JDBC
+    - #### C++: SQLAPI++
+    - #### NET: Data Provider 
+    - #### PHP: PDO
+    - #### Python: DBAPI
+    - #### Perl, Ruby, R: DBI
 
 ------
 
@@ -158,7 +165,8 @@ sql <- 'SELECT rt.route_name,
 
 agg_sql <- dbGetQuery(conn, sql)
 
-knitr::kable(agg_sql)
+kable_styling(kable(agg_sql),
+              bootstrap_options = c("striped", "hover", "condensed"))
 ```
 
 ------
@@ -216,7 +224,8 @@ sql <- 'WITH station_agg AS
   
 agg_sql <- dbGetQuery(conn, sql)
 
-knitr::kable(agg_sql[sample(1:nrow(agg_sql), 20),])
+kable_styling(kable(agg_sql[sample(1:nrow(agg_sql), 20),]),
+              bootstrap_options = c("striped", "hover", "condensed"))
 ```
 
 ------
@@ -282,59 +291,22 @@ REFRESH MATERIALIZED VIEW Rail_Model_Data;
 ```{r}
 rail_model_data <- dbGetQuery(conn, "SELECT * FROM rail_model_data")
 
-head(rail_model_data)
+scroll_box(kable_styling(kable(head(rail_model_data)),
+                        bootstrap_options = c("striped", "hover", "condensed")), width = "100%")
 
 model <- lm(rides ~ day_type + season + latitude + longitude + rail_line + 
                     ue_rate + gas_price + avg_temp + precipitation + snow_depth, 
             data = rail_model_data)
+
+# ANOVA
+kable_styling(kable(xtable(anova(model))),
+              bootstrap_options = c("striped", "hover", "condensed"))
+
+# POINT ESTIMATES
+kable_styling(kable(xtable(summary(model))),
+              bootstrap_options = c("striped", "hover", "condensed"))
+
 ```
-
-### Analysis of Variance
-
-<!-- html table generated in R 3.4.4 by xtable 1.8-2 package -->
-<!-- Thu Apr 25 20:08:20 2019 -->
-<table class="tblstyle" border=1>
-<tr> <th>  </th> <th> Df </th> <th> Sum Sq </th> <th> Mean Sq </th> <th> F value </th> <th> Pr(&gt;F) </th>  </tr>
-  <tr> <td> day_type </td> <td align="right"> 2 </td> <td align="right"> 445663599687.39 </td> <td align="right"> 222831799843.70 </td> <td align="right"> 64679.23 </td> <td align="right"> 0.0000 </td> </tr>
-  <tr> <td> season </td> <td align="right"> 3 </td> <td align="right"> 12065643417.40 </td> <td align="right"> 4021881139.13 </td> <td align="right"> 1167.39 </td> <td align="right"> 0.0000 </td> </tr>
-  <tr> <td> latitude </td> <td align="right"> 1 </td> <td align="right"> 86867071786.38 </td> <td align="right"> 86867071786.38 </td> <td align="right"> 25214.06 </td> <td align="right"> 0.0000 </td> </tr>
-  <tr> <td> longitude </td> <td align="right"> 1 </td> <td align="right"> 319342686.35 </td> <td align="right"> 319342686.35 </td> <td align="right"> 92.69 </td> <td align="right"> 0.0000 </td> </tr>
-  <tr> <td> rail_line </td> <td align="right"> 8 </td> <td align="right"> 1832581552014.08 </td> <td align="right"> 229072694001.76 </td> <td align="right"> 66490.71 </td> <td align="right"> 0.0000 </td> </tr>
-  <tr> <td> ue_rate </td> <td align="right"> 1 </td> <td align="right"> 1655357961.89 </td> <td align="right"> 1655357961.89 </td> <td align="right"> 480.48 </td> <td align="right"> 0.0000 </td> </tr>
-  <tr> <td> gas_price </td> <td align="right"> 1 </td> <td align="right"> 22101747908.78 </td> <td align="right"> 22101747908.78 </td> <td align="right"> 6415.26 </td> <td align="right"> 0.0000 </td> </tr>
-  <tr> <td> avg_temp </td> <td align="right"> 1 </td> <td align="right"> 3204630785.23 </td> <td align="right"> 3204630785.23 </td> <td align="right"> 930.18 </td> <td align="right"> 0.0000 </td> </tr>
-  <tr> <td> precipitation </td> <td align="right"> 1 </td> <td align="right"> 878964700.83 </td> <td align="right"> 878964700.83 </td> <td align="right"> 255.13 </td> <td align="right"> 0.0000 </td> </tr>
-  <tr> <td> snow_depth </td> <td align="right"> 1 </td> <td align="right"> 8106971.91 </td> <td align="right"> 8106971.91 </td> <td align="right"> 2.35 </td> <td align="right"> 0.1250 </td> </tr>
-  <tr> <td> Residuals </td> <td align="right"> 1038214 </td> <td align="right"> 3576837505171.89 </td> <td align="right"> 3445183.27 </td> <td align="right">  </td> <td align="right">  </td> </tr>
-   </table>
-<br/>
-
-### Point Estimates
-
-<table class="tblstyle" border=1>
-<tr> <th>  </th> <th> Estimate </th> <th> Std. Error </th> <th> t value </th> <th> Pr(&gt;|t|) </th>  </tr>
-  <tr> <td align="right"> (Intercept) </td> <td align="right"> -67333.2410 </td> <td align="right"> 3539.2418 </td> <td align="right"> -19.02 </td> <td align="right"> 0.0000 </td> </tr>
-  <tr> <td align="right"> day_typeU </td> <td align="right"> -454.9352 </td> <td align="right"> 6.6213 </td> <td align="right"> -68.71 </td> <td align="right"> 0.0000 </td> </tr>
-  <tr> <td align="right"> day_typeW </td> <td align="right"> 1159.1548 </td> <td align="right"> 5.2660 </td> <td align="right"> 220.12 </td> <td align="right"> 0.0000 </td> </tr>
-  <tr> <td align="right"> seasonspring </td> <td align="right"> -180.2668 </td> <td align="right"> 5.3604 </td> <td align="right"> -33.63 </td> <td align="right"> 0.0000 </td> </tr>
-  <tr> <td align="right"> seasonsummer </td> <td align="right"> -179.9820 </td> <td align="right"> 6.5945 </td> <td align="right"> -27.29 </td> <td align="right"> 0.0000 </td> </tr>
-  <tr> <td align="right"> seasonwinter </td> <td align="right"> -160.1206 </td> <td align="right"> 6.1885 </td> <td align="right"> -25.87 </td> <td align="right"> 0.0000 </td> </tr>
-  <tr> <td align="right"> latitude </td> <td align="right"> -3954.6687 </td> <td align="right"> 36.5219 </td> <td align="right"> -108.28 </td> <td align="right"> 0.0000 </td> </tr>
-  <tr> <td align="right"> longitude </td> <td align="right"> -2679.7920 </td> <td align="right"> 43.6084 </td> <td align="right"> -61.45 </td> <td align="right"> 0.0000 </td> </tr>
-  <tr> <td align="right"> rail_linebrown </td> <td align="right"> -1187.7668 </td> <td align="right"> 7.2026 </td> <td align="right"> -164.91 </td> <td align="right"> 0.0000 </td> </tr>
-  <tr> <td align="right"> rail_linegreen </td> <td align="right"> -2076.7759 </td> <td align="right"> 6.8344 </td> <td align="right"> -303.87 </td> <td align="right"> 0.0000 </td> </tr>
-  <tr> <td align="right"> rail_lineorange </td> <td align="right"> -1082.7685 </td> <td align="right"> 8.2805 </td> <td align="right"> -130.76 </td> <td align="right"> 0.0000 </td> </tr>
-  <tr> <td align="right"> rail_linepink </td> <td align="right"> -2215.7928 </td> <td align="right"> 7.3581 </td> <td align="right"> -301.13 </td> <td align="right"> 0.0000 </td> </tr>
-  <tr> <td align="right"> rail_linepurple </td> <td align="right"> -2043.6363 </td> <td align="right"> 11.1396 </td> <td align="right"> -183.46 </td> <td align="right"> 0.0000 </td> </tr>
-  <tr> <td align="right"> rail_linepurple_exp </td> <td align="right"> -1558.0431 </td> <td align="right"> 7.6564 </td> <td align="right"> -203.50 </td> <td align="right"> 0.0000 </td> </tr>
-  <tr> <td align="right"> rail_linered </td> <td align="right"> 1636.6617 </td> <td align="right"> 6.9037 </td> <td align="right"> 237.07 </td> <td align="right"> 0.0000 </td> </tr>
-  <tr> <td align="right"> rail_lineyellow </td> <td align="right"> -1418.1369 </td> <td align="right"> 17.5558 </td> <td align="right"> -80.78 </td> <td align="right"> 0.0000 </td> </tr>
-  <tr> <td align="right"> ue_rate </td> <td align="right"> -7.6397 </td> <td align="right"> 0.9665 </td> <td align="right"> -7.90 </td> <td align="right"> 0.0000 </td> </tr>
-  <tr> <td align="right"> gas_price </td> <td align="right"> 188.1598 </td> <td align="right"> 2.4375 </td> <td align="right"> 77.19 </td> <td align="right"> 0.0000 </td> </tr>
-  <tr> <td align="right"> avg_temp </td> <td align="right"> 5.1418 </td> <td align="right"> 0.1658 </td> <td align="right"> 31.01 </td> <td align="right"> 0.0000 </td> </tr>
-  <tr> <td align="right"> precipitation </td> <td align="right"> -84.0921 </td> <td align="right"> 5.2553 </td> <td align="right"> -16.00 </td> <td align="right"> 0.0000 </td> </tr>
-  <tr> <td align="right"> snow_depth </td> <td align="right"> 1.8487 </td> <td align="right"> 1.2051 </td> <td align="right"> 1.53 </td> <td align="right"> 0.1250 </td> </tr>
-   </table>
    
 ```{r fig3, fig.height = 6, fig.width = 10, fig.align = "center"}
 graph_data <- data.frame(param = names(model$coefficients[-1]),
@@ -393,7 +365,8 @@ day_df <- dbGetQuery(conn, "SELECT t.START_TIME, t.STOP_TIME,
                             WHERE DATE(t.START_TIME) = TO_DATE('2015-09-23', 'YYYY-MM-DD')
                             ORDER BY t.START_TIME")
 
-knitr::kable(head(day_df, 20))
+kable_styling(kable(head(day_df, 20)),
+              bootstrap_options = c("striped", "hover", "condensed"))
 ```
 
 ```{r divvy1a, fig.height = 5, fig.width = 10, fig.align = "center"}
@@ -431,7 +404,7 @@ agg_sql <- dbGetQuery(conn, "WITH sub AS
                             ORDER BY MAX(TRIP_DISTANCE) DESC
                             FETCH FIRST 10 ROWS ONLY;")
 
-knitr::kable(agg_sql)
+kable_styling(kable(agg_sql), bootstrap_options = c("striped", "hover", "condensed"))
 ```
 
 ### Mapping
@@ -452,7 +425,8 @@ divvy_from <- dbGetQuery(conn, "SELECT t.FROM_STATION_NAME,
                                          t.FROM_LONGITUDE
                                 ORDER BY SUM(t.TRIP_DURATION) DESC
                                 FETCH FIRST 10 ROWS ONLY;")
-knitr::kable(divvy_from)
+
+kable_styling(kable(divvy_from), bootstrap_options = c("striped", "hover", "condensed"))
 ```
 
 ```{r divvy2, fig.height = 6, fig.width = 12, fig.align = "center"}
@@ -485,7 +459,8 @@ divvy_to <- dbGetQuery(conn, "SELECT t.TO_STATION_NAME,
                                      t.TO_LONGITUDE
                             ORDER BY SUM(t.TRIP_DURATION) DESC
                             FETCH FIRST 10 ROWS ONLY;")
-knitr::kable(divvy_to)
+
+kable_styling(kable(divvy_to), bootstrap_options = c("striped", "hover", "condensed"))
 ```
 
 ```{r divvy3, fig.height = 6, fig.width = 12, fig.align = "center"}
@@ -571,7 +546,8 @@ sql <- "SELECT l.Line,
 
 agg_sql <- dbGetQuery(conn, sql)
 
-knitr::kable(agg_sql[sample(1:nrow(agg_sql), 20),])
+kable_styling(kable(agg_sql[sample(1:nrow(agg_sql), 20),]),
+              bootstrap_options = c("striped", "hover", "condensed"))
 ```
 
 ```{r metra1, fig.height = 5, fig.width = 10, fig.align = "center"}
@@ -604,7 +580,8 @@ res <- t(sapply(combn(unique(agg_sql$Short), 2, simplify=FALSE), function(i) {
 
 row.names(res) <- nms
 
-knitr::kable(res)
+scroll_box(kable_styling(kable(res), bootstrap_options = c("striped", "hover", "condensed")),
+           height="800px")
 
 ```
 
@@ -630,7 +607,8 @@ sql <- "SELECT l.ID,
 
 agg_sql <- transform(dbGetQuery(conn, sql), Month = factor(month.abb[Month_Num], levels=month.abb))
 
-knitr::kable(agg_sql[sample(1:nrow(agg_sql), 20),])
+kable_styling(kable(agg_sql[sample(1:nrow(agg_sql), 20),]), 
+              bootstrap_options = c("striped", "hover", "condensed"))
 ```
 
 
@@ -673,11 +651,13 @@ sql <- "SELECT CAST(strftime('%Y', c.Report_Month) AS INT) AS Year,
 
 wide_sql <- dbGetQuery(conn, sql)
 
-knitr::kable(wide_sql)
+scroll_box(kable_styling(knitr::kable(wide_sql),
+                         bootstrap_options = c("striped", "hover", "condensed")), width = "100%")
 ```
 
 ```{r}
-knitr::kable(cor(wide_sql[-1], use = "complete.obs", method="pearson"))
+scroll_box(kable_styling(kable(cor(wide_sql[-1], use = "complete.obs", method="pearson")),
+                         bootstrap_options = c("striped", "hover", "condensed")), width = "100%")
 ```
 
 
@@ -697,7 +677,8 @@ sql <- "SELECT CAST(strftime('%Y', c.Report_Month) AS INT) AS Year,
 
 agg_sql <- dbGetQuery(conn, sql)
 
-knitr::kable(agg_sql[sample(1:nrow(agg_sql), 20),])
+kable_styling(knitr::kable(agg_sql[sample(1:nrow(agg_sql), 20),]),
+              bootstrap_options = c("striped", "hover", "condensed"))
 ```
 
 
@@ -728,7 +709,7 @@ dbDisconnect(conn)
 
 ## <span style="color:#336791">Conclusion: Relational Databases in R</span> ##
 
-<center><img src="assets/RDBMS_Icons.png" width="650px" /><img src="assets/plus_sign.png" width="80px" /><img src="assets/R_Logo.png" width="80px" /></center>  
+<center><img src="assets/RDBMS_Group.png" width="450px" /><img src="assets/plus_sign.png" width="80px" /><img src="assets/R_Logo.png" width="100px" /></center>  
 
 - ### <span style="color:#336791">Provides a stable, centralized, repository for data sourcing</span> ###
 - ### <span style="color:#336791">Maintains a proficient query optimizer and set-based language for data processing</span> ###
