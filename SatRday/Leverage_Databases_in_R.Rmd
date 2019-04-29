@@ -687,7 +687,7 @@ ggplot(subset(agg_sql, Late_Cause != 'Freight Interference - Total'),
               aes(Year, Total_Late_Trains, fill=Late_Cause)) + 
   geom_bar(position = "fill", stat = "identity") +
   labs(title="Metra Late Trains by Cause", x="Year", y="Late Trains") +
-  guides(fill=guide_legend(ncol=4)) +
+  guides(fill=guide_legend(title="Cause", ncol=4)) +
   scale_x_continuous("year", breaks=unique(agg_sql$Year)) +
   scale_y_continuous(labels = scales::percent_format()) +
   scale_fill_manual(values=seaborn_palette) +
