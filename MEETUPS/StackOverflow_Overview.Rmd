@@ -1,0 +1,157 @@
+---
+title: "R + StackOverflow Workshop"
+author:
+   - Parfait Gasana
+   - Chicago, IL
+font-family: 'Arial'
+date: "August 20, 2019"
+output:
+  ioslides_presentation:
+    css: Images/R_SO_Iso.css
+    widescreen: true
+subtitle: CRUG Meetup
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = FALSE)
+```
+
+##
+
+### <font size="16">What is <img src="Images/StackOverflow.png" height="100px" /> ?</font>
+<br/><br/>
+
+- Programming Q/A site launched September 15, 2008 created by Jeff Atwood and Joel Spolsky
+- Built as an open alternative to Q/A tech sites such as Experts Exchange
+- Fosters a gaming style with awarded points and badges to various milestones
+- Rigorous, engaged community with moderators voted by users
+
+## StackExchange Network
+
+<div style="float: right; margin: -100px 0 0 0;"><img src="Images/R_StackOverflow.png" width="100px"/></div>
+
+- Due to popularity becomes flagship site in [SE network](https://stackexchange.com/sites#)
+
+<div class="wrapper"><img src="Images/StackExchangeSites.png"/></div>  
+
+
+## Core of StackOverflow
+
+<div style="float: right; margin: -100px 0 0 0;"><img src="Images/R_StackOverflow.png" width="100px"/></div>
+
+- Users 
+    - **Askers**: Usually one-off, newcomers who ask few questions
+    - **Answerers**: Usually long-term, advanced members 
+    - **Moderators**: Appointed and voted members of community to manage site
+- Posts
+    - Helps individual original posters (OPs)
+    - Serves greater community/future readers
+- Tags
+    - Usually languages (C#, Java, Python, R)
+    - Frameworks, tools, and modules (i.e., pandas, dplyr)
+- Reputation and Badges
+    - Fosters gaming competition
+    - Signals expertise to community
+
+## R Tag
+
+<div style="float: right; margin: -100px 0 0 0;"><img src="Images/R_StackOverflow.png" width="100px"/></div>
+
+- [10 years old tag](https://stackoverflow.com/tags/r/info) with over 300,000 questions to date
+- [Among top 20 tags](https://stackoverflow.com/tags?tab=popular)
+- [Top R Users](https://stackoverflow.com/tags/r/info)
+
+<img src="Images/StackOverflow_Top_R_Users.png" width="200px"/></div>
+
+
+## Best Practices - Askers
+
+<div style="float: right; margin: -100px 0 0 0;"><img src="Images/R_StackOverflow.png" width="100px"/></div>
+
+- Understand asking a good question is heard
+- Research and debug enough (SO as last resort)
+- Set up a [Minimum, Reproducible Example (MRE)](https://stackoverflow.com/help/minimal-reproducible-example)
+- [How to make a great R reproducible example](https://stackoverflow.com/questions/5963269/how-to-make-a-great-r-reproducible-example)
+
+## Best Practices - Answerers 
+
+<div style="float: right; margin: -100px 0 0 0;"><img src="Images/R_StackOverflow.png" width="100px"/></div>
+
+- Balance speed, efficiency, and accuracy. 
+- Do not expect very simple answer.
+- Demonstrate code with data output and/or graph.
+- Provide detailed explanation and in-line code comments for future readers.
+- Search carefully for good attempts with reproducible examples.
+- Work through your comfortable skillsets: 
+    - Good with wrangling: `[r] [list]`, `[r] [dataframe]`, `[r] [loop]`
+    
+## Challenges/Lessons Learned
+
+<div style="float: right; margin: -100px 0 0 0;"><img src="Images/R_StackOverflow.png" width="100px"/></div>
+
+- Askers
+    - Not too invested with curated repository
+    - Often do not care about craft or learning process
+    - Passive group who comes and goes
+- Answerers 
+    - Rigorous group that will challenge you
+    - Can over-help for rep points without best practices
+    - Can over-suggest packages such as tidyverse
+- Advanced users 
+    - Can pose as bullies and intimidate newcomers
+    - StackOverflow Code of Conduct: https://stackoverflow.com/conduct
+
+## Quick Data Build
+
+<div style="float: right; margin: -100px 0 0 0;"><img src="Images/R_StackOverflow.png" width="100px"/></div>
+
+
+```{r echo = TRUE}
+txt <- '   group int         num char  bool       date
+1  stata  14 -0.01933983  FcC FALSE "1992-06-13"
+2 python  15 -0.97016057  5V9  TRUE "1993-03-11"
+3 python   8  0.01481491  llY FALSE "2017-01-28"
+4    sas   5 -1.23408058  IXI FALSE "1985-09-03"
+5      r  10  0.54730127  IIQ  TRUE "2015-12-16"
+6      r   3 -1.16625133  05x  TRUE "1990-07-18"'
+
+df <- read.table(text=txt, header=TRUE)
+df
+```
+
+
+## Example Random Dataset
+
+<div style="float: right; margin: -100px 0 0 0;"><img src="Images/R_StackOverflow.png" width="100px"/></div>
+
+```{r echo = TRUE}
+set.seed(6152019)
+alpha <- c(LETTERS, letters, c(0:9))
+data_tools <- c("sas", "stata", "spss", "python", "r", "julia")
+
+random_df <- data.frame(
+  group = sample(data_tools, 500, replace=TRUE),
+  int = sample(1:15, 500, replace=TRUE),
+  num = rnorm(500),
+  char = replicate(500, paste(sample(alpha, 3, replace=TRUE), collapse="")),
+  bool = sample(c(TRUE, FALSE), 500, replace=TRUE),
+  date = as.Date(sample(1:as.integer(Sys.Date()), 500, replace=TRUE), origin="1970-01-01")
+)
+
+head(random_df)
+```
+
+
+## CRUG Groups to Answer Questions
+
+<div class="wrapper"><img src="Images/header-background.png"></div>
+
+- Break up into ~5 person(s) group, varying in expertise (novice to advanced)
+- Designate one person to launch R (e.g., R shell, RStudio, Rgui) on computer
+- Search for live questions: https://stackoverflow.com/questions/tagged/r
+- Brainstorm and test as a team to figure solution
+- Designate someone to type and submit notebook (PR or email)
+
+<div class="footer"><img src="Images/r_so_workshop.png" width="100px"/></div>
+
+
