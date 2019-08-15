@@ -23,8 +23,8 @@ knitr::opts_chunk$set(echo = FALSE)
 
 - Programming Q/A site launched September 15, 2008 created by Jeff Atwood and Joel Spolsky
 - Built as an open alternative to Q/A tech sites such as Experts Exchange
-- Fosters a gaming style with awarded points and badges to various milestones
 - Rigorous, engaged community with moderators voted by users
+- Fosters a gaming style with awarded points and badges to various milestones
 
 ## StackExchange Network
 
@@ -44,20 +44,17 @@ knitr::opts_chunk$set(echo = FALSE)
     - **Answerers**: Usually long-term, advanced members 
     - **Moderators**: Appointed and voted members of community to manage site
 - Posts
-    - Helps individual original posters (OPs)
-    - Serves greater community/future readers
+    - Immediate help to original posters (OPs)
+    - Future help to greater community
 - Tags
     - Usually languages (C#, Java, Python, R)
     - Frameworks, tools, and modules (i.e., pandas, dplyr)
-- Reputation and Badges
-    - Fosters gaming competition
-    - Signals expertise to community
 
 ## R Tag
 
 <div style="float: right; margin: -100px 0 0 0;"><img src="Images/R_StackOverflow.png" width="100px"/></div>
 
-- [10 years old tag](https://stackoverflow.com/tags/r/info) with over 300,000 questions to date
+- [~11 year old tag](https://stackoverflow.com/tags/r/info) with over 300,000 questions to date
 - [Among top 20 tags](https://stackoverflow.com/tags?tab=popular)
 - [Top R Users](https://stackoverflow.com/tags/r/info)
 
@@ -68,22 +65,20 @@ knitr::opts_chunk$set(echo = FALSE)
 
 <div style="float: right; margin: -100px 0 0 0;"><img src="Images/R_StackOverflow.png" width="100px"/></div>
 
-- Understand asking a good question is heard
 - Research and debug enough (SO as last resort)
+- Make a genuine effort in trial and question
 - Set up a [Minimum, Reproducible Example (MRE)](https://stackoverflow.com/help/minimal-reproducible-example)
-- [How to make a great R reproducible example](https://stackoverflow.com/questions/5963269/how-to-make-a-great-r-reproducible-example)
+- Great resource: [How to make a great R reproducible example](https://stackoverflow.com/questions/5963269/how-to-make-a-great-r-reproducible-example)
 
 ## Best Practices - Answerers 
 
 <div style="float: right; margin: -100px 0 0 0;"><img src="Images/R_StackOverflow.png" width="100px"/></div>
 
-- Balance speed, efficiency, and accuracy. 
-- Do not expect very simple answer.
-- Demonstrate code with data output and/or graph.
-- Provide detailed explanation and in-line code comments for future readers.
 - Search carefully for good attempts with reproducible examples.
 - Work through your comfortable skillsets: 
-    - Good with wrangling: `[r] [list]`, `[r] [dataframe]`, `[r] [loop]`
+    - `[r] [dataframe]`, `[r] [plot]`, `[r] [shiny]`
+- Demonstrate code with data output and/or graph.
+- Provide detailed explanation and in-line code comments for future readers.
     
 ## Challenges/Lessons Learned
 
