@@ -1,0 +1,16 @@
+
+slides > slide.title-slide {
+  background-image: url("R_SO_Background.png");
+  background-repeat: no-repeat;
+  background-position: right 50% bottom 35%; 
+}
+
+.reveal h1, .reveal h2, .reveal h3 {
+  word-wrap: normal;
+  -moz-hyphens: none;
+}
+
+pre {
+  font-size: 14px;
+  line-height: 1.6;
+}

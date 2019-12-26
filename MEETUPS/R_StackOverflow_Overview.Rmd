@@ -1,0 +1,169 @@
+---
+title: "R + StackOverflow Workshop"
+author:
+   Parfait Gasana
+font-family: 'Arial'
+date: "August 20, 2019"
+output:
+  ioslides_presentation:
+    css: Images/R_SO_Iso.css
+    widescreen: true
+subtitle: CRUG Meetup
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = FALSE)
+```
+
+##
+
+### <font size="16">What is <img src="Images/StackOverflow.png" height="100px" /> ?</font>
+<br/><br/>
+
+- Programming Q/A site launched September 15, 2008 created by Jeff Atwood and Joel Spolsky
+- Built as an open alternative to Q/A tech sites such as Experts Exchange
+- Rigorous, engaged community with appointed and voted moderators
+- Fosters a gaming style with points and milestone badges
+
+## StackExchange Network
+
+<div style="float: right; margin: -100px 0 0 0;"><img src="Images/R_StackOverflow.png" width="100px"/></div>
+
+- Due to popularity became the flagship site in [SE network](https://stackexchange.com/sites#)
+
+<div class="wrapper"><img src="Images/StackExchangeSites.png"/></div>  
+
+
+## Core of StackOverflow
+
+<div style="float: right; margin: -100px 0 0 0;"><img src="Images/R_StackOverflow.png" width="100px"/></div>
+
+- Users 
+    - **Askers**: Usually one-off, newcomers who ask few questions
+    - **Answerers**: Usually long-term, advanced members 
+    - **Moderators**: Appointed and voted members of community to manage site
+- Posts
+    - Immediate help to original posters (OPs)
+    - Future help to greater community
+- Tags
+    - Usually languages (C#, Java, Python, R)
+    - Frameworks, tools, and modules (i.e., pandas, dplyr)
+
+## R Tag
+
+<div style="float: right; margin: -100px 0 0 0;"><img src="Images/R_StackOverflow.png" width="100px"/></div>
+
+- [~11 year old tag](https://stackoverflow.com/tags/r/info) with over 300,000 questions to date
+    - Creator: David Locke, CRUG Member
+    - First Question: [How can I remove an element from a list?](https://stackoverflow.com/questions/652136)
+- [Top 20 tags](https://stackoverflow.com/tags?tab=popular) among software/web development stacks
+- [Top R Users](https://stackoverflow.com/tags/r/info)
+
+<img src="Images/StackOverflow_Top_R_Users.png" width="200px"/></div>
+
+
+## Best Practices - Askers
+
+<div style="float: right; margin: -100px 0 0 0;"><img src="Images/R_StackOverflow.png" width="100px"/></div>
+
+- Research and debug enough (use SO as last resort)
+- Make a genuine effort in trial and question
+- Set up a [Minimum, Reproducible Example (MRE)](https://stackoverflow.com/help/minimal-reproducible-example)
+    - Great resource: [How to make a great R reproducible example](https://stackoverflow.com/questions/5963269/how-to-make-a-great-r-reproducible-example)
+    - Use `dput` or `data.frame` constructor
+    
+## Best Practices - Answerers 
+
+<div style="float: right; margin: -100px 0 0 0;"><img src="Images/R_StackOverflow.png" width="100px"/></div>
+
+- Set up time to search for good attempts with reproducible examples
+- Work through your comfortable skillsets: 
+    - `[r] [dataframe]`, `[r] [plot]`, `[r] [shiny]`
+- Provide detailed explanation and in-line code comments
+- Demonstrate code with data output and/or graph
+
+## Quick Data Build
+
+<div style="float: right; margin: -100px 0 0 0;"><img src="Images/R_StackOverflow.png" width="100px"/></div>
+
+```{r echo = TRUE}
+### READ TABLE FORMATTED DATA
+txt <- '   group int         num char  bool       date
+1  stata  14 -0.01933983  FcC FALSE "1992-06-13"
+2 python  15 -0.97016057  5V9  TRUE "1993-03-11"
+3 python   8  0.01481491  llY FALSE "2017-01-28"
+4    sas   5 -1.23408058  IXI FALSE "1985-09-03"
+5      r  10  0.54730127  IIQ  TRUE "2015-12-16"
+6      r   3 -1.16625133  05x  TRUE "1990-07-18"'
+
+df <- read.table(text=txt, header=TRUE)
+df
+```
+
+## Data.Frame Example
+
+<div style="float: right; margin: -100px 0 0 0;"><img src="Images/R_StackOverflow.png" width="100px"/></div>
+
+```{r echo = TRUE}
+set.seed(8202019)
+alpha <- c(LETTERS, letters, c(0:9))
+data_tools <- c("sas", "stata", "spss", "python", "r", "julia")
+
+random_df <- data.frame(
+  group = factor(sample(data_tools, 500, replace=TRUE)),
+  int = sample(1:15, 500, replace=TRUE),
+  num = rnorm(500),
+  char = replicate(500, paste(sample(alpha, 3, replace=TRUE), collapse="")),
+  bool = sample(c(TRUE, FALSE), 500, replace=TRUE),
+  date = as.Date(sample(1:as.integer(Sys.Date()), 500, replace=TRUE), origin="1970-01-01"),
+  stringsAsFactors = FALSE
+)
+head(random_df)
+```
+
+## Dput Example
+
+<div style="float: right; margin: -100px 0 0 0;"><img src="Images/R_StackOverflow.png" width="100px"/></div>
+
+```{r echo = TRUE}
+### ASSIGN OBJECT TO RESULT OF dput(head(random_df))
+
+reproduced_df <- structure(list(group = structure(c(6L, 2L, 2L, 4L, 3L, 3L), .Label = c("julia", 
+"python", "r", "sas", "spss", "stata"), class = "factor"), int = c(14L, 
+15L, 8L, 5L, 10L, 3L), num = c(-0.019339832897539, -0.970160572336964, 
+0.0148149050692396, -1.23408057869592, 0.547301270279682, -1.16625132915773
+), char = c("FcC", "5V9", "llY", "IXI", "IIQ", "05x"), bool = c(FALSE, 
+TRUE, FALSE, FALSE, TRUE, TRUE), date = structure(c(8199, 8470, 
+17194, 5724, 16785, 7503), class = "Date")), row.names = c(NA, 
+6L), class = "data.frame")
+
+reproduced_df
+```
+
+## Challenges
+
+<div style="float: right; margin: -100px 0 0 0;"><img src="Images/R_StackOverflow.png" width="100px"/></div>
+
+- Askers
+    - Not too invested with curated repository
+    - Often do not care about craft or learning process
+    - Passive group who comes and goes
+- Answerers
+    - Some over-help for rep points without best practices
+    - Some over-suggest packages/aglorithms (e.g., tidyverse)
+    - Some pose as bullies and intimidate newcomers
+        - Updated Code of Conduct: https://stackoverflow.com/conduct
+
+## StackOverflow API Data Analytics Workshop
+
+<div class="wrapper"><img src="Images/header-background.png"></div>
+
+- Break up into ~5 person(s) group
+- Launch R notebooks (RStudio or Jupyter) on a computer
+- Answer guided questions along Posts, Users, and Tags or find other insights
+- Alternate someone to type table/plot solutions
+- Submit notebook (PR or email) for presentation
+
+<div class="footer"><img src="Images/r_so_workshop.png" width="100px"/></div>
+
+
