@@ -1,0 +1,821 @@
+---
+title: "PostgreSQL As A Data Science Database"
+output:
+  html_document:
+    df_print: paged
+---
+
+<style type="text/css">
+.main-container {
+  max-width: 1000px;
+  margin-left: auto;
+  margin-right: auto;
+}
+</style>
+
+<br/>
+<div style="font-size: 20px;">Chicago Postgres User Group Meetup</div>
+<div style="font-size: 18px;">January 14, 2020</div>
+<div style="float:left"><img src="IMAGES/postgresql_r.png" width="200px"/></div>
+<br/><br/><br/><br/>
+
+## Parfait Gasana ##
+<div style="font-size: 20px;">Data Analyst, Winston & Strawn</div>
+<div style="float:left"><img src="IMAGES/stackoverflow.png" width="30px"/></div>
+<div style="font-size: 16px;">@Parfait (StackOverflow) | <img src="IMAGES/github.png" width="30px"/>&nbsp;&nbsp;@ParfaitG (GitHub)</div>
+
+<hr style="border: none; height: 1px; background-color: #CCC;"/>
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(root.dir = "/home/parfaitg/Documents/PGSQL")
+```
+
+<div style="float:right"><img src="IMAGES/open_source.png" width="75px"/></div>
+<br/>
+
+## Open Source Success Stories
+
+<br/>
+
+<div style="float:right"><img src="IMAGES/postgresql.jpeg" width="50px"/></div>
+- ### PostgreSQL: powerful, extensible, analytical RDBMS
+    - #### [Community](https://www.postgresql.org/community/): contributors, mailing lists, local user groups
+<div style="float:right"><img src="IMAGES/r_logo.png" width="50px"/></div>
+- ### R: data science stack, extensible environment
+    - #### [CRAN](https://cran.r-project.org/) repository of packages
+<div style="float:right"><img src="IMAGES/python.png" width="50px"/></div>
+- ### Python: general purpose, extensible language
+    - #### [PyPI](https://pypi.org/) ecosystem of modules
+
+<div style="margin-left:40px;"/><h3>Challenging Commercial Market Share</h3></div>
+<div style="float:left; margin-left:100px;"/><img src="IMAGES/commercial_tools.png" width="200px"/></div>
+<br/>
+<br/>
+<br/>
+<br/>
+
+
+<hr style="border: none; height: 1px; background-color: #CCC;"/>
+
+<h2>Data Science Challenges</h2>
+
+- <h3>Flat Files Management: text, binary, web, field</h3>
+- <h3>Big Data: volume, variety, velocity, veracity</h3>
+- <h3>Reproducibility: data, environment, tools</h3>
+
+<br/>
+
+<hr style="border: none; height: 1px; background-color: #CCC;"/>
+
+<br/>
+
+<h2><span style="color: #336791"/>Relational Database Solution</span></h2>
+
+<div style="float:right;"><img src="IMAGES/RDBMS_Group.png" width="250px"/></div>
+
+- ### <span style="color: #336791"/>Data persistence: historical and current needs</span>
+- ### <span style="color: #336791"/>Maintenance/hygiene: adherence to types</span>
+
+<div style="float:right;"><img src="IMAGES/postgresql.jpeg" width="100px"/></div>
+
+- ### <span style="color: #336791"/>Storage efficiency: normalization reduces repetition of data</span>
+- ### <span style="color: #336791"/>Centralization: multiple user environment and security</span>
+- ### <span style="color: #336791"/>Scalability: not limited to local resources</span>
+
+<br/>
+<br/>
+
+<hr style="border: none; height: 1px; background-color: #CCC;"/>
+
+<div style="float:right"><a href="https://hub.docker.com/r/parfaitg/environment_db/tags"><img src="IMAGES/docker_pgsql.png" width="150px"/></a></div>
+## <span style="color: #336791"/>Use Case: Environment Database</a></span>
+
+<h3><span style="color: #336791"/><i>Human Impact on the Global and Local Biosphere and Climate</i></span></h3>
+<div style="float:center; text-align:center;"><img src="IMAGES/env_data.png"/></div>
+<br/>
+
+<hr style="border: none; height: 1px; background-color: #CCC;"/>
+
+```{r}
+suppressMessages(library(kableExtra))
+suppressMessages(library(xts))
+
+seaborn_palette <- c("#4C72B0", "#DD8452", "#55A868", "#C44E52", "#8172B3", "#937860", 
+                     "#DA8BC3", "#8C8C8C", "#CCB974", "#64B5CD", "#4C72B0", "#DD8452")
+```
+
+## Connection
+
+- #### Centralized location for multiple users
+- #### Well maintained API modules
+- #### Multiple backend connection types
+
+### <span style="color: #336791"/><a href="https://www.postgresql.org/ftp/odbc/versions/src/" target="blank">ODBC</a></span>
+
+```{r}
+library(DBI)
+library(odbc)
+
+conn <- dbConnect(odbc::odbc(), driver="PostgreSQL Unicode", 
+                  server="localhost", database="environment",
+                  uid="postgres", pwd="env19", port=6432)
+dbListTables(conn)
+
+dbDisconnect(conn)
+```
+
+### <span style="color: #336791"/><a href="https://jdbc.postgresql.org/download.html" target="blank">JDBC</a></span>
+
+```{r}
+library(rJava)
+library(RJDBC)
+
+drv <- JDBC("org.postgresql.Driver",
+           "/usr/lib/jvm/java-8-oracle/lib/postgresql-42.2.2.jar")
+conn <- dbConnect(drv, "jdbc:postgresql://localhost:6432/environment", "postgres", "env19")
+dbListTables(conn, schema="public")
+
+dbDisconnect(conn)
+```
+
+
+### <span style="color: #336791"/><a href="https://rdrr.io/cran/RPostgreSQL/" target="blank">R-Postgres API</a></span>
+
+```{r}
+library(RPostgreSQL)
+
+conn <- dbConnect(RPostgreSQL::PostgreSQL(), host="localhost", dbname="environment",
+                  user="postgres", password="env19", port=6432)
+dbListTables(conn)
+```
+
+<hr style="border: none; height: 1px; background-color: #CCC;"/>
+
+## Import & Manage Data
+
+- #### Seamless bulk text file import
+- #### Data hygiene support
+- #### Annotate sources with comments
+
+```{sql, eval=FALSE}
+CREATE TABLE global_temperature (
+   id SERIAL NOT NULL PRIMARY KEY,
+   year INT,
+   period VARCHAR(50),
+   global_mean NUMERIC(5,2)
+);
+
+\copy global_temperature (year, period, global_mean) FROM '/home/parfaitg/Databases/SQL_Server/ENVIRONMENT/global_temperature.csv' DELIMITER ',' CSV HEADER;
+
+COMMENT ON TABLE global_temperature IS 'Source: NASA - Combined Land-Surface Air and Sea-Surface Water Temperature Anomalies (Land-Ocean Temperature Index, LOTI) (https://data.giss.nasa.gov/gistemp/)';
+```
+
+```{sql connection=conn, output.var = "comments_df"}
+SELECT relname as table, obj_description(oid) as comment
+FROM pg_class
+WHERE relkind = 'r'
+  AND obj_description(oid) IS NOT NULL
+  ORDER BY relname
+```
+
+```{r}
+kable_styling(kable(comments_df),
+              bootstrap_options = c("striped", "hover"))
+```
+
+<hr style="border: none; height: 1px; background-color: #CCC;"/>
+
+## Analyze Data
+
+- #### Decalarative SQL to interact with many data
+- #### Leverage query engine for data processing
+- #### Readable, maintainable, tranferable
+
+<div style="float:right"><a href="https://www.esrl.noaa.gov/gmd/obop/mlo/" blank="target"><img src="IMAGES/noaa.png" height="50px"/></a></div>
+<div style="float:right"><a href="https://www.eia.gov/totalenergy/data/monthly/" blank ="taget"><img src="IMAGES/doe_eia.png" height="50px"/></a></div>
+
+
+### <span style="color: #336791"/>Department of Energy's EIA: Monthly Energy Review &</span>
+### <span style="color: #336791"/>NOAA Mauna Loa, Hawaii Observatory - Carbon PPM</span>
+
+```{sql connection=conn, output.var = "agg_df"}
+SELECT p.date_year,
+       sum(p.average_ppm) as carbon_ppm_total, 
+       avg(p.average_ppm) as carbon_ppm_mean, 
+       sum(c.energy_consumed) as btu_consumed_total,
+       avg(c.energy_consumed) as btu_consumed_mean,
+       sum(e.energy_co2) as co2_emissions_total,
+       avg(e.energy_co2) as co2_emissions_mean
+  FROM ppm_month p
+  JOIN consumption c 
+    ON p.date_year = c.date_year AND p.date_month = c.date_month and c.msn = 'TXRCBUS'
+  JOIN us_co2_emissions e
+    ON p.date_year = e.date_year AND p.date_month = e.date_month and e.msn = 'TETCEUS'
+GROUP BY p.date_year
+ORDER BY p.date_year
+```
+
+```{r}
+kable_styling(kable(tail(agg_df, 10)),
+              bootstrap_options = c("striped", "hover"))
+```
+
+```{sql connection=conn, output.var = "metrics_df"}
+SELECT p.date_year, p.date_month, CONCAT(p.date_year, '-', p.date_month, '-01')::date as date_day,
+               p.average_ppm as "carbon ppm", c.energy_consumed as "btu consumed", e.energy_co2 as "co2 emissions"
+  FROM ppm_month p
+  JOIN consumption c 
+    ON p.date_year = c.date_year AND p.date_month = c.date_month and c.msn = 'TXRCBUS'
+  JOIN us_co2_emissions e
+    ON p.date_year = e.date_year AND p.date_month = e.date_month and e.msn = 'TETCEUS'
+  ORDER BY p.date_year, p.date_month
+```
+
+```{r fig1a, fig.height = 7, fig.width = 13, fig.align = "center"}
+metric_ts <- xts(x=metrics_df[c("carbon ppm", "btu consumed", "co2 emissions")], 
+                 order.by=metrics_df$date_day)
+
+plot(metric_ts, main = "Energy and Carbon PPM Metrics",
+     legend.loc="bottomright", 
+     col = seaborn_palette[1:3],
+     yaxis.right=FALSE,
+     axes=FALSE,
+     lwd=1,
+     cex.main=3,
+     major.ticks="years",
+     major.format="%Y",
+     minor.format="%Y",
+     grid.ticks.lty=1)
+```
+
+### <span style="color: #336791"/>Seasonal Decomposition</span>
+
+```{r  fig1b, fig.height = 7, fig.width = 13, fig.align = "center"}
+carbonppm_ts <- ts(metrics_df$`carbon ppm`, start=c(1973, 1), frequency=12)
+carbonppm_stl <- stl(carbonppm_ts, s.window="periodic")
+
+plot(carbonppm_stl, col = seaborn_palette[1], 
+     main="Seasonal Decomposition of Global Carbon PPM")
+```
+
+```{r  fig1c, fig.height = 7, fig.width = 13, fig.align = "center"}
+consumed_ts <- ts(metrics_df$`btu consumed`, start=c(1973, 1), frequency=12)
+consumed_stl <- stl(consumed_ts, s.window="periodic")
+
+plot(consumed_stl, col = seaborn_palette[2], 
+     main="Seasonal Decomposition of U.S. Energy Consumption")
+```
+
+```{r fig1d, fig.height = 7, fig.width = 13, fig.align = "center"}
+emissions_ts <- ts(metrics_df$`co2 emissions`, start=c(1973, 1), frequency=12)
+emissions_stl <- stl(emissions_ts, s.window="periodic")
+
+plot(emissions_stl, col = seaborn_palette[3],
+     main = "Seasonal Decomposition of U.S. CO2 Emissions")
+```
+
+```{r}
+sql <- "WITH c1 AS
+           (SELECT CONCAT((date_year/10)::int * 10, 's') as decade, 
+                   REPLACE(description, 'Primary Energy Consumed by the ', '') AS \"Sector\",
+                   SUM(energy_consumed) AS \"Primary Energy Consumed\"
+            FROM consumption
+            WHERE msn IN ('TXICBUS', 'TXRCBUS', 'TXACBUS', 'TXCCBUS', 'TXEIBUS')
+            GROUP BY CONCAT((date_year/10)::int * 10, 's'), description
+           ), c2 AS
+           (SELECT CONCAT((date_year/10)::int * 10, 's') as decade, 
+                   REPLACE(description, 'Total Energy Consumed by the ', '') AS \"Sector\",
+                   SUM(energy_consumed) AS \"Total Energy Consumed\"
+            FROM consumption
+            WHERE msn IN ('TECCBUS', 'TEACBUS', 'TEICBUS', 'TERCBUS')
+            GROUP BY CONCAT((date_year/10)::int * 10, 's'), description
+           )
+
+        SELECT c1.decade, c1.\"Sector\", c1.\"Primary Energy Consumed\", c2.\"Total Energy Consumed\"
+        FROM c1
+        LEFT JOIN c2
+            ON c1.\"Sector\" = c2.\"Sector\" AND c1.decade = c2.decade
+        ORDER BY c1.decade, c1.\"Sector\"
+       "
+
+consumed_df <- dbGetQuery(conn, sql)
+
+kable_styling(kable(tail(consumed_df)),
+              bootstrap_options = c("striped", "hover"))
+```
+
+<div style="float:right"><img src="IMAGES/doe_eia.png" width="75px"/></div>
+### <span style="color: #336791"/>Consumption and CO2 Emissions</span>
+
+
+```{r fig1e, fig.height = 6, fig.width = 15, fig.align = "center"}
+plot_mat <- with(subset(consumed_df, Sector != 'Electric Power Sector'),
+                 tapply(`Total Energy Consumed`, list(decade, `Sector`), sum))
+
+par(mar=c(5, 5, 2, 1))
+barplot(plot_mat, main="U.S. Total Energy Consumption by Sector", cex.main=1.5,
+        col=seaborn_palette[1:8], ylim=c(0, 8E5), xaxt="n", yaxt="n", beside=TRUE)
+
+axis(side=1, at=c(5, 14, 23, 32), labels=colnames(plot_mat), padj=0.9, pos=c(0,0))
+axis(side=2, at=axTicks(2), labels=format(axTicks(2), big.mark=',', scientific=FALSE), las=1)
+legend("top", row.names(plot_mat), fill=seaborn_palette[1:8], ncol=8)
+```
+
+```{r fig1f, fig.height = 6, fig.width = 15, fig.align = "center"}
+plot_mat <- with(consumed_df, tapply(`Primary Energy Consumed`, list(decade, `Sector`), sum))
+
+par(mar=c(5, 5, 2, 1))
+barplot(plot_mat, main="U.S. Primary Energy Consumption by Sector", cex.main=1.5,
+        col=seaborn_palette[1:8], ylim=c(0, 9E5), xaxt="n", yaxt="n", beside=TRUE)
+
+axis(side=1, at=c(5, 14, 23, 32, 41), labels=colnames(plot_mat), padj=0.9, pos=c(0,0))
+axis(side=2, at=axTicks(2), labels=format(axTicks(2), big.mark=',', scientific=FALSE), las=1)
+legend("top", row.names(plot_mat), fill=seaborn_palette[1:8], ncol=8)
+```
+
+```{r}
+sql <- "SELECT CONCAT((date_year/10)::int * 10, 's') as decade, 
+               REPLACE(REPLACE(description, 'Total Energy ', ''), ' CO2 Emissions', '') AS \"Sector\",
+               SUM(energy_co2) AS \"Total CO2 Emissions\"
+        FROM us_co2_emissions
+        WHERE msn IN ('TERCEUS', 'TECCEUS', 'TEACEUS', 'TXEIEUS')
+        GROUP BY date_year, description
+        ORDER BY date_year, description
+       "
+
+emissions_df <- dbGetQuery(conn, sql)
+
+kable_styling(kable(tail(emissions_df)),
+              bootstrap_options = c("striped", "hover"))
+```
+
+```{r fig1g, fig.height = 6, fig.width = 15, fig.align = "center"}
+plot_mat <- with(emissions_df, tapply(`Total CO2 Emissions`, list(decade, `Sector`), sum))
+
+par(mar=c(5, 8, 2, 1))
+barplot(plot_mat, main="U.S. CO2 Emissions by Sector", cex.main=1.5,
+        col=seaborn_palette[1:5], ylim=c(0, 6E4), xaxt="n", yaxt="n", beside=TRUE)
+
+axis(side=1, at=c(3, 9, 15, 21)+0.5, labels=colnames(plot_mat), padj=0.9, pos=c(0,0))
+axis(side=2, at=axTicks(2), labels=format(axTicks(2), big.mark=',', scientific=FALSE), las=1)
+legend("top", row.names(plot_mat), fill=seaborn_palette[1:5], ncol=5)
+```
+
+
+```{r}
+sql <- "WITH sub AS
+          (SELECT CONCAT((date_year/10)::int * 10, 's') as decade, 
+                  REPLACE($1, '%', '') as sector,
+                  REPLACE(
+                     REPLACE(
+                       REPLACE(
+                               REPLACE(description, 'Commercial Sector CO2 Emissions', ''), 
+                               'Residential Sector CO2 Emissions', ''
+                       ), 'Transportation Sector CO2 Emissions', ''),
+                  ' ', '\n')  AS \"Type\",
+                 energy_co2
+           FROM us_co2_emissions
+           WHERE description LIKE $2)
+
+       SELECT decade, sector, \"Type\", 
+              SUM(energy_co2) AS \"Total CO2 Emissions\"
+       FROM sub
+       GROUP BY decade, sector, \"Type\"
+       ORDER BY decade, sector, \"Type\"
+       "
+
+params <- paste0(c("%Transportation", "%Residential", "%Commercial"), " Sector%")
+emissions_type_df <- do.call(rbind, lapply(params, function(p) dbGetQuery(conn, sql, param=list(p, p))))
+```
+
+```{r fig1h, fig.height = 5, fig.width = 15, fig.align = "center"}
+
+output <- by(emissions_type_df, emissions_type_df$sector, function(sub) {
+  plot_mat <- with(sub, tapply(`Total CO2 Emissions`, list(decade, `Type`), sum))
+
+  barplot(plot_mat, main=paste("U.S. CO2 Emissions by", sub$sector[[1]]), cex.main=1.5,
+          col=seaborn_palette[1:5], ylim=c(0, ceiling(max(plot_mat, na.rm=TRUE)/1E4) * 1E4), 
+          xaxt="n", yaxt="n", beside=TRUE)
+  
+  axis(side=1, at=c(3,9,15,21,27,33,39,45,51,57,63)[seq_along(colnames(plot_mat))] + 0.5,
+       labels=colnames(plot_mat), padj=0.9, pos=c(0,0))
+  axis(side=2, at=axTicks(2), labels=format(axTicks(2), big.mark=',', scientific=FALSE), las=1)
+  legend("top", row.names(plot_mat), fill=seaborn_palette[1:5], ncol=5)
+})
+```
+
+<div style="float:right"><img src="IMAGES/doe_eia.png" width="75px"/></div>
+### <span style="color: #336791"/>Renewable Energy: Production and Consumption</span>
+
+```{r}
+sql <- "SELECT energy_type,
+               date,
+               SUM(production) AS production,
+               SUM(consumption) AS consumption
+        FROM us_renewable_energy
+        GROUP BY energy_type,
+                 date
+        ORDER BY energy_type,
+                 date
+       "
+
+renewable_df <- dbGetQuery(conn, sql)
+
+kable_styling(kable(tail(renewable_df)),
+              bootstrap_options = c("striped", "hover"))
+```
+
+```{r renewable_fig, fig.height = 15, fig.width = 15, fig.align = "center"}
+
+par(mfrow=c(3,3), mar=c(5, 5, 2, 1))
+output <- by(renewable_df, renewable_df$energy_type, function(sub) {
+  
+  metric_ts <- xts(x=sub[c("production", "consumption")], 
+                   order.by=sub$date)
+  
+  print(plot(metric_ts, main = sub$energy_type[1],
+             legend.loc="bottomright", 
+             col = seaborn_palette[1:3],
+             yaxis.right=FALSE,
+             axes=FALSE,
+             lwd=1,
+             cex.main=3,
+             major.ticks="years",
+             major.format="%Y",
+             minor.format="%Y",
+             grid.ticks.lty=1))
+  
+})
+```
+
+<div style="float:right"><a href="https://waterdata.usgs.gov/nwis/gw"><img src="IMAGES/usgs.png" width="75px"/></a></div>
+
+### <span style="color: #336791"/>U.S. Geological Survey - Groundwater Well Depth Data</span>
+```{r}
+sql <- "SELECT g.year, g.month,
+               avg(g.mean_value) as mean_value
+        FROM groundwater g
+        WHERE g.year BETWEEN 1990 AND 2019
+        GROUP BY g.year, g.month"
+
+groundwater_df <- dbGetQuery(conn, sql)
+
+kable_styling(kable(tail(groundwater_df)),
+              bootstrap_options = c("striped", "hover"))
+```
+
+```{r fig3, fig.height = 7, fig.width = 16, fig.align = "center"}
+boxplot(mean_value ~ year, groundwater_df, col=seaborn_palette[1:10], 
+        main="Groundwater Well Depth Mean Values", cex.main=1.5)
+```
+
+
+```{r}
+sql <- "WITH sites AS (
+            SELECT CONCAT(g.year, '-', g.month, '-1')::date AS \"date\",
+                   g.site_name,
+                   AVG(g.mean_value) as mean_value
+            FROM groundwater g
+            WHERE g.year BETWEEN 1990 AND 2019
+            GROUP BY CONCAT(g.year, '-', g.month, '-1')::date,
+                     g.site_name
+        ), bottom AS (
+            SELECT site_name, AVG(mean_value) AS mean_value, 'bottom_sites' AS category
+            FROM sites 
+            GROUP BY site_name
+            ORDER BY AVG(mean_value) ASC LIMIT 5
+        ), top AS (
+            SELECT site_name, AVG(mean_value) AS mean_value, 'top_sites' AS category
+            FROM sites 
+            GROUP BY site_name
+            ORDER BY AVG(mean_value) DESC LIMIT 5
+        )
+
+        SELECT sites.\"date\", sites.mean_value, sites.site_name, top.category
+        FROM sites
+        INNER JOIN top
+            ON sites.site_name = top.site_name
+
+        UNION
+
+        SELECT sites.\"date\", sites.mean_value, sites.site_name, bottom.category
+        FROM sites
+        INNER JOIN bottom
+            ON sites.site_name = bottom.site_name
+
+        ORDER BY category, site_name, \"date\""
+
+groundwater_df <- dbGetQuery(conn, sql)
+
+kable_styling(kable(head(groundwater_df)),
+              bootstrap_options = c("striped", "hover"))
+```
+
+```{r groundwater_fig, fig.height = 25, fig.width = 15, fig.align = "center"}
+
+groundwater_df$year <- format(groundwater_df$date, "%Y")
+
+par(mfrow=c(5,2), mar=c(5, 5, 2, 1))
+output <- by(groundwater_df, groundwater_df$site_name, function(sub) {
+  
+  metric_ts <- xts(x=sub[c("mean_value")], 
+                   order.by=sub$date)
+  
+  print(plot(metric_ts, main = paste(sub$site_name[1], ':', sub$category[1]),
+             legend.loc="bottomright", 
+             col = seaborn_palette[1:3],
+             yaxis.right=FALSE,
+             axes=FALSE,
+             lwd=1,
+             cex.main=3,
+             major.ticks="years",
+             major.format="%Y",
+             minor.format="%Y",
+             grid.ticks.lty=1))
+  
+})
+```
+
+<div style="float:right"><a href="https://www.fws.gov/endangered/" target="blank"><img src="IMAGES/us_fws.png" width="75px"/></a></div>
+### U.S. FWS Endangered Species List
+
+```{r}
+sql <- "SELECT CONCAT((f.date_year/10)::int * 10, 's') AS decade, 
+               f.taxonomic_group,
+               f.current_status,
+               count(*) AS species_count
+        FROM fws_species_year f
+        WHERE f.current_status IN ('Endangered', 'Recovery', 'Resolved Taxon', 
+                                   'Threatened', 'Extinction')
+        GROUP BY CONCAT((f.date_year/10)::int * 10, 's'),
+                 f.taxonomic_group,
+                 f.current_status
+        ORDER BY CONCAT((f.date_year/10)::int * 10, 's'),
+                 f.taxonomic_group,
+                 f.current_status"
+
+fws_df <- dbGetQuery(conn, sql)
+
+kable_styling(kable(tail(fws_df)),
+              bootstrap_options = c("striped", "hover"))
+```
+
+```{r fws_fig, fig.height = 15, fig.width = 15, fig.align = "center"}
+
+par(mfrow=c(5,3), mar=c(5, 5, 2, 1))
+output <- by(fws_df, fws_df$taxonomic_group, function(sub) {
+  plot_mat <- with(sub, tapply(species_count, list(decade, current_status), sum))
+  
+  barplot(plot_mat, main=sub$taxonomic_group[[1]], cex.main=1.5,
+          ylim = c(0, max(plot_mat, na.rm=TRUE)+5),
+          col=seaborn_palette[seq_along(row.names(plot_mat))], beside=TRUE)
+  legend("top", row.names(plot_mat), fill=seaborn_palette[seq_along(row.names(plot_mat))], 
+         ncol=length(row.names(plot_mat)))
+  box()
+})
+```
+
+
+<div style="float:right"><a href="https://www.nass.usda.gov/AgCensus/" target="blank"><img src="IMAGES/usda.png" width="100px"/></a></div>
+### <span style="color: #336791"/>U.S. Department of Agriculture: Agriculture Census</span>
+
+```{r fig4, fig.height = 6, fig.width = 17, fig.align = "center"}
+sql <- "SELECT year,
+               CASE
+                    WHEN domain_category = '' THEN 'TOTAL\nOPERATIONS'
+                    ELSE REPLACE(REPLACE(REPLACE(domain_category, '(', '\n('), 'TO', 'TO\n'), 'OR', 'OR\n')
+               END AS domain_category, 
+               value
+        FROM ag_census 
+        WHERE data_item = 'FARM OPERATIONS - NUMBER OF OPERATIONS'"
+
+agcensus_df <- dbGetQuery(conn, sql)
+
+plot_mat <- with(agcensus_df, tapply(value, list(year, domain_category), sum))
+
+par(mar=c(5, 5, 2, 1))
+barplot(plot_mat, main="U.S. Agriculture Census: Number of Farm Operations", cex.main=1.5,
+        col=seaborn_palette[1:5], ylim=c(0, 2E6+5E5), beside=TRUE, xaxt="n", yaxt="n")
+
+axis(side=1, at=c(3,9,15,21,27,33,39,45)+0.5, labels=colnames(plot_mat), tick=FALSE, padj=0.9, pos=c(0,0))
+axis(side=2, at=axTicks(2), labels=format(axTicks(2), big.mark=',', scientific=FALSE), las=1)
+legend("top", row.names(plot_mat), fill=seaborn_palette[1:5], ncol=5)
+```
+
+```{r}
+sql <- "WITH sub AS (
+          SELECT year,
+                 data_item,
+                 REPLACE(
+                    REPLACE(
+                        REPLACE(
+                           REPLACE(
+                              REPLACE(domain_category, ';', ','),
+                              '(', '\n('), 
+                           'TO', 'TO\n'),
+                        ' OR', ' OR\n'),
+                    'LESS', 'LESS\n') AS domain_category, 
+                 value
+          FROM ag_census 
+          WHERE data_item LIKE '%COMMODITY TOTALS%'
+            AND value IS NOT NULL
+       ) 
+
+       SELECT year, 
+              CASE
+                  WHEN TRIM(domain_category) = '' 
+                  THEN CASE 
+                            WHEN data_item = 'COMMODITY TOTALS - SALES; MEASURED IN $' 
+                            THEN 'TOTAL\nSALES'
+                            WHEN data_item = 'COMMODITY TOTALS - SALES; MEASURED IN $ / OPERATION' 
+                            THEN 'TOTAL\nSALES\nPER OPERATION'
+                       END
+                  ELSE domain_category 
+              END AS domain_category,
+              value
+       FROM sub
+      "
+
+agcensus_df <- within(dbGetQuery(conn, sql),
+                      domain_category <- factor(domain_category,
+                                                levels = c("FARM SALES: \n(LESS\n THAN 2,500 $)", "FARM SALES: \n(2,500 TO\n 4,999 $)", 
+                                                           "FARM SALES: \n(5,000 TO\n 9,999 $)", "FARM SALES: \n(10,000 TO\n 24,999 $)",
+                                                           "FARM SALES: \n(25,000 TO\n 49,999 $)", "FARM SALES: \n(50,000 TO\n 99,999 $)",
+                                                           "FARM SALES: \n(100,000 TO\n 499,999 $)", "FARM SALES: \n(500,000 OR\n MORE $)", 
+                                                           "TOTAL\nSALES", "TOTAL\nSALES\nPER OPERATION"))
+)
+
+kable_styling(kable(tail(agcensus_df)),
+              bootstrap_options = c("striped", "hover"))
+```
+
+```{r fig5, fig.height = 6, fig.width = 17, fig.align = "center"}
+plot_mat <- with(agcensus_df[agcensus_df$domain_category != 'TOTAL\nSALES',], 
+                 tapply(value, list(year, factor(domain_category)), sum))
+
+par(mar=c(5, 5, 2, 1))
+barplot(plot_mat, main="U.S. Agriculture Census: Commodity Totals - Farm Sales", cex.main=1.5,
+        col=seaborn_palette[1:5], ylim=c(0, 1E6), beside=TRUE, xaxt="n", yaxt="n")
+
+axis(side=1, at=c(3,9,15,21,27,33,39,45,51)+0.5, labels=colnames(plot_mat), tick=FALSE, padj=0.9, pos=c(0,0))
+axis(side=2, at=axTicks(2), labels=format(axTicks(2), big.mark=',', scientific=FALSE), las=1)
+legend("top", row.names(plot_mat), fill=seaborn_palette[1:5], ncol=5)
+```
+
+
+```{r fig6, fig.height = 6, fig.width = 15, fig.align = "center"}
+plot_mat <- with(agcensus_df[agcensus_df$domain_category == 'TOTAL\nSALES',], 
+                 tapply(value, list(year, factor(domain_category)), sum))
+
+par(mar=c(5, 8, 2, 1))
+barplot(plot_mat, main="U.S. Agriculture Census: Commodity Totals - Overall Farm Sales", cex.main=1.5,
+        col=seaborn_palette[1:5], ylim=c(0, 4E11+5E10), beside=TRUE, xaxt="n", yaxt="n", space=2)
+        
+axis(side=1, at=c(2.5,5.5,8.5,11.5,14.5), labels=row.names(plot_mat), padj=0.9, pos=c(0,0))
+axis(side=2, at=axTicks(2), labels=format(axTicks(2), big.mark=',', scientific=FALSE), las=1)
+legend("top", row.names(plot_mat), fill=seaborn_palette[1:5], ncol=5)
+```
+
+<div style="float:right"><img src="IMAGES/world_metrics.png" width="300px"/></div>
+### World Metrics
+
+```{r}
+sql <- "WITH pop AS 
+            (SELECT p.year,
+                    p.population
+             FROM world_population p
+             WHERE p.country_name = 'World'
+               AND p.year BETWEEN 2000 AND 2019
+             ),
+              
+              land AS
+            (SELECT a.year,
+                    a.percent_arable
+             FROM arable_land a
+             WHERE a.country_name = 'World'
+               AND a.year BETWEEN 2000 AND 2019
+             ),
+         
+              fauna AS
+            (SELECT i.year,
+                    SUM(i.species_count) AS animals_count
+             FROM iucn_species_count i
+             WHERE i.year BETWEEN 2000 AND 2019
+             GROUP BY i.year
+             ),
+         
+              flora AS
+            (SELECT p.assessment_year as year,
+                    COUNT(*) AS plants_count
+             FROM plants_assessments p
+             WHERE p.assessment_year BETWEEN 2000 AND 2019
+               AND p.interpreted_status = 'Threatened'
+             GROUP BY p.assessment_year
+             ),             
+         
+              ice AS
+            (SELECT s.date_year as year,
+                    AVG(s.extent) FILTER(WHERE s.region = 'Arctic') AS arctic_sea_ice_extent,
+                    AVG(s.extent) FILTER(WHERE s.region = 'Antarctica') AS antarctic_sea_ice_extent
+             FROM sea_ice_extent s
+             WHERE s.date_year BETWEEN 2000 AND 2019
+             GROUP BY s.date_year
+             ),
+             
+              ocean AS
+            (SELECT o.year as year,
+                    AVG(o.tco2) AS total_co2,
+                    AVG(o.phts25p0) AS ph_scale
+             FROM ocean_data o
+             WHERE o.year BETWEEN 2000 AND 2019
+               AND o.tco2 <> -9999 AND o.phts25p0 <> -9999
+             GROUP BY o.year
+             ),
+             
+              temp AS
+            (SELECT g.year as year,
+                    AVG(g.global_mean) AS global_mean
+             FROM global_temperature g
+             WHERE g.year BETWEEN 2000 AND 2019
+             GROUP BY g.year
+             )
+             
+         SELECT pop.year, pop.population, land.percent_arable, fauna.animals_count, flora.plants_count,
+                ice.arctic_sea_ice_extent, ice.antarctic_sea_ice_extent, 
+                ocean.total_co2, ocean.ph_scale, temp.global_mean
+         FROM pop 
+         JOIN land USING (year)
+         JOIN fauna USING (year)
+         JOIN flora USING (year)
+         JOIN ice USING (year)
+         JOIN ocean USING (year)
+         JOIN temp USING (year)
+         ORDER BY pop.year"
+
+env_world_df <- dbGetQuery(conn, sql)
+
+kable_styling(kable(tail(env_world_df)), font_size = 12,
+              bootstrap_options = c("striped", "hover"))
+```
+
+```{r}
+kable_styling(kable(cor(env_world_df[-1])), font_size = 12,
+              bootstrap_options = c("striped", "hover"))
+```
+
+```{r fig10, fig.height = 15, fig.width = 15, fig.align = "center"}
+par(mfrow=c(4,2), mai = c(0.3, 0.2, 0.7, 0.2))
+
+for(x in colnames(env_world_df)[3:ncol(env_world_df)]) {
+  lfit <- loess(paste(x, "~ population"), data=env_world_df)
+  
+  plot(as.formula(paste(x, "~ population")), env_world_df, 
+       main=paste("population and\n", gsub("_", " ", x)), cex.main=2,
+       type="p", col=seaborn_palette[1], yaxt='n', xaxt='n', pch=19)
+  axis(side=1, at=axTicks(1), labels=format(axTicks(1), big.mark=',', scientific=FALSE))
+  axis(side=2, at=axTicks(2), labels=format(axTicks(2), big.mark=',', scientific=FALSE))
+  pop_order <- order(env_world_df$population)
+  lines(env_world_df$population[pop_order], lfit$fitted[pop_order], col=seaborn_palette[4], lwd=3)
+}
+
+```
+
+
+```{r}
+dbDisconnect(conn)
+```
+
+<div style="float:right"><img src="IMAGES/r_shiny.png"/></div>
+
+### User Data Application
+
+<div style="float:center"><img src="IMAGES/env_data.png" width="400px"/></div>
+
+```{r}
+
+# LINUX SHELL COMMAND CALL
+system(paste0("gnome-terminal -- Rscript -e \"library(shiny); setwd('", getwd(), "'); runApp('EnvironmentDB_Shiny_App.R')\""))
+
+```
+
+<hr style="border: none; height: 1px; background-color: #CCC;"/>
+
+<h2><span style="color: #336791"/>Conclusion</span></h2>
+
+<div style="float:right;"><img src="IMAGES/data_pipeline.png" width="350px"/></div>
+<br/>
+
+<div style="float:left;"><img src="IMAGES/postgresql_r.png" width="100px"/></div>
+<br/>
+<br/>
+
+- <h3><span style="color: #336791"/>Postgres as tool in data science workflow</h3>
+- <h3><span style="color: #336791"/>Clear and expressive SQL processing</h3>
+- <h3><span style="color: #336791"/>Leverage powerful database engine</h3>
+- <h3><span style="color: #336791"/>Enhanced and robust process over flat files</h3>
+- <h3><span style="color: #336791"/>Streamlined open source ecosystem</h3>
+
+<br/>
+<br/>
+
+
