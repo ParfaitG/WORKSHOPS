@@ -1,0 +1,113 @@
+/* The sidebar menu */
+.sidenav {
+  font-family: Arial, Helvetica, sans-serif;
+  height: auto;                  /* Full-height: remove this if you want "auto" height */
+  width: 400px;                  /* Set the width of the sidebar */
+  position: fixed;               /* Fixed Sidebar (stay in place on scroll) */
+  z-index: 1;                    /* Stay on top */
+  top: 0px;                      /* Stay at the top */
+  left: 0;
+  background-color: #F8F8F8;     /* Black */
+  overflow-x: hidden;            /* Disable horizontal scroll */
+  padding: 10px;
+}
+
+/* The navigation menu links */
+.sidenav a {
+  padding: 6px 8px 6px 16px;
+  text-decoration: none;
+  font-size: 25px;
+  color: #818181;
+  display: block;
+}
+
+/* When you mouse over the navigation links, change their color */
+.sidenav a:hover {
+  color: #f1f1f1;
+}
+
+/* Style page content */
+.main {
+  font-family: Arial, Helvetica, sans-serif;
+  margin-left: 420px; /* Same as the width of the sidebar */
+  padding: 0px 10px;
+}
+
+.sidenav label {
+  display: block;
+  margin: 5px;
+  padding: 5px;
+  font: normal 16px/16px Arial, Helvetica, sans-serif;
+}
+
+.sidenav label>span {
+  float: left;
+  margin: 10px 0px 0px 10px;
+  color: #5E5E5E;
+}
+
+.sidenav input[type="text"], .sidenav input[type="email"], .sidenav textarea, .sidenav select, .sidenav table {
+  color: #555;
+  height: 30px;
+  line-height:15px;
+  width: 80%;
+  padding: 0px 0px 0px 0px;
+  margin: 5px;
+  border: 1px solid #E5E5E5;
+  background: #FBFBFB;
+  outline: 0;
+  -webkit-box-shadow: inset 1px 1px 2px rgba(238, 238, 238, 0.2);
+  box-shadow: inset 1px 1px 2px rgba(238, 238, 238, 0.2);
+  font: normal 16px/16px Arial, Helvetica, sans-serif;
+}
+
+.sidenav select {
+  background: url('down-arrow.png') no-repeat right, -moz-linear-gradient(top, #FBFBFB 0%, #E9E9E9 100%);
+  background: url('down-arrow.png') no-repeat right, -webkit-gradient(linear, left top, left bottom, color-stop(0%,#FBFBFB), color-stop(100%,#E9E9E9));
+  appearance:none;
+  -webkit-appearance:none;
+  -moz-appearance: none;
+  text-indent: 0.01px;
+  text-overflow: '';
+  width: 78%;
+  height: 30px;
+  padding: 5px;
+}
+
+.sidenav .button {
+  font: normal 20px/20px Arial, Helvetica, sans-serif;
+  background-color: #9DC45F;
+  border-radius: 5px;
+  -webkit-border-radius: 5px;
+  -moz-border-border-radius: 5px;
+  border: none;
+  padding: 10px 25px 10px 25px;
+  margin-left: 90px;
+  width: 70%;
+  color: #FFF;
+  text-shadow: 1px 1px 1px #949494;
+}
+
+.sidenav .button:hover {
+  background-color:#80A24A;
+}
+
+.sidenav .env_table {
+    text-align: center;
+}
+.sidenav .env_table tr:nth-child(even) {
+    background: #E0E0E0;
+}
+.sidenav .env_table tr:hover {
+    background: silver;
+    cursor: pointer;
+}
+.sidenav .note {
+  text-align: right;
+  display: block;
+  float: right;
+  padding-top: 10px;
+  font: normal 12px/12px Arial, Helvetica, sans-serif;
+}
+
+
