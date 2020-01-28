@@ -26,11 +26,12 @@ install.packages("RDCOMClient", repos = "http://www.omegahat.net/R")
 library(RDCOMClient)
 ```
 
+## Use Case Example
 
-## Data
+### Data
 
 ```{r}
-metals_df <- readRDS("Precious_Metals_Prices.rds")
+metals_df <- readRDS("DATA/Precious_Metals_Prices.rds")
 metals_df <- data.frame(with(metals_df, metals_df[order(year, metal),]),
                         row.names = NULL)
 tail(metals_df, 10)
@@ -49,7 +50,7 @@ agg_df <- do.call(data.frame,
 agg_df
 ```
 
-## Plotting
+### Plotting
 
 ```{r fig.height = 6, fig.width = 14, fig.align = "center"}
 seaborn_palette <- c("#4C72B0", "#DD8452", "#55A868", "#C44E52", "#8172B3", "#937860", 
@@ -61,7 +62,7 @@ metal_box_plot <- function() {
           main = "Boxplot Distribution of \nPrecious Metals, 1968 - 2020\n")
 }
 
-png('Precious_Metals_Plot.png')
+png('IMAGES/Precious_Metals_Plot.png')
   metal_box_plot()
 dev.off()
 
@@ -82,7 +83,7 @@ metal_year_plot <- function() {
   mtext("Average Spot Price of\nPrecious Metals, 1968-2020", outer = TRUE, cex = 2)
 }
 
-png('Precious_Metals_Year.png')
+png('IMAGES/Precious_Metals_Year.png')
   metal_year_plot()
 dev.off()
 
