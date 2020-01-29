@@ -1,0 +1,607 @@
+<!DOCTYPE html>
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+
+<head>
+
+<meta charset="utf-8" />
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<meta name="generator" content="pandoc" />
+
+
+
+
+<title>R Interface with MS Office using COM</title>
+
+<script src="R_MS_Office_API_files/jquery-1.11.3/jquery.min.js"></script>
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<link href="R_MS_Office_API_files/bootstrap-3.3.5/css/bootstrap.min.css" rel="stylesheet" />
+<script src="R_MS_Office_API_files/bootstrap-3.3.5/js/bootstrap.min.js"></script>
+<script src="R_MS_Office_API_files/bootstrap-3.3.5/shim/html5shiv.min.js"></script>
+<script src="R_MS_Office_API_files/bootstrap-3.3.5/shim/respond.min.js"></script>
+<script src="R_MS_Office_API_files/navigation-1.1/tabsets.js"></script>
+<link href="R_MS_Office_API_files/highlightjs-9.12.0/default.css" rel="stylesheet" />
+<script src="R_MS_Office_API_files/highlightjs-9.12.0/highlight.js"></script>
+
+<style type="text/css">code{white-space: pre;}</style>
+<style type="text/css">
+  pre:not([class]) {
+    background-color: white;
+  }
+</style>
+<script type="text/javascript">
+if (window.hljs) {
+  hljs.configure({languages: []});
+  hljs.initHighlightingOnLoad();
+  if (document.readyState && document.readyState === "complete") {
+    window.setTimeout(function() { hljs.initHighlighting(); }, 0);
+  }
+}
+</script>
+
+
+
+<style type="text/css">
+h1 {
+  font-size: 34px;
+}
+h1.title {
+  font-size: 38px;
+}
+h2 {
+  font-size: 30px;
+}
+h3 {
+  font-size: 24px;
+}
+h4 {
+  font-size: 18px;
+}
+h5 {
+  font-size: 16px;
+}
+h6 {
+  font-size: 12px;
+}
+.table th:not([align]) {
+  text-align: left;
+}
+</style>
+
+
+
+
+<style type = "text/css">
+.main-container {
+  max-width: 940px;
+  margin-left: auto;
+  margin-right: auto;
+}
+code {
+  color: inherit;
+  background-color: rgba(0, 0, 0, 0.04);
+}
+img {
+  max-width:100%;
+  height: auto;
+}
+.tabbed-pane {
+  padding-top: 12px;
+}
+.html-widget {
+  margin-bottom: 20px;
+}
+button.code-folding-btn:focus {
+  outline: none;
+}
+summary {
+  display: list-item;
+}
+</style>
+
+
+
+<!-- tabsets -->
+
+<style type="text/css">
+.tabset-dropdown > .nav-tabs {
+  display: inline-table;
+  max-height: 500px;
+  min-height: 44px;
+  overflow-y: auto;
+  background: white;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+}
+
+.tabset-dropdown > .nav-tabs > li.active:before {
+  content: "";
+  font-family: 'Glyphicons Halflings';
+  display: inline-block;
+  padding: 10px;
+  border-right: 1px solid #ddd;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open > li.active:before {
+  content: "&#xe258;";
+  border: none;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open:before {
+  content: "";
+  font-family: 'Glyphicons Halflings';
+  display: inline-block;
+  padding: 10px;
+  border-right: 1px solid #ddd;
+}
+
+.tabset-dropdown > .nav-tabs > li.active {
+  display: block;
+}
+
+.tabset-dropdown > .nav-tabs > li > a,
+.tabset-dropdown > .nav-tabs > li > a:focus,
+.tabset-dropdown > .nav-tabs > li > a:hover {
+  border: none;
+  display: inline-block;
+  border-radius: 4px;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open > li {
+  display: block;
+  float: none;
+}
+
+.tabset-dropdown > .nav-tabs > li {
+  display: none;
+}
+</style>
+
+<script>
+$(document).ready(function () {
+  window.buildTabsets("TOC");
+});
+
+$(document).ready(function () {
+  $('.tabset-dropdown > .nav-tabs > li').click(function () {
+    $(this).parent().toggleClass('nav-tabs-open')
+  });
+});
+</script>
+
+<!-- code folding -->
+
+
+
+
+</head>
+
+<body>
+
+
+<div class="container-fluid main-container">
+
+
+
+
+<div class="fluid-row" id="header">
+
+
+
+<h1 class="title toc-ignore">R Interface with MS Office using COM</h1>
+
+</div>
+
+
+<style type="text/css">
+.main-container {
+  max-width: 1000px;
+  margin-left: auto;
+  margin-right: auto;
+}
+</style>
+<div id="parfait-gasana" class="section level2">
+<h2>Parfait Gasana</h2>
+<div style="font-size: 20px;">
+Data Analyst, Winston &amp; Strawn, LLP
+</div>
+<div style="float:left">
+<img src="IMAGES/stackoverflow.png" width="30px"/>
+</div>
+<div style="font-size: 16px;">
+<span class="citation">@Parfait</span> (StackOverflow) | <img src="IMAGES/github.png" width="30px"/>  <span class="citation">@ParfaitG</span> (GitHub)
+</div>
+<p><br/> <br/></p>
+<p><img src="IMAGES/R_MS_Office.png" width="450px"/></p>
+<p><br/></p>
+</div>
+<div id="rdcomclientcomcreate" class="section level1">
+<h1><code>RDCOMClient::COMCreate()</code></h1>
+<ul>
+<li><h3 id="component-object-model-com-is-a-platform-independent-distributed-object-oriented-system-for-creating-binary-software-components-that-can-interact"><a href="https://docs.microsoft.com/en-us/windows/win32/com/component-object-model--com--portal">Component Object Model (COM)</a> is a platform-independent, distributed, object-oriented system for creating binary software components that can interact</h3>
+<ul>
+<li><h4>
+Microsoft OLE + ActiveX technologies
+</h4></li>
+</ul></li>
+<li><h3 id="com-objects-can-be-created-with-a-variety-of-programming-languages">COM objects can be created with a variety of programming languages</h3>
+<ul>
+<li><h4>
+Including C++, Java, .Net (C#, VB), Python, PHP, R, and VBA
+</h4></li>
+</ul></li>
+<li><h3 id="package-developed-and-supported-by-omega-hat">Package developed and supported by <a href="http://www.omegahat.net/">Omega Hat</a></h3>
+<ul>
+<li><h4>
+Joint project with the goal of providing a variety of open-source software for statistical applications mainly for statistical lanageus (S, R, and Lisp)
+</h4></li>
+</ul></li>
+</ul>
+<pre class="r"><code>install.packages(&quot;RDCOMClient&quot;, repos = &quot;http://www.omegahat.net/R&quot;)
+
+library(RDCOMClient)</code></pre>
+<div id="use-case-example" class="section level2">
+<h2>Use Case Example</h2>
+<div id="data" class="section level3">
+<h3>Data</h3>
+<pre class="r"><code>metals_df &lt;- readRDS(&quot;DATA/Precious_Metals_Prices.rds&quot;)
+metals_df &lt;- data.frame(with(metals_df, metals_df[order(year, metal),]),
+                        row.names = NULL)
+tail(metals_df, 10)</code></pre>
+<pre><code>##     year     metal  avg_price
+## 203 2018  platinum  879.95200
+## 204 2018    silver   15.70538
+## 205 2019      gold 1392.59602
+## 206 2019 palladium 1533.79920
+## 207 2019  platinum  862.20482
+## 208 2019    silver   16.20854
+## 209 2020      gold 1555.03125
+## 210 2020 palladium 2212.12500
+## 211 2020  platinum  988.87500
+## 212 2020    silver   18.00313</code></pre>
+<pre class="r"><code>agg_df &lt;- do.call(data.frame, 
+                  aggregate(avg_price ~ metal, metals_df, function(x) 
+                    c(min=min(x), 
+                      median=median(x), 
+                      mean=mean(x), 
+                      max=max(x),
+                      sd=sd(x)))
+)
+
+agg_df</code></pre>
+<pre><code>##       metal avg_price.min avg_price.median avg_price.mean avg_price.max
+## 1      gold     35.950236       380.820200     553.638368     1668.9804
+## 2 palladium     88.134921       352.250000     502.267119     2212.1250
+## 3  platinum    359.964286       862.204819     861.002394     1721.8675
+## 4    silver      1.536333         5.539794       9.446237       35.1192
+##   avg_price.sd
+## 1   463.126020
+## 2   459.259769
+## 3   445.650760
+## 4     7.478743</code></pre>
+</div>
+<div id="plotting" class="section level3">
+<h3>Plotting</h3>
+<pre class="r"><code>seaborn_palette &lt;- c(&quot;#4C72B0&quot;, &quot;#DD8452&quot;, &quot;#55A868&quot;, &quot;#C44E52&quot;, &quot;#8172B3&quot;, &quot;#937860&quot;, 
+                     &quot;#DA8BC3&quot;, &quot;#8C8C8C&quot;, &quot;#CCB974&quot;, &quot;#64B5CD&quot;, &quot;#4C72B0&quot;, &quot;#DD8452&quot;)
+
+metal_box_plot &lt;- function() {
+  par(mar=c(3, 3, 4, 1), oma=c(0, 0, 3, 0)) 
+  boxplot(avg_price ~ metal, metals_df, col=seaborn_palette[1:5], cex.main=1.5,
+          main = &quot;Boxplot Distribution of \nPrecious Metals, 1968 - 2020\n&quot;)
+}
+
+png(&#39;IMAGES/Precious_Metals_Plot.png&#39;)
+  metal_box_plot()
+dev.off()</code></pre>
+<pre><code>## png 
+##   2</code></pre>
+<pre class="r"><code>metal_box_plot()</code></pre>
+<p><img src="R_MS_Office_API_files/figure-html/unnamed-chunk-4-1.png" width="1344" style="display: block; margin: auto;" /></p>
+<pre class="r"><code>plt_colors &lt;- as.list(setNames(seaborn_palette[1:5], unique(metals_df$metal)))
+
+metal_year_plot &lt;- function() {
+  par(mfrow=c(4,1), mar=c(3, 5, 3, 1), oma=c(0, 0, 5, 0)) 
+  by(metals_df, metals_df$metal, function(sub)
+    with(sub, {
+      plot(year, avg_price, main=sub$metal[[1]], cex.main=1.5, pch=16, col=plt_colors[[sub$metal[[1]]]])
+      lines(year, avg_price, col=plt_colors[[sub$metal[[1]]]])
+    })
+  )
+  mtext(&quot;Average Spot Price of\nPrecious Metals, 1968-2020&quot;, outer = TRUE, cex = 2)
+}
+
+png(&#39;IMAGES/Precious_Metals_Year.png&#39;)
+  metal_year_plot()
+dev.off()</code></pre>
+<pre><code>## png 
+##   2</code></pre>
+<pre class="r"><code>metal_year_plot()</code></pre>
+<p><img src="R_MS_Office_API_files/figure-html/unnamed-chunk-5-1.png" width="1248" style="display: block; margin: auto;" /></p>
+<div style="float: right">
+<img src="IMAGES/MS_Excel.png" width="75px"/>
+</div>
+</div>
+</div>
+<div id="excel" class="section level2">
+<h2>Excel</h2>
+<div id="object-library-workbooks-worksheets-querytables" class="section level3">
+<h3><a href="https://docs.microsoft.com/en-us/office/vba/api/overview/excel/object-model">Object Library</a>: Workbooks, Worksheets, QueryTables</h3>
+<pre class="r"><code>xlApp &lt;- COMCreate(&quot;Excel.Application&quot;)
+xlWbk &lt;- xlApp$Workbooks()$Add()                                         # CREATE WORKBOOK
+
+xlWks &lt;- xlWbk$Worksheets(1)
+xlWks[[&quot;Name&quot;]] &lt;- &quot;METALS&quot;
+xlQt &lt;- xlWks$QueryTables()$Add(Connection=paste0(&quot;TEXT;&quot;, csvData), 
+                                Destination=xlWks$Range(&quot;A1&quot;))           # IMPORT CSV DATA
+
+xlQt[[&quot;TextFileParseType&quot;]] &lt;- 1
+xlQt[[&quot;TextFileCommaDelimiter&quot;]] &lt;- TRUE
+xlQt$Refresh()
+xlQt$Delete()
+
+xlWbk$SaveAs(paste0(path, &quot;\\R_MSO_Spreadsheet.xlsx&quot;))                   # SAVE AND CLOSE WORKBOOK
+xlWbk$Close(TRUE)                                                        # SAVE AND CLOSE WORKBOOK
+xlApp$Quit()                                                             # CLOSE COM APP 
+
+# RELEASE RESOURCES
+xlQt &lt;- xlWks &lt;- xlWbk &lt;- xlApp &lt;- NULL
+rm(xlQt, xlWks, xlWbk, xlApp)
+gc()  </code></pre>
+<div style="text-align:center">
+<img src="IMAGES/R_MSO_Excel.png" width="700px"/>
+</div>
+<hr />
+<div style="float: right">
+<img src="IMAGES/MS_Word.png" width="75px"/>
+</div>
+</div>
+</div>
+<div id="word" class="section level2">
+<h2>Word</h2>
+<div id="object-library-documents-paragraphs-tables-inlineshapes" class="section level3">
+<h3><a href="https://docs.microsoft.com/en-us/office/vba/api/overview/word/object-model">Object Library</a>: Documents, Paragraphs, Tables, InlineShapes</h3>
+<pre class="r"><code>wdApp &lt;- COMCreate(&quot;Word.Application&quot;)
+wdDoc &lt;- wdApp$Documents()$Add()                                         # CREATE DOCUMENT
+
+wdDoc$Paragraphs()$Add()
+wdDoc$Paragraphs(1)$Range()$InsertAfter(&quot;Precious Metals Aggregate Summary&quot;)
+wdDoc$Paragraphs()$Add()
+wdDoc$Paragraphs()$Add()
+
+wdRange &lt;- wdDoc$Content() 
+wdRange$Collapse(Direction=0)
+
+wdDoc$Tables()$Add(Range=wdRange, NumRows=6, NumColumns=6)
+wdTbl &lt;- wdDoc$Tables(1)
+wdTbl[[&quot;Style&quot;]] &lt;- &quot;Plain Table 1&quot;
+
+for(j in 1:6) {
+    wdTbl$Cell(1,j)$Range()$InsertAfter(gsub(&quot;\\.&quot;, &quot; &quot;, names(agg_df)[j]))
+}
+
+agg_df[,2:6] &lt;- round(agg_df[,2:6],4)
+
+for(i in 2:6) {
+  for(j in 1:6) {
+    wdTbl$Cell(i,j)$Range()$InsertAfter(as.character(agg_df[i-1, j]))
+  } 
+}
+
+wdDoc$Paragraphs()$Add()
+wdDoc$Content()$InsertAfter(&quot;Precious Metals Aggregate Plots&quot;)
+
+wdDoc$Characters()$Last()$Select()
+wdApp$Selection()$Collapse()
+
+wdApp$Selection()$InlineShapes()$AddPicture(FileName = paste0(path, &quot;\\Precious_Metals_Plot.png&quot;), 
+                                            LinkToFile = FALSE,
+                                            SaveWithDocument = TRUE)
+
+wdDoc$Paragraphs()$Add()
+
+wdDoc$Characters()$Last()$Select()
+wdApp$Selection()$Collapse()
+
+wdApp$Selection()$InlineShapes()$AddPicture(FileName = paste0(path, &quot;\\Precious_Metals_Year.png&quot;), 
+                                            LinkToFile = FALSE,
+                                            SaveWithDocument = TRUE)
+
+wdDoc$SaveAs(paste0(path, &quot;\\R_MSO_Document.docx&quot;))                      # SAVE AND CLOSE DOCUMENT
+wdDoc$Close(TRUE)                                                        # SAVE AND CLOSE DOCUMENT
+wdApp$Quit()                                                             # QUIT COM APP 
+
+# RELEASE RESOURCES
+wdRange &lt;- wdPara &lt;- wdTbl &lt;- wdDoc &lt;- wdApp &lt;- NULL
+rm(wdRange, wdPara, wdTbl, wdDoc, wdApp)
+gc()  </code></pre>
+<div style="text-align:center">
+<img src="IMAGES/R_MSO_Word.png" width="700px"/>
+</div>
+<hr />
+<div style="float: right">
+<img src="IMAGES/MS_PowerPoint.png" width="75px"/>
+</div>
+</div>
+</div>
+<div id="powerpoint" class="section level2">
+<h2>PowerPoint</h2>
+<div id="object-library-presentations-slides-shapes-table" class="section level3">
+<h3><a href="https://docs.microsoft.com/en-us/office/vba/api/overview/powerpoint/object-model">Object Library</a>: Presentations, Slides, Shapes, Table</h3>
+<pre class="r"><code>pptApp &lt;- COMCreate(&quot;PowerPoint.Application&quot;)
+
+pptPres &lt;- pptApp$Presentations()$Add(FALSE)                             # CREATE PRESENTATION
+pptSlide &lt;- pptPres$Slides()$Add(Index=1, Layout=1)
+pptSlide$Shapes(1)[[&quot;TextFrame&quot;]][[&quot;TextRange&quot;]]$InsertAfter(&quot;Precious Metals Analysis&quot;)
+pptSlide$Shapes(2)[[&quot;TextFrame&quot;]][[&quot;TextRange&quot;]]$InsertAfter(&quot;Powered by R&quot;)
+
+pptSlide &lt;- pptPres$Slides()$Add(Index=2, Layout=16)
+
+pptSlide$Shapes(1)[[&quot;TextFrame&quot;]][[&quot;TextRange&quot;]]$InsertAfter(&quot;Precious Metals Avg Price Aggregation&quot;)
+pptTbl &lt;- pptSlide$Shapes()$AddTable(6, 6)
+
+for(j in 1:6) {
+  pptTbl$Table()$Cell(1, j)$Shape()[[&quot;TextFrame&quot;]][[&quot;TextRange&quot;]]$InsertAfter(gsub(&quot;\\.&quot;, &quot; &quot;, names(agg_df)[j]))
+}
+
+for(i in 2:6) {
+  for(j in 1:6) {
+    pptTbl$Table()$Cell(i, j)$Shape()[[&quot;TextFrame&quot;]][[&quot;TextRange&quot;]]$InsertAfter(as.character(agg_df[i-1, j]))
+  } 
+}
+
+pptSlide &lt;- pptPres$Slides()$Add(Index=3, Layout=29)
+pptSlide$Shapes(1)[[&quot;TextFrame&quot;]][[&quot;TextRange&quot;]]$InsertAfter(&quot;Precious Metals Avg Price Plotting&quot;)
+pptSlide$Shapes()$AddPicture(FileName = paste0(path, &quot;\\Precious_Metals_Plot.png&quot;),
+                             LinkToFile = FALSE,
+                             SaveWithDocument = TRUE,
+                             Left = 100,
+                             Top = 100)
+
+pptSlide$Shapes()$AddPicture(FileName = paste0(path, &quot;\\Precious_Metals_Year.png&quot;),
+                             LinkToFile = FALSE,
+                             SaveWithDocument = TRUE,
+                             Left = 100,
+                             Top = 100)
+
+pptPres$SaveAs(paste0(path, &quot;\\R_MSO_Presentation.pptx&quot;))                # SAVE AND CLOSE PRESENTATION
+pptApp$Presentations(paste0(path, &quot;\\R_MSO_Presentation.pptx&quot;))$Close()  # CLOSE PRESENTATION
+pptApp$Quit()                                                            # QUIT APP
+
+# RELEASE RESOURCES
+pptTitle &lt;- pptTbl &lt;- pptSlide &lt;- pptPres &lt;- pptApp &lt;- NULL
+rm(pptTitle, pptTbl, pptSlide, pptPres, pptApp)
+gc()  </code></pre>
+<div style="text-align:center">
+<img src="IMAGES/R_MSO_PowerPoint.png" width="700px"/>
+</div>
+<hr />
+<div style="float: right">
+<img src="IMAGES/MS_Access.png" width="75px"/>
+</div>
+</div>
+</div>
+<div id="access" class="section level2">
+<h2>Access</h2>
+<div id="object-library-dbengine-workspace-currentdatabase-docmd" class="section level3">
+<h3><a href="https://docs.microsoft.com/en-us/office/vba/api/overview/access/object-model">Object Library</a>: DBEngine, Workspace, CurrentDatabase, DoCmd</h3>
+<pre class="r"><code>accApp &lt;- COMCreate(&quot;Access.Application&quot;)
+
+dbEngine &lt;- accApp$DBEngine()
+workspace &lt;- dbEngine$Workspaces(0)
+
+accDB &lt;- workspace$CreateDatabase(paste0(path, &quot;\\R_MSO_Database.accdb&quot;),     
+                                  &quot;;LANGID=0x0409;CP=1252;COUNTRY=0&quot;, 64)       # CREATE DATABASE
+
+accApp$OpenCurrentDatabase(paste0(path, &quot;\\R_MSO_Database.accdb&quot;))              # OPEN DATABASE
+accApp$DoCmd()$TransferText(0, TableName=&quot;metals&quot;, FileName = csvData,
+                            HasFieldNames = TRUE)                               # IMPORT CSV
+accApp$DoCmd()$CloseDatabase()                                                  # CLOSE DATABASE
+accApp$Quit()                                                                   # QUIT COM APP
+
+# RELEASE RESOURCES
+dbEngine &lt;- workspace &lt;- conn &lt;- output &lt;- accDB &lt;- accApp &lt;- NULL
+rm(dbEngine, workspace, conn, output, accDB, accApp)
+gc()</code></pre>
+<div style="text-align:center">
+<img src="IMAGES/R_MSO_Access.png" width="700px"/>
+</div>
+<hr />
+<div style="float: right">
+<img src="IMAGES/MS_Outlook.png" width="75px"/>
+</div>
+</div>
+</div>
+<div id="outlook" class="section level2">
+<h2>Outlook</h2>
+<div id="object-library-item-body-recipeints-subject-attachments" class="section level3">
+<h3><a href="https://docs.microsoft.com/en-us/office/vba/api/overview/outlook/object-model">Object Library</a>: Item, Body, Recipeints, Subject, Attachments</h3>
+<pre class="r"><code>olApp &lt;- COMCreate(&quot;Outlook.Application&quot;)
+olMail &lt;- olApp$CreateItem(0)                                         # CREATE EMAIL
+
+olHdr &lt;- paste0(&quot;&lt;tr&gt;&lt;th&gt;&quot;, paste(gsub(&quot;\\.&quot;, &quot; &quot;, names(agg_df)), collapse=&quot;&lt;/th&gt;&lt;th&gt;&quot;), &quot;&lt;/th&gt;&lt;/tr&gt;&quot;,
+                collapse=&quot;&quot;)
+olTbl &lt;- paste0(apply(agg_df, 1, function(row) paste0(&quot;&lt;tr&gt;&lt;td&gt;&quot;, paste0(row, collapse=&quot;&lt;/td&gt;&lt;td&gt;$&quot;), &quot;&lt;/td&gt;&lt;/tr&gt;&quot;)),
+                collapse=&quot;&quot;)
+
+olMail$GetInspector()
+signature &lt;- olMail[[&quot;HTMLBody&quot;]]                                   
+olMail[[&quot;Recipients&quot;]]$Add(&quot;pgasana@winston.com&quot;)                     # EDIT EMAIL CONTENT
+olMail[[&quot;Subject&quot;]] &lt;- &quot;some subject&quot;
+
+olAttachments &lt;- olMail$Attachments()
+olAttachments$Add(paste0(path, &quot;\\R_MSO_Spreadsheet.xlsx&quot;), 1)
+olAttachments$Add(paste0(path, &quot;\\R_MSO_Document.docx&quot;), 1)
+olAttachments$Add(paste0(path, &quot;\\R_MSO_Presentation.pptx&quot;), 1)
+olAttachments$Add(paste0(path, &quot;\\R_MSO_Database.accdb&quot;), 1)
+olAttachments$Add(paste0(path, &quot;\\Precious_Metals_Plot.png&quot;), 1, 0)
+olAttachments$Add(paste0(path, &quot;\\Precious_Metals_Year.png&quot;), 1, 0)
+
+olMail[[&quot;HTMLBody&quot;]] &lt;- paste0(&#39;&lt;html&gt;&#39;,
+                               &#39;&lt;head&gt;&#39;,
+                               &#39;&lt;style type=&quot;text/css&quot;&gt;
+                                   .aggtable {font-family: Arial; font-size: 12px; border-collapse: collapse;}
+                                   .aggtable th, .aggtable td {border: 1px solid #CCC; text-align: right; padding: 2px;}
+                                   .aggtable tr:nth-child(even) {background-color: #f2f2f2;}
+                               &lt;/style&gt;&#39;,
+                               &#39;&lt;/head&gt;&#39;,
+                               &#39;&lt;body style=&quot;font-family: Arial; font-size: 12px;&quot;&gt;&#39;,
+                               &#39;&lt;p&gt;Hello CRUG useRs!&lt;br/&gt;&lt;br/&gt;&#39;, 
+                               &#39;&lt;p&gt;Please find below our analysis of precious metals, powered by R!&lt;/p&gt;&#39;,
+                               &#39;&lt;br/&gt;&lt;div style=&quot;text-align: center;&quot;/&gt;&#39;,
+                               &#39;&lt;table class=&quot;aggtable&quot;&gt;&#39;,
+                               olHdr,
+                               olTbl,
+                               &#39;&lt;/table&gt;&lt;br/&gt;&#39;,
+                               &#39;&lt;img src=&quot;cid:Precious_Metals_Plot.png&quot;/&gt;&lt;br/&gt;&#39;,
+                               &#39;&lt;img src=&quot;cid:Precious_Metals_Year.png&quot;/&gt;&#39;,
+                               &#39;&lt;/div&gt;&#39;,
+                               signature, &#39;&lt;/p&gt;&#39;,
+                               &#39;&lt;/body&gt;&lt;/html&gt;&#39;)
+
+olMail$Display()                                                      # DISPLAY EMAIL
+
+# RELEASE RESOURCES
+signature &lt;- olTbl &lt;- olAttachments &lt;- olMail &lt;- olApp &lt;- NULL
+rm(signature, olTbl, olAttachments, olMail, olApp)                   
+gc()  </code></pre>
+<div style="text-align:center">
+<img src="IMAGES/R_MSO_Outlook.png" width="700px"/>
+</div>
+<hr />
+<p><br/></p>
+<p><br/></p>
+</div>
+</div>
+</div>
+
+
+
+
+</div>
+
+<script>
+
+// add bootstrap table styles to pandoc tables
+function bootstrapStylePandocTables() {
+  $('tr.header').parent('thead').parent('table').addClass('table table-condensed');
+}
+$(document).ready(function () {
+  bootstrapStylePandocTables();
+});
+
+
+</script>
+
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+  (function () {
+    var script = document.createElement("script");
+    script.type = "text/javascript";
+    script.src  = "https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML";
+    document.getElementsByTagName("head")[0].appendChild(script);
+  })();
+</script>
+
+</body>
+</html>

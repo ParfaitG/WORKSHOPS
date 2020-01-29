@@ -1,13 +1,31 @@
 ---
-title: "R Interfacing with MS Office using COM"
-output: html_notebook
+title: "R Interface with MS Office using COM"
+output:
+  html_document:
+    self_contained: no
 ---
+
+<style type="text/css">
+.main-container {
+  max-width: 1000px;
+  margin-left: auto;
+  margin-right: auto;
+}
+</style>
+
+## Parfait Gasana ##
+<div style="font-size: 20px;">Data Analyst, Winston & Strawn, LLP</div>
+<div style="float:left"><img src="IMAGES/stackoverflow.png" width="30px"/></div>
+<div style="font-size: 16px;">@Parfait (StackOverflow) | <img src="IMAGES/github.png" width="30px"/>&nbsp;&nbsp;@ParfaitG (GitHub)</div>
+
+<br/>
+<br/>
 
 <img src="IMAGES/R_MS_Office.png" width="450px"/>
 
 <br/>
 
-# RDCOMClient::COMCreate
+# `RDCOMClient::COMCreate()`
 
 - ### [Component Object Model (COM)](https://docs.microsoft.com/en-us/windows/win32/com/component-object-model--com--portal) is a platform-independent, distributed, object-oriented system for creating binary software components that can interact
     - <h4>Microsoft OLE + ActiveX technologies</h4>
@@ -121,8 +139,11 @@ rm(xlQt, xlWks, xlWbk, xlApp)
 gc()  
 ```
 
-<div style = "float: right"><img src="IMAGES/MS_Word.png" width="75px"/></div>
+<div style="text-align:center"><img src="IMAGES/R_MSO_Excel.png" width="700px"/></div>
 
+---
+
+<div style = "float: right"><img src="IMAGES/MS_Word.png" width="75px"/></div>
 ## Word
 
 ### [Object Library](https://docs.microsoft.com/en-us/office/vba/api/overview/word/object-model): Documents, Paragraphs, Tables, InlineShapes
@@ -184,6 +205,10 @@ rm(wdRange, wdPara, wdTbl, wdDoc, wdApp)
 gc()  
 ```
 
+<div style="text-align:center"><img src="IMAGES/R_MSO_Word.png" width="700px"/></div>
+
+---
+
 <div style = "float: right"><img src="IMAGES/MS_PowerPoint.png" width="75px"/></div>
 
 ## PowerPoint
@@ -237,6 +262,10 @@ rm(pptTitle, pptTbl, pptSlide, pptPres, pptApp)
 gc()  
 ```
 
+<div style="text-align:center"><img src="IMAGES/R_MSO_PowerPoint.png" width="700px"/></div>
+
+---
+
 <div style = "float: right"><img src="IMAGES/MS_Access.png" width="75px"/></div>
 
 ## Access
@@ -263,6 +292,10 @@ dbEngine <- workspace <- conn <- output <- accDB <- accApp <- NULL
 rm(dbEngine, workspace, conn, output, accDB, accApp)
 gc()
 ```
+
+<div style="text-align:center"><img src="IMAGES/R_MSO_Access.png" width="700px"/></div>
+
+---
 
 <div style = "float: right"><img src="IMAGES/MS_Outlook.png" width="75px"/></div>
 
@@ -321,6 +354,10 @@ signature <- olTbl <- olAttachments <- olMail <- olApp <- NULL
 rm(signature, olTbl, olAttachments, olMail, olApp)                   
 gc()  
 ```
+
+<div style="text-align:center"><img src="IMAGES/R_MSO_Outlook.png" width="700px"/></div>
+
+---
 
 <br/>
 
