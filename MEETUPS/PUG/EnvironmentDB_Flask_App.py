@@ -84,7 +84,7 @@ def graph_multiple_fct(df, main, categ, series, multiple_title, other_series, ot
 def data_query(series1_dict, series2_dict):
   
   # CONNECT TO DATABASE
-  conn = psycopg2.connect(host='localhost', user='postgres', password='env19', dbname='environment', port=6432)
+  conn = psycopg2.connect(host='10.0.0.220', user='postgres', password='env19', dbname='environment', port=6432)
 
   if not series1_dict['source'] in ["species_count", "plants_count", "sea_ice_extent", 
                                     "us_renewable_consumption", "us_sector_consumption"]:
@@ -176,7 +176,7 @@ def data_query(series1_dict, series2_dict):
             ), us_pop AS (
                    SELECT "date",
                           popthm as us_pop
-                   FROM us_population
+                   FROM usa_population
             ), world_co2 AS (
                    SELECT CONCAT(year, '-01-01')::date AS "date", 
                           (co2_emissions / 1E6) AS world_co2
@@ -263,7 +263,7 @@ def data_query(series1_dict, series2_dict):
                 ), us_pop AS (
                     SELECT "date",
                            popthm as us_pop
-                     FROM us_population
+                     FROM usa_population
                 ), world_gdp AS (
                      SELECT CONCAT(year, '-01-01')::date AS "date",
                             (gdp / 1E9) AS world_gdp
@@ -307,7 +307,7 @@ def data_query(series1_dict, series2_dict):
                ), us_pop AS (
                      SELECT "date",
                             popthm as us_pop
-                     FROM us_population
+                     FROM usa_population
                ), world_gdp AS (
                      SELECT CONCAT(year, '-01-01')::date AS "date",
                             (gdp / 1E9) AS world_gdp
@@ -351,7 +351,7 @@ def data_query(series1_dict, series2_dict):
                ), us_pop AS (
                      SELECT "date",
                             popthm as us_pop
-                     FROM us_population
+                     FROM usa_population
                ), world_gdp AS (
                      SELECT CONCAT(year, '-01-01')::date AS "date",
                             (gdp / 1E9) AS world_gdp
@@ -395,7 +395,7 @@ def data_query(series1_dict, series2_dict):
                ), us_pop AS (
                      SELECT "date",
                              popthm AS us_pop
-                     FROM us_population
+                     FROM usa_population
                ), world_gdp AS (
                      SELECT CONCAT(year, '-01-01')::date AS "date",
                             (gdp / 1E9) AS world_gdp
@@ -444,7 +444,7 @@ def data_query(series1_dict, series2_dict):
                ), us_pop AS (
                      SELECT "date",
                             popthm AS us_pop
-                     FROM us_population
+                     FROM usa_population
                ), world_gdp AS (
                      SELECT CONCAT(year, '-01-01')::date AS "date",
                             (gdp / 1E9) AS world_gdp
