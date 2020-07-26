@@ -9,4 +9,3 @@
 - ## [Notebook-Demo-EnergyData-Info](https://raw.githack.com/ParfaitG/WORKSHOPS/master/useR2020/awesome-climate-data/Notebook-Demo-EnergyData-Info.nb.html)
 
 - ## [Notebook-Demo-US-Data-Gov](https://raw.githack.com/ParfaitG/WORKSHOPS/master/useR2020/awesome-climate-data/Notebook-Demo-US-Data-Gov.nb.html)
-a
