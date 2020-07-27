@@ -86,7 +86,7 @@ with(co2_source_df, {
           xlab = "Year", ylab = "Ktonnes CO2\n", 
           ylim=range(pretty(c(0, dat))), font.lab=2, las=2,
           cex.lab=1.0, cex.main=1.5, cex.axis=0.9,
-          col=seaborn_palette)
+          col=seaborn_palette[1])
 })  
 ```
 
@@ -133,7 +133,7 @@ output <- sapply(names(co2_demand_df)[2:9], function(nm) {
           main = paste("U.K. CO2 Emissions by", nm),
           ylab = "Ktonnes CO2\n", ylim=range(pretty(c(0, dat))),
           space=0.4, cex.lab=1.0, cex.main=1.75, cex.axis=1.0,
-          col=seaborn_palette)
+          col=seaborn_palette[grep(paste0("^", nm, "$"), names(co2_demand_df))-1])
 })  
 ```
 

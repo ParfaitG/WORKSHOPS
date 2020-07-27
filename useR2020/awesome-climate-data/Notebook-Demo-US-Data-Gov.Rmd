@@ -42,13 +42,13 @@ us_ghg_economic_sector_df
 par(mar = c(5,6,4,2), mfrow=c(nrow(us_ghg_economic_sector_df), 1), las=1)
 
 output <- by(us_ghg_economic_sector_df, us_ghg_economic_sector_df$`Economic Sector`, function(sub) {
-  
+  color <- as.integer(row.names(sub))
   dat <- as.matrix(sub[-1])
   
   barplot(dat, beside = TRUE, ylim=range(pretty(c(0, dat))),
           main = paste("U.S. Greenhouse Gases -", sub$`Economic Sector`[1], "Emissions"),
           ylab = "Million metric tons of CO2e\n", cex.lab=1.5, cex.main=1.8, cex.axis=1.5,
-          col=seaborn_palette)
+          col=seaborn_palette[color])
 })
 ```
 
@@ -70,7 +70,7 @@ head(us_ghg_economic_sector_long_df, 10)
 with(subset(us_ghg_economic_sector_long_df, `Economic Sector`=="Agriculture"), {
   par(mar = c(5,6,4,2), las=1)
   
-  plot(Year, Value, type='l', pch=16,
+  plot(Year, Value, type='l', pch=20,
        main="U.S. Greehouse Gas Emissions by Economic Sector",
        xlab="Year", ylab="Million metric tons of CO2e\n", font.lab=2,
        ylim=range(pretty(c(0, us_ghg_economic_sector_long_df$Value))),
@@ -80,7 +80,7 @@ with(subset(us_ghg_economic_sector_long_df, `Economic Sector`=="Agriculture"), {
 
 output <- by(us_ghg_economic_sector_long_df, us_ghg_economic_sector_long_df$`Economic Sector`, function(sub) {
    lines(sub$Year, sub$Value, col=seaborn_palette[as.integer(sub$`Economic Sector`)])  
-   points(sub$Year, sub$Value, pch=16, col=seaborn_palette[as.integer(sub$`Economic Sector`)]) 
+   points(sub$Year, sub$Value, pch=20, col=seaborn_palette[as.integer(sub$`Economic Sector`)]) 
 })
 
 legend("topleft", legend=unique(us_ghg_economic_sector_long_df$`Economic Sector`),
@@ -99,13 +99,13 @@ us_ghg_inventory_sector_df
 par(mar = c(5,6,4,2), mfrow=c(nrow(us_ghg_inventory_sector_df), 1), las=1)
 
 output <- by(us_ghg_inventory_sector_df, us_ghg_inventory_sector_df$`IPCC Sector`, function(sub) {
-  
+  color <- as.integer(row.names(sub))
   dat <- as.matrix(sub[-1])
   
   barplot(dat, beside = TRUE, ylim=range(pretty(c(0, dat))),
           main = paste("U.S. Greenhouse Gases -", sub$`IPCC Sector`[1], "Emissions"),
           ylab = "Million metric tons of CO2e\n", cex.lab=1.5, cex.main=1.8, cex.axis=1.5,
-          col=seaborn_palette)
+          col=seaborn_palette[color])
 })
 ```
 ```{r}
@@ -126,7 +126,7 @@ head(us_ghg_inventory_sector_long_df, 10)
 with(subset(us_ghg_inventory_sector_long_df, `IPCC Sector`=="Agriculture"), {
   par(mar = c(5,6,4,2), las=1)
   
-  plot(Year, Value, type='l', pch=16,
+  plot(Year, Value, type='l', pch=20,
        main="U.S. Greehouse Gas Emissions by Inventory Sector",
        xlab="Year", ylab="Million metric tons of CO2e\n", font.lab=2,
        ylim=range(pretty(c(0, us_ghg_inventory_sector_long_df$Value))),
@@ -136,7 +136,7 @@ with(subset(us_ghg_inventory_sector_long_df, `IPCC Sector`=="Agriculture"), {
 
 output <- by(us_ghg_inventory_sector_long_df, us_ghg_inventory_sector_long_df$`IPCC Sector`, function(sub) {
    lines(sub$Year, sub$Value, col=seaborn_palette[as.integer(sub$`IPCC Sector`)])  
-   points(sub$Year, sub$Value, pch=16, col=seaborn_palette[as.integer(sub$`IPCC Sector`)])  
+   points(sub$Year, sub$Value, pch=20, col=seaborn_palette[as.integer(sub$`IPCC Sector`)])  
 })
 
 legend("topleft", legend=sort(unique(as.character(us_ghg_inventory_sector_long_df$`IPCC Sector`))),
@@ -156,13 +156,13 @@ us_ghg_gas_df
 par(mar = c(5,6,4,2), mfrow=c(nrow(us_ghg_gas_df), 1), las=1)
 
 output <- by(us_ghg_gas_df, us_ghg_gas_df$Gas, function(sub) {
-  
+  color <- as.integer(row.names(sub))
   dat <- as.matrix(sub[-1])
   
   barplot(dat, beside = TRUE, ylim=range(pretty(c(0, dat))),
           main = paste("U.S. Greenhouse Gases -", sub$Gas[1], "Emissions"),
           ylab = "Million metric tons of CO2e\n", cex.lab=1.5, cex.main=1.8, cex.axis=1.5,
-          col=seaborn_palette)
+          col=seaborn_palette[color])
 })
 ```
 
@@ -182,7 +182,7 @@ head(us_ghg_gas_long_df, 10)
 with(subset(us_ghg_gas_long_df, Gas=="Carbon dioxide"), {
   par(mar = c(5,6,4,2), las=1)
   
-  plot(Year, Value, type='l', pch=16,
+  plot(Year, Value, type='l', pch=20,
        main="U.S. Greehouse Gas Emissions by Gas",
        xlab="Year", ylab="Million metric tons of CO2e\n", font.lab=2,
        ylim=range(pretty(c(0, us_ghg_gas_long_df$Value))),
@@ -192,7 +192,7 @@ with(subset(us_ghg_gas_long_df, Gas=="Carbon dioxide"), {
 
 output <- by(us_ghg_gas_long_df, us_ghg_gas_long_df$Gas, function(sub) {
    lines(sub$Year, sub$Value, col=seaborn_palette[as.integer(sub$Gas)])  
-   points(sub$Year, sub$Value, pch=16, col=seaborn_palette[as.integer(sub$Gas)])  
+   points(sub$Year, sub$Value, pch=20, col=seaborn_palette[as.integer(sub$Gas)])  
 })
 
 legend("topleft", legend=sort(unique(as.character(us_ghg_gas_long_df$Gas))),

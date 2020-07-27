@@ -33,7 +33,7 @@ major_regions <- c("North America", "Latin America", "Asia", "Africa", "Middle-E
 
 ```
 
-<div style="text-align:center"><img src="images/EnergyData_Info_Energy_Stats.png" alt="EnergyData.info Screenshot" width=800px/></div>
+<div style="text-align:center"><img src="images/EnergyData_Info_Energy_Stats.png" alt="EnergyData.info Screenshot" width="800px"/></div>
 
 ## Energy Tables
 
@@ -207,18 +207,19 @@ energy_df
 
 
 ```{r fig3a, fig.height = 32, fig.width = 13, fig.align = "center"}
-par(mar = c(5,6,4,5), mfrow=c(length(major_regions), 1), las=1)
+par(mar = c(5,6,4,2), mfrow=c(length(major_regions), 1), las=1)
 
-energy_df <- energy_df[energy_df$Region %in% major_regions,]
+energy_df <- within(energy_df[energy_df$Region %in% major_regions,],
+                    color <- 1:length(Region))
 
 output <- by(energy_df, energy_df$Region, function(sub) {
-  
-  dat <- as.matrix(sub[-1])
+  color <- sub$color[1]
+  dat <- as.matrix(sub[as.character(1990:2017)])
   
   barplot(dat, beside = TRUE, ylim=range(pretty(c(0, dat))),
           main = paste0(sub$Region[1], " Share of Renewable Energy\nin Electricity Production"), 
           ylab="Share (%)", cex.lab=1.5, cex.main=1.8, cex.axis=1.5,
-          col=seaborn_palette)
+          col=seaborn_palette[sub$color[1]])
 })
 ```
 

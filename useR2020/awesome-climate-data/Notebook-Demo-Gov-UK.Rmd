@@ -29,7 +29,7 @@ seaborn_palette <- c("#4C72B0", "#DD8452", "#55A868", "#C44E52", "#8172B3",
 ```
 
 
-<div style="text-align:center"><img src="images/Gov_UK_National_Statistics.png" alt="UK Gov Screenshot" width="600px"/></div>
+<div style="text-align:center"><img src="images/Gov_UK_National_Statistics.png" alt="UK Gov Screenshot" width="800px"/></div>
 
 
 ```{r}
@@ -68,13 +68,14 @@ uk_ghg_df
 par(mar = c(5,6,4,2), mfrow=c(nrow(uk_ghg_df), 1), las=1)
 
 output <- by(uk_ghg_df, uk_ghg_df$Gas, function(sub) {
+  color <- as.integer(row.names(sub))
   dat <- as.matrix(sub[-1])
   
   barplot(dat, beside = TRUE, 
-          main = paste("U.K. ", sub$`Gas`[1], "Emissions"),
+          main = paste(sub$`Gas`[1], "Emissions"),
           ylab = "MtCO2e\n", ylim=range(pretty(c(0, dat))),
           cex.lab=1.5, cex.main=1.8, cex.axis=1.5,
-          col=seaborn_palette)
+          col=seaborn_palette[color])
 })
 ```
 
@@ -102,8 +103,9 @@ uk_ghg_df <- within(uk_ghg_df, {
   rm(`Geographic Coverage_`, `Gas Coverage_`)
 })
 
-uk_ghg_df <- subset(uk_ghg_df, `Gas Coverage` == "Including net emissions/removals from LULUCF" & 
-                               `Gas` == "Total")
+uk_ghg_df <- `row.names<-`(subset(uk_ghg_df, `Gas Coverage` == "Including net emissions/removals from LULUCF" & 
+                                    `Gas` == "Total"), 
+                           NULL)
 uk_ghg_df
 ```
 
@@ -112,13 +114,14 @@ uk_ghg_df
 par(mar = c(5,8,4,2), mfrow=c(nrow(uk_ghg_df), 1), las=1)
 
 output <- by(uk_ghg_df, uk_ghg_df$`Geographic Coverage`, function(sub) {
+  color <- as.integer(row.names(sub))
   dat <- as.matrix(sub[4:32])
   
   barplot(dat, beside = TRUE, 
           main = paste(sub$`Geographic Coverage`[1], " - Total Net Emissions"),
           ylab = "MtCO2e\n", ylim=range(pretty(c(0, dat))),
           cex.lab=1.5, cex.main=1.8, cex.axis=1.5,
-          col=seaborn_palette)
+          col=seaborn_palette[color])
 })
 ```
 
@@ -141,7 +144,7 @@ uk_ghg_long_df <- subset(uk_ghg_long_df, `Geographic Coverage` != "United Kingdo
 with(subset(uk_ghg_long_df, `Geographic Coverage`=="UK Crown Dependencies"), {
   par(mar = c(5,6,4,2), las=1)
   
-  plot(Year, Value, type='l', pch=16,
+  plot(Year, Value, type='l', pch=20,
        main="Other U.K. Territories - Total Greehouse Gas Emissions",
        xlab="Year", ylab="Million metric tons of CO2e\n", font.lab=2,
        ylim=range(pretty(c(0, uk_ghg_long_df$Value))),
@@ -151,7 +154,7 @@ with(subset(uk_ghg_long_df, `Geographic Coverage`=="UK Crown Dependencies"), {
 
 output <- by(uk_ghg_long_df, uk_ghg_long_df$`Geographic Coverage`, function(sub) {
    lines(sub$Year, sub$Value, col=seaborn_palette[as.integer(sub$`Geographic Coverage`)])  
-   points(sub$Year, sub$Value, pch=16, col=seaborn_palette[as.integer(sub$`Geographic Coverage`)]) 
+   points(sub$Year, sub$Value, pch=20, col=seaborn_palette[as.integer(sub$`Geographic Coverage`)]) 
 })
 
 legend("topleft", legend=unique(uk_ghg_long_df$`Geographic Coverage`),
@@ -162,8 +165,9 @@ legend("topleft", legend=unique(uk_ghg_long_df$`Geographic Coverage`),
 ### Table 3: Estimated territorial greenhouse gas emissions by source category, 1990-2018
 
 ```{r}
-uk_ghg_df <- subset(uk_ghg_tables$`Table 3`[c(1:122),],
-                    is.na(More.Detail))
+uk_ghg_df <- data.frame(subset(uk_ghg_tables$`Table 3`[c(1:122),],
+                               is.na(More.Detail)), 
+                        check.names = FALSE, row.names=NULL)
 
 uk_ghg_df
 ```
@@ -173,13 +177,14 @@ uk_ghg_df
 par(mar = c(5,8,4,2), mfrow=c(nrow(uk_ghg_df), 1), las=1)
 
 output <- by(uk_ghg_df, uk_ghg_df$`Sector`, function(sub) {
+  color <- as.integer(row.names(sub))
   dat <- as.matrix(sub[3:31])
   
   barplot(dat, beside = TRUE, 
           main = paste(sub$`Sector`[1], " - Total Net Emissions"),
           ylab = "MtCO2e\n", ylim=range(pretty(c(0, dat))),
           cex.lab=1.5, cex.main=1.8, cex.axis=1.5,
-          col=seaborn_palette)
+          col=seaborn_palette[color])
 })
 ```
 
@@ -199,8 +204,8 @@ head(uk_ghg_long_df, 10)
 with(subset(uk_ghg_long_df, Sector=="Energy supply"), {
   par(mar = c(5,6,4,2), las=1)
   
-  plot(Year, Value, type='l', pch=16,
-       main="UK Total Greehouse Gas Emissions by Sector",
+  plot(Year, Value, type='l', pch=20,
+       main="U.K. Total Greehouse Gas Emissions by Sector",
        xlab="Year", ylab="Million metric tons of CO2e", font.lab=2,
        ylim=range(pretty(c(0, uk_ghg_long_df$Value))),
        col=seaborn_palette[1], lwd=2, 
@@ -209,7 +214,7 @@ with(subset(uk_ghg_long_df, Sector=="Energy supply"), {
 
 output <- by(uk_ghg_long_df, uk_ghg_long_df$Sector, function(sub) {
    lines(sub$Year, sub$Value, col=seaborn_palette[as.integer(sub$Sector)])  
-   points(sub$Year, sub$Value, pch=16, col=seaborn_palette[as.integer(sub$Sector)]) 
+   points(sub$Year, sub$Value, pch=20, col=seaborn_palette[as.integer(sub$Sector)]) 
 })
 
 legend("topright", legend=unique(uk_ghg_long_df$Sector),
