@@ -114,12 +114,12 @@ with(co2_demand_df, {
   points(Year, Households, pch=20, col=seaborn_palette[1])
   
   sapply(3:ncol(co2_demand_df), function(i) {
-    lines(Year, co2_demand_df[,i], col=seaborn_palette[i])
-    points(Year, co2_demand_df[,i], pch=20, col=seaborn_palette[i])
+    lines(Year, co2_demand_df[,i], col=seaborn_palette[i-1])
+    points(Year, co2_demand_df[,i], pch=20, col=seaborn_palette[i-1])
   })
   
   legend("top", legend=names(co2_demand_df)[-1],
-         col=seaborn_palette, ncol=3, lty=1, cex=0.8)
+         col=seaborn_palette[], ncol=3, lty=1, cex=0.8)
 })
 ```
 
@@ -175,12 +175,12 @@ with(co2_product_df, {
   points(YEAR, FOO, pch=20, col=seaborn_palette[1])
   
   sapply(3:35, function(i){
-    lines(YEAR, co2_product_df[,i], col=seaborn_palette[i])
-    points(YEAR, co2_product_df[,i], pch=20, col=seaborn_palette[i])
+    lines(YEAR, co2_product_df[,i], col=seaborn_palette[i-1])
+    points(YEAR, co2_product_df[,i], pch=20, col=seaborn_palette[i-1])
   })
   
   legend("top", legend=names(co2_product_df)[-1],
-         col=seaborn_palette[1:4], ncol=9, lty=1, cex=0.8)
+         col=seaborn_palette, ncol=9, lty=1, cex=0.8)
 })
 ```
 

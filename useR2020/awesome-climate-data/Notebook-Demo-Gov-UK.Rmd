@@ -103,9 +103,9 @@ uk_ghg_df <- within(uk_ghg_df, {
   rm(`Geographic Coverage_`, `Gas Coverage_`)
 })
 
-uk_ghg_df <- `row.names<-`(subset(uk_ghg_df, `Gas Coverage` == "Including net emissions/removals from LULUCF" & 
-                                    `Gas` == "Total"), 
-                           NULL)
+uk_ghg_df <- data.frame(within(subset(uk_ghg_df, `Gas Coverage` == "Including net emissions/removals from LULUCF" & `Gas` == "Total"),
+                                  rm(`Gas Coverage`, `Gas`)),
+                        check.names = FALSE, row.names = NULL)
 uk_ghg_df
 ```
 
@@ -115,7 +115,7 @@ par(mar = c(5,8,4,2), mfrow=c(nrow(uk_ghg_df), 1), las=1)
 
 output <- by(uk_ghg_df, uk_ghg_df$`Geographic Coverage`, function(sub) {
   color <- as.integer(row.names(sub))
-  dat <- as.matrix(sub[4:32])
+  dat <- as.matrix(sub[2:30])
   
   barplot(dat, beside = TRUE, 
           main = paste(sub$`Geographic Coverage`[1], " - Total Net Emissions"),
@@ -126,7 +126,7 @@ output <- by(uk_ghg_df, uk_ghg_df$`Geographic Coverage`, function(sub) {
 ```
 
 ```{r}
-uk_ghg_long_df <- reshape(uk_ghg_df, varying=names(uk_ghg_df)[4:32], times=names(uk_ghg_df)[4:32],
+uk_ghg_long_df <- reshape(uk_ghg_df, varying=names(uk_ghg_df)[2:30], times=names(uk_ghg_df)[2:30],
                           v.names="Value", timevar="Year", ids=NULL,
                           drop=c("Gas Coverage", "Gas"),
                           new.row.names=1:1E4, direction="long")
@@ -138,7 +138,6 @@ head(uk_ghg_long_df, 10)
 
 
 ```{r fig2b, fig.height = 7, fig.width = 13, fig.align = "center"}
-
 uk_ghg_long_df <- subset(uk_ghg_long_df, `Geographic Coverage` != "United Kingdom only")
 
 with(subset(uk_ghg_long_df, `Geographic Coverage`=="UK Crown Dependencies"), {
@@ -165,8 +164,8 @@ legend("topleft", legend=unique(uk_ghg_long_df$`Geographic Coverage`),
 ### Table 3: Estimated territorial greenhouse gas emissions by source category, 1990-2018
 
 ```{r}
-uk_ghg_df <- data.frame(subset(uk_ghg_tables$`Table 3`[c(1:122),],
-                               is.na(More.Detail)), 
+uk_ghg_df <- data.frame(within(subset(uk_ghg_tables$`Table 3`[c(1:122),], is.na(More.Detail)), 
+                               rm(More.Detail)),
                         check.names = FALSE, row.names=NULL)
 
 uk_ghg_df
@@ -178,7 +177,7 @@ par(mar = c(5,8,4,2), mfrow=c(nrow(uk_ghg_df), 1), las=1)
 
 output <- by(uk_ghg_df, uk_ghg_df$`Sector`, function(sub) {
   color <- as.integer(row.names(sub))
-  dat <- as.matrix(sub[3:31])
+  dat <- as.matrix(sub[2:30])
   
   barplot(dat, beside = TRUE, 
           main = paste(sub$`Sector`[1], " - Total Net Emissions"),
@@ -190,17 +189,16 @@ output <- by(uk_ghg_df, uk_ghg_df$`Sector`, function(sub) {
 
 
 ```{r}
-uk_ghg_long_df <- reshape(uk_ghg_df, varying=names(uk_ghg_df)[3:31], times=names(uk_ghg_df)[3:31],
+uk_ghg_long_df <- reshape(uk_ghg_df, varying=names(uk_ghg_df)[2:30], times=names(uk_ghg_df)[2:30],
                           v.names="Value", timevar="Year", ids=NULL, drop="More.Detail",
                           new.row.names=1:1E4, direction="long")
 
-uk_ghg_long_df$Sector <- with(uk_ghg_long_df, factor(Sector, labels=unique(Sector)))
+uk_ghg_long_df$Sector <- with(uk_ghg_long_df, factor(Sector, levels=unique(Sector)))
 
 head(uk_ghg_long_df, 10)
 ```
 
 ```{r fig3b, fig.height = 7, fig.width = 13, fig.align = "center"}
-
 with(subset(uk_ghg_long_df, Sector=="Energy supply"), {
   par(mar = c(5,6,4,2), las=1)
   
@@ -213,11 +211,11 @@ with(subset(uk_ghg_long_df, Sector=="Energy supply"), {
 })
 
 output <- by(uk_ghg_long_df, uk_ghg_long_df$Sector, function(sub) {
-   lines(sub$Year, sub$Value, col=seaborn_palette[as.integer(sub$Sector)])  
-   points(sub$Year, sub$Value, pch=20, col=seaborn_palette[as.integer(sub$Sector)]) 
+   lines(sub$Year, sub$Value, col=seaborn_palette[as.integer(sub$Sector[1])])  
+   points(sub$Year, sub$Value, pch=20, col=seaborn_palette[as.integer(sub$Sector[1])]) 
 })
 
-legend("topright", legend=unique(uk_ghg_long_df$Sector),
+legend("topright", legend=levels(uk_ghg_long_df$Sector),
        col=seaborn_palette, lty=1, cex=0.75)
 
 ```

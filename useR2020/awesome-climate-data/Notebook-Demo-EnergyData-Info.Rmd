@@ -65,7 +65,7 @@ df_list <- lapply(c("Total energy production", "Total energy consumption"), func
 
 energy_df<- Reduce(function(x,y) merge(x, y, all=TRUE, by=c("Region", "Year")), df_list)
 
-tail(energy_df, 10)
+tail(energy_df, 28)
 ```
 
 ### By Major Regions
@@ -120,7 +120,7 @@ energy_df <- within(energy_df[energy_df$Region %in% major_regions,],
 
 energy_df <- aggregate(. ~ span_years + Region, energy_df[c(1,3:7)], FUN=mean)
 
-head(energy_df, 10)
+energy_df
 ```
 
 ```{r fig2, fig.height = 32, fig.width = 13, fig.align = "center"}
@@ -173,7 +173,7 @@ energy_df <- within(energy_df[energy_df$Region %in% major_regions,],
 
 energy_df <- aggregate(. ~ span_years + Region, energy_df[c(1,3:7)], FUN=mean)
 
-head(energy_df, 10)
+energy_df
 ```
 
 
@@ -299,8 +299,8 @@ plot(row.names(energy_df), energy_df$World, type='l', pch=16,
 points(row.names(energy_df), energy_df$World, pch=20, col=seaborn_palette[1]) 
 
 output <- sapply(2:ncol(energy_df), function(i) {
-   lines(row.names(energy_df), energy_df[,i], col=seaborn_palette[i])  
-   points(row.names(energy_df), energy_df[,i], pch=20, col=seaborn_palette[i]) 
+   lines(row.names(energy_df), energy_df[,i], col=seaborn_palette[i-1])  
+   points(row.names(energy_df), energy_df[,i], pch=20, col=seaborn_palette[i-1]) 
 })
 
 legend("topleft", legend=names(energy_df),
@@ -335,8 +335,8 @@ plot(row.names(energy_df), energy_df$World, type='l', pch=16,
 points(row.names(energy_df), energy_df$World, pch=20, col=seaborn_palette[1]) 
 
 output <- sapply(2:ncol(energy_df), function(i) {
-   lines(row.names(energy_df), energy_df[,i], col=seaborn_palette[i])  
-   points(row.names(energy_df), energy_df[,i], pch=20, col=seaborn_palette[i]) 
+   lines(row.names(energy_df), energy_df[,i], col=seaborn_palette[i-1])  
+   points(row.names(energy_df), energy_df[,i], pch=20, col=seaborn_palette[i-1]) 
 })
 
 legend("topright", legend=names(energy_df),

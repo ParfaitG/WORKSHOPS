@@ -52,8 +52,9 @@ data.frame(`Scenario Tables` = all_tables$Tables)
 
 
 ```{r}
-climate_df <- setNames(scenario_tables$`AII-1-1a`[c(2:98), c("Year", "CO2.(ppm)", "CH4.(ppb)", "N2O.(ppb)")],
-                       c("year", "co2_ppm", "ch4_ppb", "n2o_ppb"))
+climate_df <- data.frame(setNames(scenario_tables$`AII-1-1a`[c(2:98), c("Year", "CO2.(ppm)", "CH4.(ppb)", "N2O.(ppb)")],
+                                  c("year", "co2_ppm", "ch4_ppb", "n2o_ppb")),
+                         row.names = NULL)
 
 climate_df <- within(climate_df, {
   year <- as.integer(year)
@@ -94,7 +95,8 @@ output <- by(climate_long_df, climate_long_df$ghg, function(sub) {
 ## Table AII.2.1a: Anthropogenic CO2 emissions from fossil fuels and other industrial sources (FF) (PgC yr–1)
 
 ```{r}
-climate_df <- scenario_tables$`AII-2-1abc`[c(1:11), c("Year", "RCP2.6", "RCP4.5", "RCP6.0", "RCP8.5")]
+climate_df <- data.frame(scenario_tables$`AII-2-1abc`[c(1:11), c("Year", "RCP2.6", "RCP4.5", "RCP6.0", "RCP8.5")],
+                         row.names=NULL)
 
 climate_df <- within(climate_df, {
   Year <- as.integer(Year)
@@ -139,7 +141,8 @@ with(climate_df,  {
 ### Table AII.2.1b: Anthropogenic CO2 emissions from agriculture, forestry, land use (AFOLU) (PgC yr–1)
 
 ```{r}
-climate_df <- scenario_tables$`AII-2-1abc`[c(19:29), c("Year", "RCP2.6", "RCP4.5", "RCP6.0", "RCP8.5")]
+climate_df <- data.frame(scenario_tables$`AII-2-1abc`[c(19:29), c("Year", "RCP2.6", "RCP4.5", "RCP6.0", "RCP8.5")],
+                         row.names=NULL)
 
 climate_df <- within(climate_df, {
   Year <- as.integer(Year)
@@ -181,7 +184,8 @@ with(climate_df,  {
 ### Table AII.2.1c: Anthropogenic total CO2 emissions (PgC yr–1)
 
 ```{r}
-climate_df <- scenario_tables$`AII-2-1abc`[c(34:44), c("Year", "RCP2.6", "RCP4.5", "RCP6.0", "RCP8.5")]
+climate_df <- data.frame(scenario_tables$`AII-2-1abc`[c(34:44), c("Year", "RCP2.6", "RCP4.5", "RCP6.0", "RCP8.5")],
+                         row.names=NULL)
 
 climate_df <- within(climate_df, {
   Year <- as.integer(Year)
@@ -225,7 +229,8 @@ with(climate_df,  {
 ## Table AII.2.2: Anthropogenic CH4 emissions (Tg yr–1)
 
 ```{r}
-climate_df <- scenario_tables$`AII-2-2`[c(4:13), c("Year", "RCP2.6", "RCP4.5", "RCP6.0", "RCP8.5")]
+climate_df <- data.frame(scenario_tables$`AII-2-2`[c(4:13), c("Year", "RCP2.6", "RCP4.5", "RCP6.0", "RCP8.5")],
+                         row.names = NULL)
 
 climate_df <- within(climate_df, {
   Year <- as.integer(Year)
@@ -267,7 +272,8 @@ with(climate_df,  {
 ## Table AII.2.3: Anthropogenic N2O emissions (TgN yr–1)
 
 ```{r}
-climate_df <- scenario_tables$`AII-2-3`[c(4:13), c("Year", "RCP2.6", "RCP4.5", "RCP6.0", "RCP8.5")]
+climate_df <- data.frame(scenario_tables$`AII-2-3`[c(4:13), c("Year", "RCP2.6", "RCP4.5", "RCP6.0", "RCP8.5")],
+                         row.names = NULL)
 
 climate_df <- within(climate_df, {
   Year <- as.integer(Year)
@@ -309,7 +315,8 @@ with(climate_df,  {
 ## Table AII.4.1: CO2 abundance (ppm)
 
 ```{r}
-climate_df <- scenario_tables$`AII-4-1`[c(4:13), c("Year", "RCP2.6", "RCP4.5", "RCP6.0", "RCP8.5")]
+climate_df <- data.frame(scenario_tables$`AII-4-1`[c(4:13), c("Year", "RCP2.6", "RCP4.5", "RCP6.0", "RCP8.5")],
+                         row.names=NULL)
 
 climate_df <- within(climate_df, {
   Year <- as.integer(Year)
@@ -351,7 +358,8 @@ with(climate_df,  {
 ## Table AII.4.2: CH4 abundance (ppb)
 
 ```{r}
-climate_df <- scenario_tables$`AII-4-2`[c(4:13), c("Year", "RCP2.6", "RCP4.5", "RCP6.0", "RCP8.5")]
+climate_df <- data.frame(scenario_tables$`AII-4-2`[c(4:13), c("Year", "RCP2.6", "RCP4.5", "RCP6.0", "RCP8.5")],
+                         row.names = NULL)
 
 climate_df <- within(climate_df, {
   Year <- as.integer(Year)
@@ -393,7 +401,8 @@ with(climate_df,  {
 ## Table AII.4.3: N2O abundance (ppb)
 
 ```{r}
-climate_df <- scenario_tables$`AII-4-3`[c(4:13), c("Year", "RCP2.6", "RCP4.5", "RCP6.0", "RCP8.5")]
+climate_df <- data.frame(scenario_tables$`AII-4-3`[c(4:13), c("Year", "RCP2.6", "RCP4.5", "RCP6.0", "RCP8.5")],
+                         row.names = NULL)
 
 climate_df <- within(climate_df, {
   Year <- as.integer(Year)
